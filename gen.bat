@@ -1,0 +1,1 @@
+thrift -r --gen delphi %GOPATH%\src\github.com\fpawel\atool\api.thrift
