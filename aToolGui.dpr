@@ -32,7 +32,9 @@ uses
   myutils in 'utils\myutils.pas',
   api in 'gen-delphi\api.pas',
   apitypes in 'gen-delphi\apitypes.pas',
-  logfile in 'logfile.pas';
+  logfile in 'logfile.pas',
+  UnitFormVar in 'UnitFormVar.pas' {FormVar},
+  UnitFormVarHelp in 'UnitFormVarHelp.pas' {Form1};
 
 {$R *.res}
 
@@ -44,5 +46,7 @@ begin
   Application.CreateForm(TFormWorkCtrl, FormWorkCtrl);
   Application.CreateForm(TFormLastParty, FormLastParty);
   Application.CreateForm(TFormPopup, FormPopup);
+  Application.CreateForm(TFormVar, FormVar);
+  Application.CreateForm(TForm1, Form1);
   Application.Run;
 end.

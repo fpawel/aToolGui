@@ -49,13 +49,13 @@ type
 
         procedure UpdateSerial(ACol, ARow: Integer; Value: string);
         procedure UpdateAddr(ACol, ARow: Integer; Value: string);
-
+        procedure setup_products;
     public
         { Public declarations }
-        FProducts: IThriftList<IProduct>;
+        FParty: IParty;
 
         procedure reload_data;
-        procedure setup_products;
+
 
         // procedure OnProductConnection(X: TPlaceConnection);
         // procedure OnWorkComplete;
@@ -183,7 +183,7 @@ begin
           mb_IconQuestion or mb_YesNo) <> mrYes then
             exit;
 
-        ProductsClient.deleteProduct(FProducts[Row - 1].ProductID);
+        ProductsClient.deleteProduct(FParty.Products[Row - 1].ProductID);
         reload_data;
     end;
 
@@ -222,8 +222,8 @@ begin
     if (ACol <> 0) or (ARow < 1) or (ARow >= StringGrid1.RowCount) then
         exit;
 
-    FProducts[ARow - 1].Checked := not FProducts[ARow - 1].Checked;
-    ProductsClient.setProduct(FProducts[ARow - 1]);
+    FParty.Products[ARow - 1].Checked := not FParty.Products[ARow - 1].Checked;
+    ProductsClient.setProduct(FParty.Products[ARow - 1]);
     reload_data;
 end;
 
@@ -282,7 +282,7 @@ begin
         exit;
     end;
 
-    p := FProducts[ARow - 1];
+    p := FParty.Products[ARow - 1];
 
     if ARow = FPlaceInterrogate + 1 then
     begin
@@ -328,15 +328,15 @@ var
     connInfo: TConnectionInfo;
 
 begin
-    Height := StringGrid1.DefaultRowHeight * (FProducts.Count + 1) + 50;
+    Height := StringGrid1.DefaultRowHeight * (FParty.Products.Count + 1) + 50;
     StringGrid_Clear(StringGrid1);
     with StringGrid1 do
     begin
-        Height := DefaultRowHeight * (FProducts.Count + 1) + 50;
+        Height := DefaultRowHeight * (FParty.Products.Count + 1) + 50;
 
         ColCount := 4;
-        RowCount := FProducts.Count + 1;
-        if FProducts.Count = 0 then
+        RowCount := FParty.Products.Count + 1;
+        if FParty.Products.Count = 0 then
             exit;
 
         FixedRows := 1;
@@ -351,9 +351,9 @@ begin
 
         for ARow := 1 to RowCount - 1 do
         begin
-            Cells[0, ARow] := Inttostr(FProducts[ARow - 1].ProductID);
-            Cells[1, ARow] := Inttostr(FProducts[ARow - 1].addr);
-            Cells[2, ARow] := Inttostr(FProducts[ARow - 1].Serial);
+            Cells[0, ARow] := Inttostr(FParty.Products[ARow - 1].ProductID);
+            Cells[1, ARow] := Inttostr(FParty.Products[ARow - 1].addr);
+            Cells[2, ARow] := Inttostr(FParty.Products[ARow - 1].Serial);
             if FPlaceConnection.TryGetValue(ARow - 1, connInfo) then
                 Cells[ColumnConnection, ARow] := connInfo.Text;
         end;
@@ -363,14 +363,14 @@ end;
 
 procedure TFormLastParty.reload_data;
 begin
+    FParty := ProductsClient.getLastParty;
     with Application.MainForm do
-        with ProductsClient.getLastParty do
+        with FParty do
             Caption := Format('Загрузка ДАФ-М %d от %s',
               [PartyID, FormatDateTime('dd MMMM yyyy hh:nn',
               IncHour(unixMillisToDateTime(CreatedAt), -3)
 
               )]);
-    FProducts := ProductsClient.listLastPartyProducts;
     FPlaceInterrogate := -1;
     setup_products;
 
@@ -381,11 +381,12 @@ var
     p: IProduct;
 begin
     FormPopup.Hide;
-    p := FProducts[ARow - 1];
+    p := FParty.Products[ARow - 1];
     try
-        FProducts[ARow - 1].addr := StrToInt(Value);
-        ProductsClient.setProduct(FProducts[ARow - 1]);
+        FParty.Products[ARow - 1].addr := StrToInt(Value);
+        ProductsClient.setProduct(FParty.Products[ARow - 1]);
     except
+
         on E: Exception do
         begin
             E.Message := 'адрес: ' + E.Message;
@@ -399,10 +400,10 @@ var
     p: IProduct;
 begin
     FormPopup.Hide;
-    p := FProducts[ARow - 1];
+    p := FParty.Products[ARow - 1];
     try
-        FProducts[ARow - 1].Serial := StrToInt(Value);
-        ProductsClient.setProduct(FProducts[ARow - 1]);
+        FParty.Products[ARow - 1].Serial := StrToInt(Value);
+        ProductsClient.setProduct(FParty.Products[ARow - 1]);
     except
         on E: Exception do
         begin
@@ -417,7 +418,7 @@ end;
 // ACol, prevPlaceInterrogate: Integer;
 // connInfo: TConnectionInfo;
 // begin
-// if (X.place < 0) Or (X.place >= Length(FProducts)) then
+// if (X.place < 0) Or (X.place >= Length(FParty.Products)) then
 // exit;
 //
 // prevPlaceInterrogate := FPlaceInterrogate;
