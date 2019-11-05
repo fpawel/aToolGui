@@ -84,10 +84,11 @@ object FormLastParty: TFormLastParty
       Left = 3
       Top = 3
       Width = 839
-      Height = 214
-      Align = alTop
+      Height = 434
+      Align = alClient
       BorderStyle = bsNone
       ColCount = 4
+      DefaultColWidth = 80
       DefaultDrawing = False
       FixedColor = clBackground
       FixedCols = 0
@@ -100,11 +101,7 @@ object FormLastParty: TFormLastParty
       OnMouseDown = StringGrid1MouseDown
       OnSelectCell = StringGrid1SelectCell
       OnSetEditText = StringGrid1SetEditText
-      ColWidths = (
-        64
-        64
-        64
-        64)
+      ExplicitHeight = 214
     end
   end
   object ImageList1: TImageList

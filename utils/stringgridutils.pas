@@ -223,12 +223,12 @@ begin
           IfThen(checked, DFCS_CHECKED, DFCS_BUTTONCHECK));
     end;
 
-    r := system.Classes.Rect(r.Right + PADDING, Rect.Top, Rect.Right,
+    r := system.Classes.Rect(Rect.Left + 25, Rect.Top , Rect.Right,
       Rect.Bottom);
     r.Right := r.Right - 3;
 
     DrawText(cnv.Handle, text, length(text), r, DT_SINGLELINE or DT_VCENTER or
-      DT_RIGHT or DT_END_ELLIPSIS);
+      DT_LEFT or DT_END_ELLIPSIS);
 
 end;
 

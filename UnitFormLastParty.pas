@@ -44,18 +44,13 @@ type
     private
         { Private declarations }
         Last_Edited_Col, Last_Edited_Row: Integer;
-        FPlaceInterrogate: Integer;
-        FPlaceConnection: TDictionary<Integer, TConnectionInfo>;
 
-        procedure UpdateSerial(ACol, ARow: Integer; Value: string);
-        procedure UpdateAddr(ACol, ARow: Integer; Value: string);
-        procedure setup_products;
+        procedure setupStringGrid;
     public
         { Public declarations }
         FParty: IParty;
 
         procedure reload_data;
-
 
         // procedure OnProductConnection(X: TPlaceConnection);
         // procedure OnWorkComplete;
@@ -63,9 +58,6 @@ type
 
 var
     FormLastParty: TFormLastParty;
-
-const
-    ColumnConnection = 3;
 
 implementation
 
@@ -75,11 +67,8 @@ uses stringgridutils, stringutils, dateutils,
 {$R *.dfm}
 
 procedure TFormLastParty.FormCreate(Sender: TObject);
-
 begin
-    FPlaceInterrogate := -1;
-    FPlaceConnection := TDictionary<Integer, TConnectionInfo>.create;
-
+    //
 end;
 
 procedure TFormLastParty.FormShow(Sender: TObject);
@@ -108,7 +97,7 @@ begin
     end;
     // Do whatever else wanted
 
-    if (ARow > 0) AND (ACol in [1, 2]) then
+    if (ACol > 0) AND (ARow in [1, 2]) then
         grd.Options := grd.Options + [goEditing]
     else
         grd.Options := grd.Options - [goEditing];
@@ -122,6 +111,7 @@ var
 
     r: TRect;
     pt: TPoint;
+    sel : TGridRect;
 begin
     if ARow = 0 then
         exit;
@@ -134,22 +124,36 @@ begin
             Last_Edited_Row := -1; // Indicate no cell is edited
             // Do whatever wanted after user has finish editing a cell
             StringGrid1.OnSetEditText := nil;
-
             try
-                case ACol of
-                    2:
-                        UpdateSerial(ACol, ARow, Value);
-                    1:
-                        UpdateAddr(ACol, ARow, Value);
-                end;
                 FormPopup.Hide;
+                p := FParty.Products[ACol - 1];
+                case ARow of
+                    4:
+                        begin
+                            p.Serial := StrToInt(Value);
+                            ProductsClient.setProduct(p);
+                        end;
+                    3:
+                        begin
+                            p.addr := StrToInt(Value);
+                            ProductsClient.setProduct(p);
+                        end;
+                end;
             except
                 on E: Exception do
-                begin
                     with FormPopup do
                     begin
                         try
                             reload_data;
+                            with sel do
+                            begin
+                                Left := ACol;
+                                Right := ACol;
+                                Top := ARow;
+                                Bottom := ARow;
+                            end;
+                            Selection := sel;
+
                         except
                         end;
                         Caption := 'Ошибка';
@@ -159,7 +163,6 @@ begin
                           [ARow - 1, Value, E.Message]));
                         ShowAtStringGridCell(StringGrid1);
                     end;
-                end;
             end;
             StringGrid1.OnSetEditText := StringGrid1SetEditText;
         end
@@ -172,18 +175,24 @@ begin
 end;
 
 procedure TFormLastParty.ToolButton1Click(Sender: TObject);
+var p: IProduct;
 begin
 
     with StringGrid1 do
     begin
+        if (Col < 1) or (Col >= ColCount) then
+            exit;
+        p := FParty.Products[Col - 1];
+
+
         if MessageBox(Handle,
           PCHar(Format
-          ('Подтвердите необходимость удаления данных БО %s, место %d, адрес %s',
-          [Cells[2, Row], Row, Cells[1, Row]])), 'Запрос подтверждения',
+          ('Подтвердите необходимость удаления данных '#13#10' - прибор: %d'#13#10' - место: %d'#13#10' - адрес: %d'#13#10' - серийный номер: %d',
+          [p.ProductID, col, p.Addr, p.Serial])), 'Удаление данных прибора',
           mb_IconQuestion or mb_YesNo) <> mrYes then
             exit;
 
-        ProductsClient.deleteProduct(FParty.Products[Row - 1].ProductID);
+        ProductsClient.deleteProduct(FParty.Products[Col - 1].ProductID);
         reload_data;
     end;
 
@@ -219,11 +228,11 @@ begin
     if (GetAsyncKeyState(VK_LBUTTON) >= 0) then
         exit;
     StringGrid1.MouseToCell(X, Y, ACol, ARow);
-    if (ACol <> 0) or (ARow < 1) or (ARow >= StringGrid1.RowCount) then
+    if (ARow <> 0) or (ACol < 1) or (ACol >= StringGrid1.ColCount) then
         exit;
 
-    FParty.Products[ARow - 1].Checked := not FParty.Products[ARow - 1].Checked;
-    ProductsClient.setProduct(FParty.Products[ARow - 1]);
+    FParty.Products[ACol - 1].Checked := not FParty.Products[ACol - 1].Checked;
+    ProductsClient.setProduct(FParty.Products[ACol - 1]);
     reload_data;
 end;
 
@@ -236,37 +245,6 @@ var
     connInfo: TConnectionInfo;
     ta: TAlignment;
 
-    procedure DrawCellConnection;
-    var
-        bmp: TBitmap;
-        n: Integer;
-    begin
-        n := 0;
-        if not connInfo.Ok then
-            n := 3;
-        if gdSelected in State then
-            n := n + 1
-        else if ARow = FPlaceInterrogate + 1 then
-            n := n + 2;
-
-        bmp := TBitmap.create;
-        ImageList2.GetBitmap(n, bmp);
-        // StringGrid1.Canvas.FillRect(Rect);
-        StringGrid_DrawCellBmp(StringGrid1, Rect, bmp, grd.Cells[ACol, ARow]);
-        bmp.Free
-    end;
-
-    procedure DrawHeaderCell;
-    begin
-        ta := taCenter;
-        if (ACol = grd.ColCount - 1) then
-            ta := taLeftJustify;
-        grd.Canvas.FillRect(Rect);
-        DrawCellText(StringGrid1, ACol, ARow, Rect, ta,
-          StringGrid1.Cells[ACol, ARow]);
-        StringGrid_DrawCellBounds(StringGrid1.Canvas, ACol, 0, Rect);
-    end;
-
 begin
     grd := StringGrid1;
     cnv := grd.Canvas;
@@ -276,20 +254,18 @@ begin
     if (ARow = 0) or (ACol = 0) then
         cnv.Brush.Color := cl3DLight;
 
-    if ARow = 0 then
+    if ACol = 0 then
     begin
-        DrawHeaderCell;
+        grd.Canvas.FillRect(Rect);
+        DrawCellText(StringGrid1, ACol, ARow, Rect, tarightJustify,
+          StringGrid1.Cells[ACol, ARow]);
+        StringGrid_DrawCellBounds(StringGrid1.Canvas, ACol, ARow, Rect);
         exit;
     end;
 
-    p := FParty.Products[ARow - 1];
+    p := FParty.Products[ACol - 1];
 
-    if ARow = FPlaceInterrogate + 1 then
-    begin
-        cnv.Brush.Color := clSkyBlue;
-    end;
-
-    if ACol = 0 then
+    if ARow = 0 then
     begin
         grd.Canvas.FillRect(Rect);
         DrawCheckbox(grd, grd.Canvas, Rect, p.Checked, grd.Cells[ACol, ARow]);
@@ -302,60 +278,50 @@ begin
         cnv.Brush.Color := clGradientInactiveCaption;
     end;
 
-    if (ACol = ColumnConnection) AND FPlaceConnection.TryGetValue(ARow - 1,
-      connInfo) then
-    begin
-        if FPlaceConnection.TryGetValue(ARow - 1, connInfo) then
-            if connInfo.Ok then
-                cnv.Font.Color := clBlue
-            else
-                cnv.Font.Color := clRed;
-        DrawCellConnection;
-        StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
-        exit;
-    end;
+    ta := taRightJustify;
+    if ARow = grd.Cols[0].IndexOf('Тип прибора') then
+        ta := taCenter;
 
-    ta := taLeftJustify;
+
     DrawCellText(StringGrid1, ACol, ARow, Rect, ta,
       StringGrid1.Cells[ACol, ARow]);
     StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
 
 end;
 
-procedure TFormLastParty.setup_products;
+procedure TFormLastParty.setupStringGrid;
 var
     place, n, ARow, ACol: Integer;
     connInfo: TConnectionInfo;
+    p:IProduct;
 
 begin
-    Height := StringGrid1.DefaultRowHeight * (FParty.Products.Count + 1) + 50;
     StringGrid_Clear(StringGrid1);
     with StringGrid1 do
     begin
-        Height := DefaultRowHeight * (FParty.Products.Count + 1) + 50;
-
-        ColCount := 4;
-        RowCount := FParty.Products.Count + 1;
+        ColCount := FParty.Products.Count + 1;
+        RowCount := 5;
         if FParty.Products.Count = 0 then
             exit;
 
         FixedRows := 1;
         FixedCols := 1;
-        ColWidths[0] := 80;
+        ColWidths[0] := 120;
 
-        Cells[0, 0] := '№ ДАФ';
-        Cells[1, 0] := 'Адрес';
-        Cells[2, 0] := 'Сер.№';
-        Cells[ColumnConnection, 0] := 'Связь';
-        ColWidths[ColumnConnection] := 200;
+        Cells[0, 0] := 'Место';
+        Cells[0, 1] := 'Тип прибора';
+        Cells[0, 2] := 'Номер прибор';
+        Cells[0, 3] := 'Адрес';
+        Cells[0, 4] := 'Серийный номер';
 
-        for ARow := 1 to RowCount - 1 do
+        for ACol := 1 to ColCount - 1 do
         begin
-            Cells[0, ARow] := Inttostr(FParty.Products[ARow - 1].ProductID);
-            Cells[1, ARow] := Inttostr(FParty.Products[ARow - 1].addr);
-            Cells[2, ARow] := Inttostr(FParty.Products[ARow - 1].Serial);
-            if FPlaceConnection.TryGetValue(ARow - 1, connInfo) then
-                Cells[ColumnConnection, ARow] := connInfo.Text;
+            p := FParty.Products[ACol - 1];
+            Cells[ACol, 0] := Format('%d', [ACol]);
+            Cells[ACol, 1] := p.Device;
+            Cells[ACol, 2] := Inttostr(p.ProductID);
+            Cells[ACol, 3] := Inttostr(p.addr);
+            Cells[ACol, 4] := Inttostr(p.Serial);
         end;
     end;
 
@@ -371,47 +337,10 @@ begin
               IncHour(unixMillisToDateTime(CreatedAt), -3)
 
               )]);
-    FPlaceInterrogate := -1;
-    setup_products;
+    setupStringGrid;
 
 end;
 
-procedure TFormLastParty.UpdateAddr(ACol, ARow: Integer; Value: string);
-var
-    p: IProduct;
-begin
-    FormPopup.Hide;
-    p := FParty.Products[ARow - 1];
-    try
-        FParty.Products[ARow - 1].addr := StrToInt(Value);
-        ProductsClient.setProduct(FParty.Products[ARow - 1]);
-    except
-
-        on E: Exception do
-        begin
-            E.Message := 'адрес: ' + E.Message;
-            raise;
-        end;
-    end;
-end;
-
-procedure TFormLastParty.UpdateSerial(ACol, ARow: Integer; Value: string);
-var
-    p: IProduct;
-begin
-    FormPopup.Hide;
-    p := FParty.Products[ARow - 1];
-    try
-        FParty.Products[ARow - 1].Serial := StrToInt(Value);
-        ProductsClient.setProduct(FParty.Products[ARow - 1]);
-    except
-        on E: Exception do
-        begin
-            E.Message := 'серийный номер: ' + E.Message;
-            raise;
-        end;
-    end;
-end;
 
 // procedure TFormLastParty.OnProductConnection(X: TPlaceConnection);
 // var

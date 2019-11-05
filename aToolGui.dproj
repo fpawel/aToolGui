@@ -84,7 +84,7 @@
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
         <Debugger_IncludeSystemVars>true</Debugger_IncludeSystemVars>
-        <Debugger_EnvVars>ATOOL_API_PORT=60003;$(Debugger_EnvVars)</Debugger_EnvVars>
+        <Debugger_EnvVars>ATOOL_API_PORT=60002;$(Debugger_EnvVars)</Debugger_EnvVars>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
@@ -147,10 +147,6 @@
         <DCCReference Include="logfile.pas"/>
         <DCCReference Include="UnitFormVar.pas">
             <Form>FormVar</Form>
-            <FormType>dfm</FormType>
-        </DCCReference>
-        <DCCReference Include="UnitFormVarHelp.pas">
-            <Form>Form1</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Release">
