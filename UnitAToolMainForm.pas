@@ -5,12 +5,19 @@ interface
 uses
     Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
     System.Classes, Vcl.Graphics,
-    Vcl.Controls, Vcl.Forms, Vcl.Dialogs, System.ImageList, Vcl.ImgList;
+    Vcl.Controls, Vcl.Forms, Vcl.Dialogs, System.ImageList, Vcl.ImgList,
+  Vcl.Menus;
 
 type
     TAToolMainForm = class(TForm)
+    MainMenu1: TMainMenu;
+    N1: TMenuItem;
+    N2: TMenuItem;
+    N3: TMenuItem;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
+    procedure N2Click(Sender: TObject);
+    procedure N3Click(Sender: TObject);
     private
         { Private declarations }
         procedure AppException(Sender: TObject; e: Exception);
@@ -49,9 +56,37 @@ begin
         BorderStyle := bsNone;
         Parent := self;
         Align := alClient;
-        reload_data;
+        upload;
         Show;
     end;
+
+end;
+
+procedure TAToolMainForm.N2Click(Sender: TObject);
+var
+    strProductsCount: string;
+    ProductsCount: integer;
+begin
+    if not InputQuery('Создание новой партии приборов',
+    'Введите количество приборов в новой партии.',
+    strProductsCount ) or not TryStrToInt(strProductsCount, ProductsCount) then
+    exit;
+    ProductsClient.CreateNewParty(ProductsCount);
+    FormLastParty.upload;
+
+end;
+
+procedure TAToolMainForm.N3Click(Sender: TObject);
+var
+    strProductsCount: string;
+    ProductsCount: integer;
+begin
+    if not InputQuery('Создание новой партии приборов',
+    'Введите количество добавляемых приборов.',
+    strProductsCount ) or not TryStrToInt(strProductsCount, ProductsCount) then
+    exit;
+    ProductsClient.AddNewProducts(ProductsCount);
+    FormLastParty.upload;
 
 end;
 

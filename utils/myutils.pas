@@ -2,15 +2,42 @@ unit myutils;
 
 interface
 
+uses classes;
+
 function UnixMillisToDateTime(t: int64): TDateTime;
 function DateTimeToUnixMillis(t: TDateTime): int64;
 
+procedure EnumComports(const Ports: TStrings);
+
 implementation
 
-uses dateutils;
+uses dateutils, registry, winapi.windows, sysutils;
 
 var
     unixTime: TDateTime;
+
+
+procedure EnumComports(const Ports: TStrings);
+var
+    nInd: integer;
+begin
+    with TRegistry.Create(KEY_READ) do
+        try
+            RootKey := HKEY_LOCAL_MACHINE;
+            if OpenKey('hardware\devicemap\serialcomm', false) then
+            begin
+                Ports.BeginUpdate();
+                GetValueNames(Ports);
+                for nInd := Ports.count - 1 downto 0 do
+                    Ports.Strings[nInd] := ReadString(Ports.Strings[nInd]);
+            end;
+
+        finally
+            Ports.EndUpdate();
+            CloseKey();
+            Free();
+        end
+end;
 
 function unixMillisToDateTime(t: int64): TDateTime;
 begin

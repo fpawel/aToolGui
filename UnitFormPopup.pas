@@ -10,12 +10,11 @@ uses
 
 type
     TFormPopup = class(TForm)
-        RichEdit1: TRichEdit;
     ImageError: TImage;
     ImageInfo: TImage;
+    Label1: TLabel;
         procedure FormDeactivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure RichEdit1Enter(Sender: TObject);
     private
         { Private declarations }
     public
@@ -42,14 +41,9 @@ begin
     Hide;
 end;
 
-procedure TFormPopup.RichEdit1Enter(Sender: TObject);
-begin
-    HideCaret(RichEdit1.Handle);
-end;
-
 procedure TFormPopup.SetText(s:string);
 begin
-    RichEdit1.Text := stringreplace(s, ': ', #13#10#9' - ', [rfReplaceAll, rfIgnoreCase]);
+    Label1.Caption := stringreplace(s, ': ', #13#10#9' - ', [rfReplaceAll, rfIgnoreCase]);
 end;
 
 

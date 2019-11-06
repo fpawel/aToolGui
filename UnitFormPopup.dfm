@@ -7,7 +7,7 @@ object FormPopup: TFormPopup
   Color = clInfoBk
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -19
+  Font.Height = -16
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
@@ -17,7 +17,7 @@ object FormPopup: TFormPopup
     729
     170)
   PixelsPerInch = 96
-  TextHeight = 23
+  TextHeight = 19
   object ImageError: TImage
     Left = 8
     Top = 8
@@ -233,26 +233,14 @@ object FormPopup: TFormPopup
       08AD54EA5EE8A304D46AF2CE18DC21D04FFC1F91D8A19C9B3B02200000000049
       454E44AE426082}
   end
-  object RichEdit1: TRichEdit
+  object Label1: TLabel
     Left = 104
-    Top = 9
+    Top = 8
     Width = 617
-    Height = 153
+    Height = 154
     Anchors = [akLeft, akTop, akRight, akBottom]
-    BorderStyle = bsNone
-    Font.Charset = RUSSIAN_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -16
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    Lines.Strings = (
-      #1047#1076#1077#1089#1100' '#1076#1086#1083#1078#1085#1086' '#1073#1099#1090#1100' '#1076#1083#1080#1085#1085#1086#1077#1080#1085#1092#1086#1088#1084#1072#1094#1080#1086#1085#1085#1086#1077' '#1089#1086#1086#1073#1097#1077#1085#1080#1077)
-    ParentColor = True
-    ParentFont = False
-    ReadOnly = True
-    ScrollBars = ssVertical
-    TabOrder = 0
-    Zoom = 100
-    OnEnter = RichEdit1Enter
+    AutoSize = False
+    Caption = 'Label1'
+    WordWrap = True
   end
 end
