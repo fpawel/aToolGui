@@ -1,7 +1,12 @@
-object FormLastParty: TFormLastParty
+object FormCurrentParty: TFormCurrentParty
+  AlignWithMargins = True
   Left = 0
   Top = 0
-  Caption = 'FormLastParty'
+  Margins.Left = 5
+  Margins.Top = 5
+  Margins.Right = 5
+  Margins.Bottom = 5
+  Caption = 'FormCurrentParty'
   ClientHeight = 440
   ClientWidth = 878
   Color = clWhite
@@ -25,8 +30,6 @@ object FormLastParty: TFormLastParty
     Caption = 'Panel1'
     ShowCaption = False
     TabOrder = 0
-    ExplicitLeft = 33
-    ExplicitWidth = 845
     object StringGrid1: TStringGrid
       AlignWithMargins = True
       Left = 3
@@ -36,7 +39,7 @@ object FormLastParty: TFormLastParty
       Align = alClient
       BorderStyle = bsNone
       ColCount = 4
-      DefaultColWidth = 80
+      DefaultColWidth = 120
       DefaultDrawing = False
       FixedColor = clBackground
       FixedCols = 0
@@ -45,13 +48,12 @@ object FormLastParty: TFormLastParty
       GradientEndColor = clBlack
       PopupMenu = PopupMenu1
       TabOrder = 0
+      OnDblClick = StringGrid1DblClick
       OnDrawCell = StringGrid1DrawCell
       OnKeyPress = StringGrid1KeyPress
       OnMouseDown = StringGrid1MouseDown
       OnSelectCell = StringGrid1SelectCell
       OnSetEditText = StringGrid1SetEditText
-      ExplicitLeft = 6
-      ExplicitTop = 6
     end
   end
   object ImageList2: TImageList

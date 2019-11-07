@@ -3,7 +3,6 @@ program aToolGui;
 uses
   Vcl.Forms,
   UnitAToolMainForm in 'UnitAToolMainForm.pas' {AToolMainForm},
-  UnitFormWorkCtrl in 'UnitFormWorkCtrl.pas' {FormWorkCtrl},
   Thrift.Collections in 'thrift\Thrift.Collections.pas',
   Thrift.Exception in 'thrift\Thrift.Exception.pas',
   Thrift in 'thrift\Thrift.pas',
@@ -24,7 +23,7 @@ uses
   Thrift.Utils in 'thrift\Thrift.Utils.pas',
   Thrift.WinHTTP in 'thrift\Thrift.WinHTTP.pas',
   UnitApiClient in 'UnitApiClient.pas',
-  UnitFormLastParty in 'UnitFormLastParty.pas' {FormLastParty},
+  UnitFormCurrentParty in 'UnitFormCurrentParty.pas' {FormCurrentParty},
   stringgridutils in 'utils\stringgridutils.pas',
   stringutils in 'utils\stringutils.pas',
   vclutils in 'utils\vclutils.pas',
@@ -33,7 +32,9 @@ uses
   api in 'gen-delphi\api.pas',
   apitypes in 'gen-delphi\apitypes.pas',
   logfile in 'logfile.pas',
-  UnitFormVar in 'UnitFormVar.pas' {FormVar};
+  UnitFormVar in 'UnitFormVar.pas' {FormVar},
+  UnitFormEditAppConfig in 'UnitFormEditAppConfig.pas' {FormEditAppConfig},
+  UnitFormSelectCurrentParty in 'UnitFormSelectCurrentParty.pas' {FormSelectCurrentParty};
 
 {$R *.res}
 
@@ -41,10 +42,10 @@ begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(TAToolMainForm, AToolMainForm);
-  Application.CreateForm(TFormWorkCtrl, FormWorkCtrl);
-  Application.CreateForm(TFormWorkCtrl, FormWorkCtrl);
-  Application.CreateForm(TFormLastParty, FormLastParty);
+  Application.CreateForm(TFormCurrentParty, FormCurrentParty);
   Application.CreateForm(TFormPopup, FormPopup);
   Application.CreateForm(TFormVar, FormVar);
+  Application.CreateForm(TFormEditAppConfig, FormEditAppConfig);
+  Application.CreateForm(TFormSelectCurrentParty, FormSelectCurrentParty);
   Application.Run;
 end.

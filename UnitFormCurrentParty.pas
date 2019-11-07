@@ -1,4 +1,4 @@
-﻿unit UnitFormLastParty;
+﻿unit UnitFormCurrentParty;
 
 interface
 
@@ -18,7 +18,7 @@ type
 
     end;
 
-    TFormLastParty = class(TForm)
+    TFormCurrentParty = class(TForm)
         ImageList2: TImageList;
         Panel1: TPanel;
         StringGrid1: TStringGrid;
@@ -39,6 +39,7 @@ type
         procedure N1Click(Sender: TObject);
         procedure StringGrid1KeyPress(Sender: TObject; var Key: Char);
         procedure PopupMenu1Popup(Sender: TObject);
+    procedure StringGrid1DblClick(Sender: TObject);
     private
         { Private declarations }
         Last_Edited_Col, Last_Edited_Row: Integer;
@@ -57,7 +58,7 @@ type
     end;
 
 var
-    FormLastParty: TFormLastParty;
+    FormCurrentParty: TFormCurrentParty;
 
 implementation
 
@@ -66,17 +67,17 @@ uses stringgridutils, stringutils, dateutils,
 
 {$R *.dfm}
 
-procedure TFormLastParty.FormCreate(Sender: TObject);
+procedure TFormCurrentParty.FormCreate(Sender: TObject);
 begin
     //
 end;
 
-procedure TFormLastParty.FormShow(Sender: TObject);
+procedure TFormCurrentParty.FormShow(Sender: TObject);
 begin
     //
 end;
 
-procedure TFormLastParty.N1Click(Sender: TObject);
+procedure TFormCurrentParty.N1Click(Sender: TObject);
 begin
     if MessageBox(Handle,
       PCHar('Подтвердите необходимость удаления данных приборов, соответствующих выбранным колонкам таблицы.'#13#10'Внимание:'#13#10'Удалённые данные восстановить невозможно.'),
@@ -87,7 +88,7 @@ begin
     upload;
 end;
 
-procedure TFormLastParty.PopupMenu1Popup(Sender: TObject);
+procedure TFormCurrentParty.PopupMenu1Popup(Sender: TObject);
 var
     Ports: TStrings;
     I: Integer;
@@ -119,7 +120,7 @@ begin
     end;
 end;
 
-procedure TFormLastParty.StringGrid1SelectCell(Sender: TObject;
+procedure TFormCurrentParty.StringGrid1SelectCell(Sender: TObject;
   ACol, ARow: Integer; var CanSelect: boolean);
 var
     r: TRect;
@@ -147,7 +148,7 @@ begin
 
 end;
 
-procedure TFormLastParty.StringGrid1SetEditText(Sender: TObject;
+procedure TFormCurrentParty.StringGrid1SetEditText(Sender: TObject;
   ACol, ARow: Integer; const Value: string);
 var
     p: IProduct;
@@ -171,13 +172,12 @@ begin
             try
                 FormPopup.Hide;
                 p := FParty.Products[ACol - 1];
-                case ARow of
-                    3:
-                        begin
-                            p.addr := StrToInt(Value);
-                            ProductsClient.setProduct(p);
-                        end;
+                if ARow = Cols[0].IndexOf('Адрес') then
+                begin
+                    p.addr := StrToInt(Value);
+                    ProductsClient.setProduct(p);
                 end;
+
             except
                 on E: Exception do
                     with FormPopup do
@@ -217,7 +217,7 @@ begin
 
 end;
 
-procedure TFormLastParty.StringGrid1MouseDown(Sender: TObject;
+procedure TFormCurrentParty.StringGrid1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
     ACol, ARow: Integer;
@@ -234,7 +234,17 @@ begin
     upload;
 end;
 
-procedure TFormLastParty.StringGrid1DrawCell(Sender: TObject;
+procedure TFormCurrentParty.StringGrid1DblClick(Sender: TObject);
+begin
+    with StringGrid1 do
+        if not EditorMode and (Row = Cols[0].IndexOf('Адрес')) then
+        begin
+            Options := Options + [goEditing];
+            EditorMode := true;
+        end;
+end;
+
+procedure TFormCurrentParty.StringGrid1DrawCell(Sender: TObject;
   ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
 var
     grd: TStringGrid;
@@ -256,9 +266,9 @@ begin
     cnv.Font.Assign(grd.Font);
     AText := grd.Cells[ACol, ARow];
 
-    if RowIs('Адрес в сети') then
+    if RowIs('Адрес') then
     begin
-        cnv.Font.Color := clBlue;
+        cnv.Font.Color := clNavy;
     end;
 
     if (ARow = 0) or (ACol = 0) then
@@ -267,7 +277,13 @@ begin
     if ACol = 0 then
     begin
         grd.Canvas.FillRect(Rect);
-        DrawCellText(StringGrid1, ACol, ARow, Rect, taLeftJustify, AText);
+        ta := taLeftJustify;
+        if ARow > 1 then
+        begin
+            ta := taRightJustify;
+            cnv.Font.Color := clNavy;
+        end;
+        DrawCellText(StringGrid1, ACol, ARow, Rect, ta, AText);
         StringGrid_DrawCellBounds(StringGrid1.Canvas, ACol, ARow, Rect);
         exit;
     end;
@@ -282,31 +298,27 @@ begin
         exit;
     end;
 
+    if ARow = 1 then
+    begin
+        AText := IntToStr(p.addr) + ' ' + p.Comport;
+
+    end;
+
     if gdSelected in State then
     begin
         cnv.Brush.Color := clGradientInactiveCaption;
     end;
 
     ta := taRightJustify;
-    if RowIs('Тип прибора') or RowIs('СОМ порт') then
-        ta := taCenter;
-
-    if grd.Cells[ACol, ARow] = 'DEFAULT' then
-    begin
-        AText := 'не задан';
-        cnv.Font.Color := clGray;
-        cnv.Font.Style := [fsItalic];
-    end;
-
     DrawCellText(StringGrid1, ACol, ARow, Rect, ta, AText);
     StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
 
 end;
 
-procedure TFormLastParty.StringGrid1KeyPress(Sender: TObject; var Key: Char);
+procedure TFormCurrentParty.StringGrid1KeyPress(Sender: TObject; var Key: Char);
 begin
     with StringGrid1 do
-        if not EditorMode and (Row in [3]) then
+        if not EditorMode and (Row = Cols[0].IndexOf('Адрес')) then
         begin
             Options := Options + [goEditing];
             Cells[Col, Row] := Key;
@@ -314,58 +326,49 @@ begin
         end;
 end;
 
-procedure TFormLastParty.setupStringGrid;
+procedure TFormCurrentParty.setupStringGrid;
 var
     place, n, ARow, ACol: Integer;
     connInfo: TConnectionInfo;
     p: IProduct;
-    param: IParam;
-
 begin
     StringGrid_Clear(StringGrid1);
     with StringGrid1 do
     begin
         ColCount := FParty.Products.Count + 1;
-        RowCount := 5 + FParty.Params.Count;
+        RowCount := 2 + FParty.Params.Count;
         if FParty.Products.Count = 0 then
             exit;
 
         FixedRows := 1;
         FixedCols := 1;
-        ColWidths[0] := 120;
+        ColWidths[0] := 60;
 
-        Cells[0, 0] := 'Место';
-        Cells[0, 1] := 'Тип прибора';
-        Cells[0, 2] := 'Номер прибора';
-        Cells[0, 3] := 'Адрес в сети';
-        Cells[0, 4] := 'СОМ порт';
+        Cells[0, 0] := 'Прибор';
+        Cells[0, 1] := 'Адрес';
 
         for ACol := 1 to ColCount - 1 do
         begin
             p := FParty.Products[ACol - 1];
-            Cells[ACol, 0] := Format('%d', [ACol]);
-            Cells[ACol, 1] := p.Device;
-            Cells[ACol, 2] := Inttostr(p.ProductID);
-            Cells[ACol, 3] := Inttostr(p.addr);
-            Cells[ACol, 4] := p.Comport;
+            Cells[ACol, 0] := Format('%d %s', [p.ProductID, p.Device]);
+            Cells[ACol, 1] := IntToStr(p.addr);
         end;
 
-        for ARow := 5 to RowCount - 1 do
+        for ARow := 2 to RowCount - 1 do
         begin
-            param := FParty.Params[ARow - 5];
-            Cells[0, ARow] := Format('%d %s', [param.TheVar, param.Format]);
+            Cells[0, ARow] := Format('%d', [FParty.Params[ARow - 2]]);
         end;
     end;
 
 end;
 
-procedure TFormLastParty.upload;
+procedure TFormCurrentParty.upload;
 begin
-    FParty := ProductsClient.getLastParty;
+    FParty := ProductsClient.getCurrentParty;
     with Application.MainForm do
         with FParty do
-            Caption := Format('Загрузка ДАФ-М %d от %s',
-              [PartyID, FormatDateTime('dd MMMM yyyy hh:nn',
+            Caption := Format('%s %d от %s',
+              [Note, PartyID, FormatDateTime('dd MMMM yyyy hh:nn',
               IncHour(unixMillisToDateTime(CreatedAt), -3)
 
               )]);
@@ -373,7 +376,7 @@ begin
 
 end;
 
-function TFormLastParty.GetSelectedProductsIDs
+function TFormCurrentParty.GetSelectedProductsIDs
   : Thrift.Collections.IThriftList<int64>;
 var
     ACol: Integer;
@@ -385,7 +388,7 @@ begin
             result.Add(FParty.Products[ACol - 1].ProductID);
 end;
 
-procedure TFormLastParty.SetProductsDevice(Sender: TObject);
+procedure TFormCurrentParty.SetProductsDevice(Sender: TObject);
 begin
     ProductsClient.SetProductsDevice(GetSelectedProductsIDs,
       (Sender AS TMenuItem).Caption);
@@ -393,7 +396,7 @@ begin
 
 end;
 
-procedure TFormLastParty.SetProductsComport(Sender: TObject);
+procedure TFormCurrentParty.SetProductsComport(Sender: TObject);
 begin
     ProductsClient.SetProductsComport(GetSelectedProductsIDs,
       (Sender AS TMenuItem).Caption);
