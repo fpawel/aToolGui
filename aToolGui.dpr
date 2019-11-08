@@ -34,7 +34,9 @@ uses
   logfile in 'logfile.pas',
   UnitFormVar in 'UnitFormVar.pas' {FormVar},
   UnitFormEditAppConfig in 'UnitFormEditAppConfig.pas' {FormEditAppConfig},
-  UnitFormSelectCurrentParty in 'UnitFormSelectCurrentParty.pas' {FormSelectCurrentParty};
+  UnitFormSelectCurrentParty in 'UnitFormSelectCurrentParty.pas' {FormSelectCurrentParty},
+  UnitFormChart in 'UnitFormChart.pas' {FormChart},
+  UnitFormCharts in 'UnitFormCharts.pas' {Form1};
 
 {$R *.res}
 
@@ -47,5 +49,6 @@ begin
   Application.CreateForm(TFormVar, FormVar);
   Application.CreateForm(TFormEditAppConfig, FormEditAppConfig);
   Application.CreateForm(TFormSelectCurrentParty, FormSelectCurrentParty);
+  Application.CreateForm(TForm1, Form1);
   Application.Run;
 end.

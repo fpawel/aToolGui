@@ -145,26 +145,22 @@ begin
             cells[acol, arow] := cells[acol, arow];
 end;
 
-procedure StringGrid_RedrawRow(grd: TStringGrid; arow: integer);
+procedure StringGrid_RedrawRow(grd: TStringGrid; ARow: integer);
 var
-    i: integer;
+    ACol: integer;
 begin
     with grd do
-        if (arow >= 0) AND (arow < rowcount) then
-            for i := 0 to colcount - 1 do
-                if not ( EditorMode AND (Col = i) AND (Row = ARow) ) then
-                    cells[i, arow] := cells[i, arow];
+        for ACol := 0 to ColCount - 1 do
+            cells[ACol, ARow] := cells[ACol, ARow];
 end;
 
 procedure StringGrid_RedrawCol(grd: TStringGrid; acol: integer);
 var
-    i: integer;
+    ARow: integer;
 begin
     with grd do
-        if (acol >= 0) AND (acol < rowcount) then
-            for i := 0 to colcount - 1 do
-
-                cells[acol, 1] := cells[acol, i];
+        for ARow := 0 to RowCount - 1 do
+            cells[ACol, ARow] := cells[ACol, ARow];
 end;
 
 procedure StringGrid_Clear(grd: TStringGrid);

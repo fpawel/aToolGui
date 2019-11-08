@@ -153,6 +153,14 @@
             <Form>FormSelectCurrentParty</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="UnitFormChart.pas">
+            <Form>FormChart</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="UnitFormCharts.pas">
+            <Form>Form1</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
