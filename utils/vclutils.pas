@@ -11,7 +11,10 @@ procedure SetButtonMultiline(b: TButton);
 
 procedure ModifyControl(const AControl: TControl; const ARef: TControlProc);
 
-procedure PageControl_DrawVerticalTab(Control: TCustomTabControl;
+procedure PageControl_DrawVerticalTab1(Control: TCustomTabControl;
+  TabIndex: integer; const Rect: system.Types.TRect; Active: boolean);
+
+procedure PageControl_DrawVerticalTab2(Control: TCustomTabControl;
   TabIndex: integer; const Rect: system.Types.TRect; Active: boolean);
 
 procedure ConvertImagesToHighColor(ImageList: TImageList);
@@ -76,13 +79,42 @@ begin
       BS_MULTILINE);
 end;
 
-procedure PageControl_DrawVerticalTab(Control: TCustomTabControl;
+procedure PageControl_DrawVerticalTab1(Control: TCustomTabControl;
+  TabIndex: integer; const Rect: system.Types.TRect; Active: boolean);
+var
+    i: integer;
+    PageControl: TPageControl;
+    x, y: integer;
+    txt_height: double;
+    word:string;
+begin
+    PageControl := Control as TPageControl;
+    Active := PageControl.ActivePageIndex = TabIndex;
+    if PageControl.ActivePageIndex = TabIndex then
+    begin
+        PageControl.Canvas.Brush.Color := clGradientInactiveCaption;
+        PageControl.Canvas.Font.Color := clNavy;
+    end
+    else
+    begin
+        PageControl.Canvas.Brush.Color := clWindow;
+        PageControl.Canvas.Font.Color := clBlack;
+    end;
+
+    word := PageControl.Pages[TabIndex].Caption;
+    x := Rect.Left + 7;
+    txt_height := PageControl.Canvas.TextHeight(word);
+    y := Rect.Top + round((Rect.Height - txt_height) / 2.0);
+    PageControl.Canvas.TextRect(Rect, x, y, word);
+end;
+
+procedure PageControl_DrawVerticalTab2(Control: TCustomTabControl;
   TabIndex: integer; const Rect: system.Types.TRect; Active: boolean);
 var
     i: integer;
     PageControl: TPageControl;
     word, word2: string;
-    words : TArray<string>;
+    words: TArray<string>;
     x, y: integer;
     txt_height: double;
 begin
@@ -108,12 +140,13 @@ begin
     begin
         y := Rect.Top + round((Rect.Height - txt_height) / 2.0);
         PageControl.Canvas.TextRect(Rect, x, y, word);
-    end else
+    end
+    else
     begin
         y := Rect.Top + 5;
         PageControl.Canvas.FillRect(Rect);
         PageControl.Canvas.TextOut(x, y, words[0]);
-        y := y + Round(txt_height) + 3;
+        y := y + round(txt_height) + 3;
         PageControl.Canvas.TextOut(x, y, words[1]);
     end;
 end;

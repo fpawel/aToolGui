@@ -226,7 +226,6 @@ object FormEditAppConfig: TFormEditAppConfig
   OldCreateOrder = False
   Position = poScreenCenter
   OnDeactivate = FormDeactivate
-  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 19
   object ToolBarStop: TToolBar
@@ -242,7 +241,7 @@ object FormEditAppConfig: TFormEditAppConfig
     EdgeOuter = esNone
     Images = ImageList4
     TabOrder = 0
-    object ToolButton2: TToolButton
+    object ToolButtonSave: TToolButton
       Left = 0
       Top = 0
       Hint = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1080#1079#1084#1077#1085#1077#1085#1080#1103
@@ -252,17 +251,17 @@ object FormEditAppConfig: TFormEditAppConfig
       ParentShowHint = False
       Wrap = True
       ShowHint = True
-      OnClick = ToolButton2Click
+      OnClick = ToolButtonSaveClick
     end
-    object ToolButton3: TToolButton
+    object ToolButtonUpload: TToolButton
       Left = 0
       Top = 86
       Hint = #1054#1073#1085#1086#1074#1080#1090#1100
-      Caption = 'ToolButton3'
+      Caption = 'ToolButtonUpload'
       ImageIndex = 2
       ParentShowHint = False
       ShowHint = True
-      OnClick = ToolButton3Click
+      OnClick = ToolButtonUploadClick
     end
   end
   object RichEdit1: TRichEdit
@@ -283,6 +282,7 @@ object FormEditAppConfig: TFormEditAppConfig
     TabOrder = 1
     Zoom = 100
     OnChange = RichEdit1Change
+    OnKeyDown = RichEdit1KeyDown
   end
   object ImageList4: TImageList
     ColorDepth = cd32Bit

@@ -6,7 +6,7 @@ uses
     Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
     System.Classes, Vcl.Graphics,
     Vcl.Controls, Vcl.Forms, Vcl.Dialogs, System.ImageList, Vcl.ImgList,
-    Vcl.Menus, UnitFormSelectCurrentParty, Vcl.ComCtrls;
+    Vcl.Menus, UnitFormSelectCurrentParty, VclTee.Chart, Vcl.ComCtrls;
 
 type
     TAToolMainForm = class(TForm)
@@ -16,17 +16,24 @@ type
         N7: TMenuItem;
         MenuRun: TMenuItem;
         MenuStop: TMenuItem;
-    N3: TMenuItem;
+        N3: TMenuItem;
+        PageControlMain: TPageControl;
+        TabSheetParty: TTabSheet;
+        TabSheetConfig: TTabSheet;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
-        procedure N4Click(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
+        procedure PageControlMainChange(Sender: TObject);
+        procedure PageControlMainDrawTab(Control: TCustomTabControl;
+          TabIndex: Integer; const Rect: TRect; Active: Boolean);
     private
         { Private declarations }
         procedure AppException(Sender: TObject; e: Exception);
         function ExceptionDialog(e: Exception): Boolean;
     public
         { Public declarations }
+        function GetChartByName(AName: string): TChart;
+        procedure DeleteAllCharts;
     end;
 
 var
@@ -39,7 +46,8 @@ implementation
 uses dateutils, myutils, api, UnitApiClient,
     Thrift.Protocol, UnitFormCurrentParty,
     Thrift.Transport, Thrift.Collections,
-    logfile, UnitFormEditAppConfig, apitypes;
+    logfile, UnitFormEditAppConfig, apitypes, vclutils, UnitFormCharts,
+    UnitFormChart;
 
 procedure TAToolMainForm.FormCreate(Sender: TObject);
 begin
@@ -54,10 +62,7 @@ begin
         StringGrid1.EditorMode := False;
     end;
 
-
 end;
-
-
 
 procedure TAToolMainForm.FormShow(Sender: TObject);
 var
@@ -72,9 +77,17 @@ begin
 
     with FormCurrentParty do
     begin
-        parent := Self;
         BorderStyle := bsNone;
-        Parent := self;
+        parent := TabSheetParty;
+        Align := alClient;
+        upload;
+        Show;
+    end;
+
+    with FormEditAppConfig do
+    begin
+        BorderStyle := bsNone;
+        parent := TabSheetConfig;
         Align := alClient;
         upload;
         Show;
@@ -82,11 +95,29 @@ begin
 
 end;
 
-procedure TAToolMainForm.N4Click(Sender: TObject);
+procedure TAToolMainForm.PageControlMainChange(Sender: TObject);
+var
+    PageControl: TPageControl;
 begin
-    FormEditAppConfig.Position := poScreenCenter;
-    FormEditAppConfig.ShowModal;
-    FormCurrentParty.upload;
+    PageControl := Sender as TPageControl;
+    PageControl.Repaint;
+    if PageControl.ActivePage = TabSheetParty then
+        FormCurrentParty.upload
+    else if PageControl.ActivePage = TabSheetConfig then
+        FormEditAppConfig.upload
+    else
+    begin
+        (PageControl.ActivePage.Controls[0] AS TFormChart).SetupStringGrid;
+
+
+    end;
+
+end;
+
+procedure TAToolMainForm.PageControlMainDrawTab(Control: TCustomTabControl;
+  TabIndex: Integer; const Rect: TRect; Active: Boolean);
+begin
+    PageControl_DrawVerticalTab1(Control, TabIndex, Rect, Active);
 end;
 
 procedure TAToolMainForm.AppException(Sender: TObject; e: Exception);
@@ -101,6 +132,41 @@ begin
     Result := MessageBox(Handle, PChar(e.ClassName + #10#10 + e.Message +
       #10#10), PChar(ExtractFileName(Application.ExeName)),
       MB_ABORTRETRYIGNORE or MB_ICONERROR) = IDABORT;
+end;
+
+function TAToolMainForm.GetChartByName(AName: string): TChart;
+var
+    I: Integer;
+    tbs: TTabSheet;
+    AFormChart: TFormChart;
+begin
+    for I := 2 to PageControlMain.PageCount - 1 do
+        if PageControlMain.Pages[I].Caption = AName then
+            exit((PageControlMain.Pages[I].Controls[0] AS TFormChart).Chart1);
+    tbs := TTabSheet.Create(nil);
+    tbs.Caption := AName;
+    tbs.PageControl := PageControlMain;
+
+    AFormChart := TFormChart.Create(tbs);
+    with AFormChart do
+    begin
+        BorderStyle := bsNone;
+        parent := tbs;
+        Align := alClient;
+        Show;
+        exit(AFormChart.Chart1);
+    end;
+end;
+
+procedure TAToolMainForm.DeleteAllCharts;
+begin
+    with PageControlMain do
+        while PageCount > 2 do
+            with Pages[PageCount - 1] do
+            begin
+                PageControl := nil;
+                Free;
+            end;
 end;
 
 end.

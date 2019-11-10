@@ -7,7 +7,7 @@ uses Vcl.Graphics;
 function str_validate_decimal_separator(s: string): string;
 function str_to_float(s: string): Double;
 function str_replace_unicode_chars(s: string): string;
-function inttostr2(n: integer): string;
+function inttostr2(n,padLen: integer): string;
 function cut_str(s: string; c: TCanvas; w: integer): string;
 function month_name(month_number: integer): string;
 function TryStrToFloat2(s: string; var v: Double): boolean;
@@ -54,10 +54,10 @@ begin
       0, 0, 0));
 end;
 
-function inttostr2(n: integer): string;
+function inttostr2(n,padLen: integer): string;
 begin
     result := inttostr(n);
-    if n < 10 then
+    while result.Length < padLen do
         result := '0' + result;
 end;
 

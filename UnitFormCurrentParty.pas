@@ -50,6 +50,7 @@ type
     private
         { Private declarations }
         FSeries: TDictionary<TProductVar, TFastLineSeries>;
+        FSeriesInfo: TDictionary<TFastLineSeries, TProductVar>;
 
         Last_Edited_Col, Last_Edited_Row: Integer;
         procedure SetProductsComport(Sender: TObject);
@@ -64,8 +65,8 @@ type
 
         procedure upload;
 
-        // procedure OnProductConnection(X: TPlaceConnection);
-        // procedure OnWorkComplete;
+        function GetSeriesInfo(ser:TFastLineSeries):TProductVar;
+
     end;
 
 var
@@ -74,13 +75,14 @@ var
 implementation
 
 uses stringgridutils, stringutils, dateutils,
-    vclutils, UnitFormPopup, UnitApiClient, myutils;
+    vclutils, UnitFormPopup, UnitApiClient, myutils, UnitAToolMainForm;
 
 {$R *.dfm}
 
 procedure TFormCurrentParty.FormCreate(Sender: TObject);
 begin
-    FSeries := TDictionary<TProductVar, TFastLineSeries>.create;
+    FSeries := TDictionary<TProductVar, TFastLineSeries>.Create;
+    FSeriesInfo := TDictionary<TFastLineSeries, TProductVar>.Create;
 end;
 
 procedure TFormCurrentParty.FormShow(Sender: TObject);
@@ -120,9 +122,8 @@ var
     str: string;
     ProductsCount: Integer;
 begin
-    if not InputQuery('Создание новой партии приборов',
-      'Количество приборов:', str) or
-      not TryStrToInt(str, ProductsCount) then
+    if not InputQuery('Создание новой партии приборов', 'Количество приборов:',
+      str) or not TryStrToInt(str, ProductsCount) then
         exit;
     ProductsClient.CreateNewParty(ProductsCount);
     upload;
@@ -164,12 +165,12 @@ var
     devices: IThriftList<string>;
 
 begin
-    Ports := TStringList.create;
+    Ports := TStringList.Create;
     EnumComports(Ports);
     MenuProductsComport.Clear;
     for i := 0 to Ports.Count - 1 do
     begin
-        m := TMenuItem.create(nil);
+        m := TMenuItem.Create(nil);
         m.Caption := Ports[i];
         m.OnClick := SetProductsComport;
         MenuProductsComport.Add(m);
@@ -180,7 +181,7 @@ begin
     devices := ProductsClient.listDevices;
     for i := 0 to devices.Count - 1 do
     begin
-        m := TMenuItem.create(nil);
+        m := TMenuItem.Create(nil);
         m.Caption := devices[i];
         m.OnClick := SetProductsDevice;
         MenuProductsDevice.Add(m);
@@ -371,7 +372,7 @@ begin
     if ACol = 0 then
     begin
         grd.Canvas.FillRect(Rect);
-        DrawCellText(StringGrid1, ACol, ARow, Rect, ta, AText);
+        StringGrid_DrawCellText(StringGrid1, ACol, ARow, Rect, ta, AText);
         StringGrid_DrawCellBounds(StringGrid1.Canvas, ACol, ARow, Rect);
         exit;
     end;
@@ -386,7 +387,7 @@ begin
         exit;
     end;
 
-    DrawCellText(StringGrid1, ACol, ARow, Rect, ta, AText);
+    StringGrid_DrawCellText(StringGrid1, ACol, ARow, Rect, ta, AText);
     StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
 
 end;
@@ -407,7 +408,7 @@ end;
 
 procedure TFormCurrentParty.setupStringGrid;
 var
-    place, n, ARow, ACol: Integer;
+    place, n, X, ARow, ACol: Integer;
     p: IProduct;
 begin
     StringGrid_Clear(StringGrid1);
@@ -420,7 +421,7 @@ begin
 
         FixedRows := 1;
         FixedCols := 1;
-        ColWidths[0] := 90;
+        ColWidths[0] := 100;
 
         Cells[0, 0] := 'Прибор';
         Cells[0, 1] := 'Тип';
@@ -439,7 +440,8 @@ begin
         for n := 0 to FParty.Params.Count - 1 do
         begin
             ARow := n + 4;
-            Cells[0, ARow] := Format('Регистр %d', [FParty.Params[n]]);
+            X := FParty.Params[n];
+            Cells[0, ARow] := Format('%s %d', ['$' + IntToHex(X, 4), X]);
         end;
     end;
 
@@ -450,20 +452,32 @@ var
     ser: TFastLineSeries;
     p: IProduct;
     VarID: SmallInt;
+    pvs: IParamVarSeries;
+    chartName: string;
 begin
-    for ser in FSeries.Values do
-    begin
-        if Assigned(ser.ParentChart) then
-            (ser.ParentChart As TChart).RemoveAllSeries;
-        ser.Free;
-    end;
     FSeries.Clear;
+    FSeriesInfo.Clear;
+    AToolMainForm.DeleteAllCharts;
     for p in FParty.Products do
         for VarID in FParty.Params do
         begin
-            ser := TFastLineSeries.create(nil);
+            ser := TFastLineSeries.Create(nil);
             ser.XValues.DateTime := true;
+            ser.Title := Format('%d:%d', [p.ProductID, VarID]);
+            ser.LinePen.Width := 2;
             FSeries.Add(TProductVar.Create(p.ProductID, VarID), ser);
+            FSeriesInfo.Add(ser, TProductVar.Create(p.ProductID, VarID));
+
+            chartName := FParty.Charts[0];
+            for pvs in FParty.Series do
+                if (pvs.ProductID = p.ProductID) AND (pvs.TheVar = VarID) then
+                begin
+                    chartName := pvs.Chart;
+                    if pvs.Color <> '' then
+                        ser.Color := StringToColor(pvs.Color);
+                end;
+            ser.ParentChart := AToolMainForm.GetChartByName(chartName);
+
         end;
 
 end;
@@ -473,6 +487,7 @@ begin
     FParty := ProductsClient.getCurrentParty;
     setMainFormCaption;
     setupStringGrid;
+    setupSeries;
 end;
 
 function TFormCurrentParty.GetSelectedProductsIDs
@@ -480,7 +495,7 @@ function TFormCurrentParty.GetSelectedProductsIDs
 var
     ACol: Integer;
 begin
-    result := Thrift.Collections.TThriftListImpl<int64>.create;
+    result := Thrift.Collections.TThriftListImpl<int64>.Create;
 
     with StringGrid1.Selection do
         for ACol := Left to Right do
@@ -511,6 +526,12 @@ begin
               IncHour(unixMillisToDateTime(CreatedAt), -3)
 
               )]);
+end;
+
+function TFormCurrentParty.GetSeriesInfo(ser:TFastLineSeries):TProductVar;
+begin
+    result := FSeriesInfo[ser];
+
 end;
 
 constructor TProductVar.Create(AProductID, AVarID: int64);
