@@ -376,9 +376,7 @@ begin
         StringGrid_DrawCellBounds(StringGrid1.Canvas, ACol, ARow, Rect);
         exit;
     end;
-
     p := FParty.Products[ACol - 1];
-
     if ARow = 0 then
     begin
         grd.Canvas.FillRect(Rect);
@@ -386,10 +384,8 @@ begin
         StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
         exit;
     end;
-
     StringGrid_DrawCellText(StringGrid1, ACol, ARow, Rect, ta, AText);
     StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
-
 end;
 
 procedure TFormCurrentParty.StringGrid1KeyPress(Sender: TObject; var Key: Char);
@@ -465,6 +461,7 @@ begin
             ser.XValues.DateTime := true;
             ser.Title := Format('%d:%d', [p.ProductID, VarID]);
             ser.LinePen.Width := 2;
+            ser.Active := False;
             FSeries.Add(TProductVar.Create(p.ProductID, VarID), ser);
             FSeriesInfo.Add(ser, TProductVar.Create(p.ProductID, VarID));
 
@@ -477,9 +474,7 @@ begin
                         ser.Color := StringToColor(pvs.Color);
                 end;
             ser.ParentChart := AToolMainForm.GetChartByName(chartName);
-
         end;
-
 end;
 
 procedure TFormCurrentParty.upload;
