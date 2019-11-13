@@ -6,7 +6,8 @@ uses
     Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
     System.Classes, Vcl.Graphics,
     Vcl.Controls, Vcl.Forms, Vcl.Dialogs, VclTee.TeeGDIPlus, VclTee.TeEngine,
-    Vcl.ExtCtrls, VclTee.TeeProcs, VclTee.Chart, VclTee.Series, Vcl.Grids;
+    Vcl.ExtCtrls, VclTee.TeeProcs, VclTee.Chart, VclTee.Series, Vcl.Grids,
+    UnitApiClient;
 
 type
     TFormChart = class(TForm)
@@ -14,6 +15,8 @@ type
         StringGrid1: TStringGrid;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
           Rect: TRect; State: TGridDrawState);
+        procedure StringGrid1MouseDown(Sender: TObject; Button: TMouseButton;
+          Shift: TShiftState; X, Y: Integer);
     private
         { Private declarations }
     public
@@ -34,16 +37,18 @@ procedure TFormChart.SetupStringGrid;
 begin
     with StringGrid1 do
     begin
+        ColCount := 4;
         RowCount := Chart1.SeriesCount + 1;
         FixedCols := 0;
         FixedRows := 1;
-        ColCount := 3;
         Cells[0, 0] := '';
         Cells[1, 0] := 'Прибор';
         Cells[2, 0] := 'Регистр';
+        Cells[3, 0] := 'Значение';
         ColWidths[0] := 60;
         ColWidths[1] := 60;
         ColWidths[2] := 60;
+        ColWidths[3] := 80;
     end;
     StringGrid_Redraw(StringGrid1);
 end;
@@ -57,7 +62,7 @@ var
     AText: string;
     d: Integer;
     brushColor: TColor;
-    r:TRect;
+    r: TRect;
     function newRect(l, t, r, b: Integer): TRect;
     begin
         Result.Left := l;
@@ -81,7 +86,6 @@ begin
           StringGrid1.Cells[ACol, ARow]);
         StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
         exit;
-
     end;
 
     ser := Chart1.Series[ARow - 1] AS TFastLineSeries;
@@ -98,8 +102,7 @@ begin
                 d := round(r.Top + r.Height / 2);
                 brushColor := cnv.Brush.Color;
                 cnv.Brush.Color := ser.SeriesColor;
-                cnv.FillRect(newRect(r.Left+5, d - 2,
-                  r.Right - 5, d + 2));
+                cnv.FillRect(newRect(r.Left + 5, d - 2, r.Right - 5, d + 2));
                 cnv.Brush.Color := brushColor;
             end;
         1:
@@ -109,10 +112,34 @@ begin
             AText := IntToStr(pv.VarID);
     end;
 
+    if (ACol = 3) AND (ser.YValues.Count > 0) then
+        AText := FloatToStr(ser.YValues[ser.YValues.Count - 1]);
+
     if AText <> '' then
         StringGrid_DrawCellText(StringGrid1, ACol, ARow, Rect,
           taLeftJustify, AText);
-    //StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
+    // StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
+end;
+
+procedure TFormChart.StringGrid1MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+var
+    ACol, ARow: Integer;
+    ser: TFastLineSeries;
+begin
+    with StringGrid1 do
+    begin
+        MouseToCell(X, Y, ACol, ARow);
+        if ARow < 1 then
+            exit;
+        ser := Chart1.Series[ARow - 1] AS TFastLineSeries;
+        ser.Active := not ser.Active;
+        Cells[ACol, ARow] := Cells[ACol, ARow];
+        with FormCurrentParty.GetSeriesInfo(ser) do
+            ProductsClient.setProductVarSeriesActive(ProductID, VarID,
+              ser.Active);
+
+    end;
 end;
 
 end.

@@ -35,8 +35,6 @@ object AToolMainForm: TAToolMainForm
     object TabSheetParty: TTabSheet
       Caption = #1055#1072#1088#1090#1080#1103
       ImageIndex = 4
-      ExplicitWidth = 948
-      ExplicitHeight = 651
     end
     object TabSheetConfig: TTabSheet
       Caption = #1050#1086#1085#1092#1080#1075#1091#1088#1072#1094#1080#1103

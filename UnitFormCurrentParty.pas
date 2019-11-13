@@ -9,7 +9,7 @@ uses
     Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, Vcl.StdCtrls,
     Vcl.Imaging.pngimage, Vcl.ExtCtrls, System.ImageList, Vcl.ImgList,
     Vcl.Menus, Vcl.ComCtrls, Vcl.ToolWin, types, apitypes, Thrift.Collections,
-    System.Generics.Collections, UnitFormSelectCurrentParty;
+    System.Generics.Collections, UnitFormSelectCurrentParty, UnitFormChart;
 
 type
 
@@ -30,6 +30,10 @@ type
         N3: TMenuItem;
         N5: TMenuItem;
         N6: TMenuItem;
+        MenuSetChartSeparator: TMenuItem;
+        MenuSetChart: TMenuItem;
+        N7: TMenuItem;
+        N8: TMenuItem;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
           Rect: TRect; State: TGridDrawState);
         procedure StringGrid1SelectCell(Sender: TObject; ACol, ARow: Integer;
@@ -47,6 +51,7 @@ type
         procedure N6Click(Sender: TObject);
         procedure N5Click(Sender: TObject);
         procedure FormCreate(Sender: TObject);
+        procedure N7Click(Sender: TObject);
     private
         { Private declarations }
         FSeries: TDictionary<TProductVar, TFastLineSeries>;
@@ -59,13 +64,14 @@ type
         procedure setMainFormCaption;
         function GetSelectedProductsIDs: Thrift.Collections.IThriftList<int64>;
         procedure setupSeries;
+        procedure MenuSetChartClick(Sender: TObject);
     public
         { Public declarations }
         FParty: IParty;
 
         procedure upload;
 
-        function GetSeriesInfo(ser:TFastLineSeries):TProductVar;
+        function GetSeriesInfo(ser: TFastLineSeries): TProductVar;
 
     end;
 
@@ -156,6 +162,19 @@ begin
     upload;
 end;
 
+procedure TFormCurrentParty.N7Click(Sender: TObject);
+var
+    name: string;
+    m: TMenuItem;
+begin
+    InputQuery('Новый график', 'Имя нового графика:', name);
+    m := TMenuItem.Create(nil);
+    m.Caption := name;
+    m.OnClick := MenuSetChartClick;
+    MenuSetChart.Add(m);
+    m.Click;
+end;
+
 procedure TFormCurrentParty.PopupMenu1Popup(Sender: TObject);
 var
     Ports: TStrings;
@@ -185,6 +204,29 @@ begin
         m.Caption := devices[i];
         m.OnClick := SetProductsDevice;
         MenuProductsDevice.Add(m);
+    end;
+
+    with StringGrid1 do
+    begin
+        MenuSetChart.Visible := (Col > 0) AND (Row > 3);
+        MenuSetChartSeparator.Visible := MenuSetChart.Visible;
+    end;
+    if MenuSetChart.Visible then
+    begin
+
+        while MenuSetChart.Count > 2 do
+        begin
+            MenuSetChart.Items[MenuSetChart.Count - 1].Free
+        end;
+
+        for i := 2 to AToolMainForm.PageControlMain.PageCount - 1 do
+        begin
+            m := TMenuItem.Create(nil);
+            m.Caption := AToolMainForm.PageControlMain.Pages[i].Caption;
+            m.OnClick := MenuSetChartClick;
+            MenuSetChart.Add(m);
+        end;
+
     end;
 end;
 
@@ -295,8 +337,8 @@ begin
         if (Col = -1) AND (ACol > 0) then
             Col := ACol;
 
-        if (row = -1) AND (ARow > 0) then
-            row := ARow;
+        if (Row = -1) AND (ARow > 0) then
+            Row := ARow;
         if (GetAsyncKeyState(VK_LBUTTON) >= 0) then
         begin
             exit;
@@ -316,7 +358,7 @@ end;
 procedure TFormCurrentParty.StringGrid1DblClick(Sender: TObject);
 begin
     with StringGrid1 do
-        if not EditorMode and (row = Cols[0].IndexOf('Адрес')) then
+        if not EditorMode and (Row = Cols[0].IndexOf('Адрес')) then
         begin
             Options := Options + [goEditing];
             EditorMode := true;
@@ -349,7 +391,7 @@ begin
         cnv.Brush.Color := cl3DLight;
 
     if (gdSelected in State) or (ARow = 0) and (ACol = grd.Col) or (ACol = 0)
-      AND (ARow = grd.row) then
+      AND (ARow = grd.Row) then
     begin
         cnv.Brush.Color := clGradientInactiveCaption;
         // cnv.Font.Color := clBlue;
@@ -393,11 +435,11 @@ var
     n: Integer;
 begin
     with StringGrid1 do
-        if not EditorMode and (row = Cols[0].IndexOf('Адрес')) and
+        if not EditorMode and (Row = Cols[0].IndexOf('Адрес')) and
           TryStrToInt(Key, n) then
         begin
             Options := Options + [goEditing];
-            Cells[Col, row] := Key;
+            Cells[Col, Row] := Key;
             EditorMode := true;
         end;
 end;
@@ -448,8 +490,7 @@ var
     ser: TFastLineSeries;
     p: IProduct;
     VarID: SmallInt;
-    pvs: IParamVarSeries;
-    chartName: string;
+    pvs: IProductVarSeries;
 begin
     FSeries.Clear;
     FSeriesInfo.Clear;
@@ -461,19 +502,22 @@ begin
             ser.XValues.DateTime := true;
             ser.Title := Format('%d:%d', [p.ProductID, VarID]);
             ser.LinePen.Width := 2;
-            ser.Active := False;
+            ser.Active := false;
             FSeries.Add(TProductVar.Create(p.ProductID, VarID), ser);
             FSeriesInfo.Add(ser, TProductVar.Create(p.ProductID, VarID));
 
-            chartName := FParty.Charts[0];
             for pvs in FParty.Series do
                 if (pvs.ProductID = p.ProductID) AND (pvs.TheVar = VarID) then
                 begin
-                    chartName := pvs.Chart;
-                    if pvs.Color <> '' then
-                        ser.Color := StringToColor(pvs.Color);
+                    if pvs.Chart <> '' then
+                    begin
+                        ser.ParentChart := AToolMainForm.GetChartByName
+                          (pvs.Chart);
+                        ser.Active := pvs.Active;
+                    end;
+
                 end;
-            ser.ParentChart := AToolMainForm.GetChartByName(chartName);
+
         end;
 end;
 
@@ -518,15 +562,37 @@ begin
         with FParty do
             Caption := Format('№%d %s',
               [PartyID, FormatDateTime('dd MMMM yyyy hh:nn',
-              IncHour(unixMillisToDateTime(CreatedAt), -3)
-
-              )]);
+              IncHour(unixMillisToDateTime(CreatedAt), -3))]);
 end;
 
-function TFormCurrentParty.GetSeriesInfo(ser:TFastLineSeries):TProductVar;
+function TFormCurrentParty.GetSeriesInfo(ser: TFastLineSeries): TProductVar;
 begin
     result := FSeriesInfo[ser];
+end;
 
+procedure TFormCurrentParty.MenuSetChartClick(Sender: TObject);
+var
+    ACol, ARow, AVar: Integer;
+    p: IProduct;
+    pv: TProductVar;
+    ser: TFastLineSeries;
+    chartName: string;
+begin
+    with StringGrid1.Selection do
+        for ACol := Left to Right do
+            for ARow := Top to Bottom do
+            begin
+                p := FParty.Products[ACol - 1];
+                AVar := FParty.Params[ARow - 4];
+                pv := TProductVar.Create(p.ProductID, AVar);
+                ser := FSeries[pv];
+                chartName := (Sender AS TMenuItem).Caption;
+                ser.ParentChart := AToolMainForm.GetChartByName(chartName);
+                ProductsClient.setProductVarSeriesChart(p.ProductID, AVar,
+                  chartName);
+                (ser.ParentChart.Parent AS TFormChart).setupStringGrid;
+            end;
+    AToolMainForm.DeleteEmptyCharts;
 end;
 
 constructor TProductVar.Create(AProductID, AVarID: int64);

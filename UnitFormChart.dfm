@@ -48,8 +48,6 @@ object FormChart: TFormChart
     BevelOuter = bvNone
     Color = clWindow
     TabOrder = 0
-    ExplicitLeft = 0
-    ExplicitWidth = 635
     DefaultCanvas = 'TGDIPlusCanvas'
     ColorPaletteIndex = 13
   end
@@ -71,6 +69,7 @@ object FormChart: TFormChart
     GradientEndColor = clBlack
     TabOrder = 1
     OnDrawCell = StringGrid1DrawCell
+    OnMouseDown = StringGrid1MouseDown
     ColWidths = (
       64
       64

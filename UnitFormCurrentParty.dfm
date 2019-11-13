@@ -489,6 +489,7 @@ object FormCurrentParty: TFormCurrentParty
       000000000000}
   end
   object PopupMenu1: TPopupMenu
+    AutoHotkeys = maManual
     OnPopup = PopupMenu1Popup
     Left = 464
     Top = 232
@@ -518,6 +519,19 @@ object FormCurrentParty: TFormCurrentParty
     object N6: TMenuItem
       Caption = #1054#1090#1082#1088#1099#1090#1100' '#1087#1088#1077#1076#1099#1076#1091#1097#1091#1102' '#1079#1072#1075#1088#1091#1079#1082#1091'...'
       OnClick = N6Click
+    end
+    object MenuSetChartSeparator: TMenuItem
+      Caption = '-'
+    end
+    object MenuSetChart: TMenuItem
+      Caption = #1059#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1075#1088#1072#1092#1080#1082
+      object N7: TMenuItem
+        Caption = #1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1099#1081' '#1075#1088#1072#1092#1082
+        OnClick = N7Click
+      end
+      object N8: TMenuItem
+        Caption = '-'
+      end
     end
   end
 end

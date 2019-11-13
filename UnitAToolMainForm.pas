@@ -34,6 +34,7 @@ type
         { Public declarations }
         function GetChartByName(AName: string): TChart;
         procedure DeleteAllCharts;
+        procedure DeleteEmptyCharts;
     end;
 
 var
@@ -47,7 +48,7 @@ uses dateutils, myutils, api, UnitApiClient,
     Thrift.Protocol, UnitFormCurrentParty,
     Thrift.Transport, Thrift.Collections,
     logfile, UnitFormEditAppConfig, apitypes, vclutils, UnitFormCharts,
-    UnitFormChart;
+    UnitFormChart, System.Generics.Collections;
 
 procedure TAToolMainForm.FormCreate(Sender: TObject);
 begin
@@ -109,7 +110,6 @@ begin
     begin
         (PageControl.ActivePage.Controls[0] AS TFormChart).SetupStringGrid;
 
-
     end;
 
 end;
@@ -162,11 +162,22 @@ procedure TAToolMainForm.DeleteAllCharts;
 begin
     with PageControlMain do
         while PageCount > 2 do
-            with Pages[PageCount - 1] do
-            begin
-                PageControl := nil;
-                Free;
-            end;
+            Pages[PageCount-1].Free;
+end;
+
+procedure TAToolMainForm.DeleteEmptyCharts;
+var
+    xs: TList<TTabSheet>;
+    I: Integer;
+begin
+    xs := TList<TTabSheet>.Create;
+    with PageControlMain do
+        for I := 2 to PageCount - 1 do
+            if (Pages[I].Controls[0] AS TFormChart).Chart1.SeriesCount = 0 then
+                xs.Add(Pages[I]);
+    for i:=0 to xs.Count - 1 do
+        xs[i].Free;
+    xs.Free;
 end;
 
 end.
