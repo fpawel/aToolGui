@@ -26,10 +26,12 @@ type
         procedure PageControlMainChange(Sender: TObject);
         procedure PageControlMainDrawTab(Control: TCustomTabControl;
           TabIndex: Integer; const Rect: TRect; Active: Boolean);
+    procedure N4Click(Sender: TObject);
     private
         { Private declarations }
         procedure AppException(Sender: TObject; e: Exception);
         function ExceptionDialog(e: Exception): Boolean;
+        procedure HandleApplyConfig(var Message: TMessage); message WM_USER + 1;
     public
         { Public declarations }
         function GetChartByName(AName: string): TChart;
@@ -70,6 +72,7 @@ var
     Protocol: IProtocol;
     Transport: ITransport;
 begin
+    OnShow := nil;
     Transport := TSocketImpl.Create('127.0.0.1',
       StrToInt(GetEnvironmentVariable('ATOOL_API_PORT')), 10000);
     Protocol := TBinaryProtocolImpl.Create(Transport);
@@ -94,6 +97,18 @@ begin
         Show;
     end;
 
+end;
+
+procedure TAToolMainForm.HandleApplyConfig(var Message: TMessage);
+begin
+    FormCurrentParty.upload;
+    Show;
+end;
+
+procedure TAToolMainForm.N4Click(Sender: TObject);
+begin
+    ProductsClient.EditConfig(Handle, WM_USER + 1);
+    Hide;
 end;
 
 procedure TAToolMainForm.PageControlMainChange(Sender: TObject);

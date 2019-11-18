@@ -593,6 +593,7 @@ begin
                 (ser.ParentChart.Parent AS TFormChart).setupStringGrid;
             end;
     AToolMainForm.DeleteEmptyCharts;
+    AToolMainForm.PageControlMain.ActivePageIndex := 0;
 end;
 
 constructor TProductVar.Create(AProductID, AVarID: int64);

@@ -87,6 +87,7 @@
         <Debugger_EnvVars>ATOOL_API_PORT=60002;$(Debugger_EnvVars)</Debugger_EnvVars>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
+        <DCC_ExeOutput>$(GOPATH)\src\github.com\fpawel\atool\build</DCC_ExeOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
@@ -155,10 +156,6 @@
         </DCCReference>
         <DCCReference Include="UnitFormChart.pas">
             <Form>FormChart</Form>
-            <FormType>dfm</FormType>
-        </DCCReference>
-        <DCCReference Include="UnitFormCharts.pas">
-            <Form>Form1</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Release">

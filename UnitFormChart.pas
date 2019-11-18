@@ -130,7 +130,7 @@ begin
     with StringGrid1 do
     begin
         MouseToCell(X, Y, ACol, ARow);
-        if ARow < 1 then
+        if (ARow < 1)  or (ACol <> 0)then
             exit;
         ser := Chart1.Series[ARow - 1] AS TFastLineSeries;
         ser.Active := not ser.Active;
