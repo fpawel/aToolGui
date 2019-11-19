@@ -483,6 +483,7 @@ begin
         end;
     end;
 
+
 end;
 
 procedure TFormCurrentParty.setupSeries;
@@ -491,10 +492,23 @@ var
     p: IProduct;
     VarID: SmallInt;
     pvs: IProductVarSeries;
+    xx : TPair<TFastLineSeries, TProductVar>;
+
 begin
+    //FSeries: TDictionary<TProductVar, TFastLineSeries>;
+    //FSeriesInfo: TDictionary<TFastLineSeries, TProductVar>;
+
+    for xx in FSeriesInfo do
+        xx.Key.ParentChart := nil;
+
+    AToolMainForm.DeleteAllCharts;
+
+    for xx in FSeriesInfo do
+        xx.Key.Free;
+
     FSeries.Clear;
     FSeriesInfo.Clear;
-    AToolMainForm.DeleteAllCharts;
+
     for p in FParty.Products do
         for VarID in FParty.Params do
         begin
@@ -527,6 +541,7 @@ begin
     setMainFormCaption;
     setupStringGrid;
     setupSeries;
+    AToolMainForm.SetupSeriesStringGrids;
 end;
 
 function TFormCurrentParty.GetSelectedProductsIDs

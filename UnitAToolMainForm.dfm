@@ -29,16 +29,18 @@ object AToolMainForm: TAToolMainForm
     TabHeight = 100
     TabOrder = 0
     TabPosition = tpLeft
-    TabWidth = 40
+    TabWidth = 50
     OnChange = PageControlMainChange
     OnDrawTab = PageControlMainDrawTab
     object TabSheetParty: TTabSheet
       Caption = #1055#1072#1088#1090#1080#1103
       ImageIndex = 4
     end
-    object TabSheetConfig: TTabSheet
-      Caption = #1050#1086#1085#1092#1080#1075#1091#1088#1072#1094#1080#1103
-      ImageIndex = 3
+    object TabSheetConsole: TTabSheet
+      Caption = #1050#1086#1085#1089#1086#1083#1100
+      ImageIndex = 1
+      ExplicitLeft = 108
+      ExplicitTop = 0
     end
   end
   object MainMenu1: TMainMenu

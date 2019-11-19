@@ -146,10 +146,6 @@
             <Form>FormVar</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="UnitFormEditAppConfig.pas">
-            <Form>FormEditAppConfig</Form>
-            <FormType>dfm</FormType>
-        </DCCReference>
         <DCCReference Include="UnitFormSelectCurrentParty.pas">
             <Form>FormSelectCurrentParty</Form>
             <FormType>dfm</FormType>
@@ -184,7 +180,7 @@
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="3">
-                <DeployFile LocalName="Win32\Debug\aToolGui.exe" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="C:\GOPATH\src\github.com\fpawel\atool\build\aToolGui.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>aToolGui.exe</RemoteName>
                         <Overwrite>true</Overwrite>

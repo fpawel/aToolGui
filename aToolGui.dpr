@@ -33,7 +33,6 @@ uses
   apitypes in 'gen-delphi\apitypes.pas',
   logfile in 'logfile.pas',
   UnitFormVar in 'UnitFormVar.pas' {FormVar},
-  UnitFormEditAppConfig in 'UnitFormEditAppConfig.pas' {FormEditAppConfig},
   UnitFormSelectCurrentParty in 'UnitFormSelectCurrentParty.pas' {FormSelectCurrentParty},
   UnitFormChart in 'UnitFormChart.pas' {FormChart};
 
@@ -46,7 +45,6 @@ begin
   Application.CreateForm(TFormCurrentParty, FormCurrentParty);
   Application.CreateForm(TFormPopup, FormPopup);
   Application.CreateForm(TFormVar, FormVar);
-  Application.CreateForm(TFormEditAppConfig, FormEditAppConfig);
   Application.CreateForm(TFormSelectCurrentParty, FormSelectCurrentParty);
   Application.Run;
 end.

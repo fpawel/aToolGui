@@ -19,24 +19,26 @@ type
         N3: TMenuItem;
         PageControlMain: TPageControl;
         TabSheetParty: TTabSheet;
-        TabSheetConfig: TTabSheet;
+    TabSheetConsole: TTabSheet;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
         procedure PageControlMainChange(Sender: TObject);
         procedure PageControlMainDrawTab(Control: TCustomTabControl;
           TabIndex: Integer; const Rect: TRect; Active: Boolean);
-    procedure N4Click(Sender: TObject);
+        procedure N4Click(Sender: TObject);
     private
         { Private declarations }
         procedure AppException(Sender: TObject; e: Exception);
         function ExceptionDialog(e: Exception): Boolean;
-        procedure HandleApplyConfig(var Message: TMessage); message WM_USER + 1;
+        procedure HandleCurrentPartyChanged(var Message: TMessage);
+          message WM_USER + 1;
     public
         { Public declarations }
         function GetChartByName(AName: string): TChart;
         procedure DeleteAllCharts;
         procedure DeleteEmptyCharts;
+        procedure SetupSeriesStringGrids;
     end;
 
 var
@@ -49,8 +51,10 @@ implementation
 uses dateutils, myutils, api, UnitApiClient,
     Thrift.Protocol, UnitFormCurrentParty,
     Thrift.Transport, Thrift.Collections,
-    logfile, UnitFormEditAppConfig, apitypes, vclutils, UnitFormCharts,
+    logfile, apitypes, vclutils, UnitFormCharts,
     UnitFormChart, System.Generics.Collections;
+
+const PageIndexChart = 2;
 
 procedure TAToolMainForm.FormCreate(Sender: TObject);
 begin
@@ -64,7 +68,11 @@ begin
         StringGrid1.OnSetEditText := nil;
         StringGrid1.EditorMode := False;
     end;
+    try
+        ProductsClient.setClientWindow(HWND_TOP);
+    except
 
+    end;
 end;
 
 procedure TAToolMainForm.FormShow(Sender: TObject);
@@ -79,6 +87,8 @@ begin
     ProductsClient := TProductsService.TClient.Create(Protocol);
     Transport.Open;
 
+    ProductsClient.setClientWindow(Handle);
+
     with FormCurrentParty do
     begin
         BorderStyle := bsNone;
@@ -88,27 +98,16 @@ begin
         Show;
     end;
 
-    with FormEditAppConfig do
-    begin
-        BorderStyle := bsNone;
-        parent := TabSheetConfig;
-        Align := alClient;
-        upload;
-        Show;
-    end;
-
 end;
 
-procedure TAToolMainForm.HandleApplyConfig(var Message: TMessage);
+procedure TAToolMainForm.HandleCurrentPartyChanged(var Message: TMessage);
 begin
     FormCurrentParty.upload;
-    Show;
 end;
 
 procedure TAToolMainForm.N4Click(Sender: TObject);
 begin
-    ProductsClient.EditConfig(Handle, WM_USER + 1);
-    Hide;
+    ProductsClient.EditConfig;
 end;
 
 procedure TAToolMainForm.PageControlMainChange(Sender: TObject);
@@ -117,22 +116,54 @@ var
 begin
     PageControl := Sender as TPageControl;
     PageControl.Repaint;
-    if PageControl.ActivePage = TabSheetParty then
-        FormCurrentParty.upload
-    else if PageControl.ActivePage = TabSheetConfig then
-        FormEditAppConfig.upload
-    else
-    begin
-        (PageControl.ActivePage.Controls[0] AS TFormChart).SetupStringGrid;
-
-    end;
+//    if PageControl.ActivePage = TabSheetParty then
+//        //FormCurrentParty.upload
+//    else
+//    if PageControl.ActivePageIndex >= PageIndexChart then
+//        (PageControl.ActivePage.Controls[0] AS TFormChart).SetupStringGrid;
 
 end;
 
 procedure TAToolMainForm.PageControlMainDrawTab(Control: TCustomTabControl;
   TabIndex: Integer; const Rect: TRect; Active: Boolean);
+var
+    i: Integer;
+    PageControl: TPageControl;
+    AText:string;
+
+    x, y: Integer;
+    txt_height: double;
 begin
-    PageControl_DrawVerticalTab1(Control, TabIndex, Rect, Active);
+    PageControl := Control as TPageControl;
+    Active := PageControl.ActivePageIndex = TabIndex;
+    if PageControl.ActivePageIndex = TabIndex then
+    begin
+        PageControl.Canvas.Brush.Color := clGradientInactiveCaption;
+        PageControl.Canvas.Font.Color := clNavy;
+    end
+    else
+    begin
+        PageControl.Canvas.Brush.Color := clWindow;
+        PageControl.Canvas.Font.Color := clBlack;
+    end;
+
+    AText := PageControl.Pages[TabIndex].Caption;
+    txt_height := PageControl.Canvas.TextHeight(AText);
+
+    if TabIndex < PageIndexChart then
+    begin
+        x := Rect.Left + 7;
+        y := Rect.Top + round((Rect.Height - txt_height) / 2.0);
+        PageControl.Canvas.TextRect(Rect, x, y, AText);
+        exit;
+    end;
+
+    x := Rect.Left + 7;
+    y := Rect.Top + 5;
+    PageControl.Canvas.FillRect(Rect);
+    PageControl.Canvas.TextOut(x, y, 'График:');
+    y := y + round(txt_height) + 3;
+    PageControl.Canvas.TextOut(x, y, AText);
 end;
 
 procedure TAToolMainForm.AppException(Sender: TObject; e: Exception);
@@ -151,13 +182,13 @@ end;
 
 function TAToolMainForm.GetChartByName(AName: string): TChart;
 var
-    I: Integer;
+    i: Integer;
     tbs: TTabSheet;
     AFormChart: TFormChart;
 begin
-    for I := 2 to PageControlMain.PageCount - 1 do
-        if PageControlMain.Pages[I].Caption = AName then
-            exit((PageControlMain.Pages[I].Controls[0] AS TFormChart).Chart1);
+    for i := PageIndexChart to PageControlMain.PageCount - 1 do
+        if PageControlMain.Pages[i].Caption = AName then
+            exit((PageControlMain.Pages[i].Controls[0] AS TFormChart).Chart1);
     tbs := TTabSheet.Create(nil);
     tbs.Caption := AName;
     tbs.PageControl := PageControlMain;
@@ -168,29 +199,40 @@ begin
         BorderStyle := bsNone;
         parent := tbs;
         Align := alClient;
+        result := Chart1;
         Show;
-        exit(AFormChart.Chart1);
     end;
 end;
 
 procedure TAToolMainForm.DeleteAllCharts;
 begin
     with PageControlMain do
-        while PageCount > 2 do
-            Pages[PageCount-1].Free;
+        while PageCount > PageIndexChart do
+            Pages[PageCount - 1].Free;
 end;
+
+procedure TAToolMainForm.SetupSeriesStringGrids;
+var
+    xs: TList<TTabSheet>;
+    i: Integer;
+begin
+    with PageControlMain do
+        for i := PageIndexChart to PageCount - 1 do
+            (Pages[i].Controls[0] AS TFormChart).SetupStringGrid;
+end;
+
 
 procedure TAToolMainForm.DeleteEmptyCharts;
 var
     xs: TList<TTabSheet>;
-    I: Integer;
+    i: Integer;
 begin
     xs := TList<TTabSheet>.Create;
     with PageControlMain do
-        for I := 2 to PageCount - 1 do
-            if (Pages[I].Controls[0] AS TFormChart).Chart1.SeriesCount = 0 then
-                xs.Add(Pages[I]);
-    for i:=0 to xs.Count - 1 do
+        for i := PageIndexChart to PageCount - 1 do
+            if (Pages[i].Controls[0] AS TFormChart).Chart1.SeriesCount = 0 then
+                xs.Add(Pages[i]);
+    for i := 0 to xs.Count - 1 do
         xs[i].Free;
     xs.Free;
 end;

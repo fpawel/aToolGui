@@ -88,7 +88,11 @@ begin
         exit;
     end;
 
+    if ARow - 1 >= Chart1.SeriesCount then
+        exit;
     ser := Chart1.Series[ARow - 1] AS TFastLineSeries;
+
+
     pv := FormCurrentParty.GetSeriesInfo(ser);
     case ACol of
         0:
@@ -127,6 +131,9 @@ var
     ACol, ARow: Integer;
     ser: TFastLineSeries;
 begin
+    if not( ssLeft in Shift) then
+        exit;
+
     with StringGrid1 do
     begin
         MouseToCell(X, Y, ACol, ARow);
