@@ -40,8 +40,6 @@ type
           var CanSelect: boolean);
         procedure StringGrid1SetEditText(Sender: TObject; ACol, ARow: Integer;
           const Value: string);
-        procedure StringGrid1MouseDown(Sender: TObject; Button: TMouseButton;
-          Shift: TShiftState; X, Y: Integer);
         procedure FormShow(Sender: TObject);
         procedure N1Click(Sender: TObject);
         procedure StringGrid1KeyPress(Sender: TObject; var Key: Char);
@@ -325,36 +323,6 @@ begin
 
 end;
 
-procedure TFormCurrentParty.StringGrid1MouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-var
-    ACol, ARow: Integer;
-    p: IProduct;
-begin
-    with StringGrid1 do
-    begin
-        MouseToCell(X, Y, ACol, ARow);
-        if (Col = -1) AND (ACol > 0) then
-            Col := ACol;
-
-        if (Row = -1) AND (ARow > 0) then
-            Row := ARow;
-        if (GetAsyncKeyState(VK_LBUTTON) >= 0) then
-        begin
-            exit;
-        end;
-
-        if (ARow <> 0) or (ACol < 1) or (ACol >= ColCount) then
-            exit;
-
-        FParty.Products[ACol - 1].Checked := not FParty.Products
-          [ACol - 1].Checked;
-        ProductsClient.setProduct(FParty.Products[ACol - 1]);
-        upload;
-    end;
-
-end;
-
 procedure TFormCurrentParty.StringGrid1DblClick(Sender: TObject);
 begin
     with StringGrid1 do
@@ -374,6 +342,7 @@ var
     ta: TAlignment;
     AText: string;
     floatValue: double;
+    ser: TFastLineSeries;
 
     function RowIs(s: string): boolean;
     begin
@@ -419,14 +388,9 @@ begin
         exit;
     end;
     p := FParty.Products[ACol - 1];
-    if ARow = 0 then
-    begin
-        grd.Canvas.FillRect(Rect);
-        DrawCheckbox(grd, grd.Canvas, Rect, p.Checked, AText);
-        StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
-        exit;
-    end;
-    StringGrid_DrawCellText(StringGrid1, ACol, ARow, Rect, ta, AText);
+
+    StringGrid_DrawCellText(StringGrid1, ACol, ARow, Rect,
+      ta, AText);
     StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
 end;
 
@@ -483,7 +447,6 @@ begin
         end;
     end;
 
-
 end;
 
 procedure TFormCurrentParty.setupSeries;
@@ -492,11 +455,11 @@ var
     p: IProduct;
     VarID: SmallInt;
     pvs: IProductVarSeries;
-    xx : TPair<TFastLineSeries, TProductVar>;
+    xx: TPair<TFastLineSeries, TProductVar>;
 
 begin
-    //FSeries: TDictionary<TProductVar, TFastLineSeries>;
-    //FSeriesInfo: TDictionary<TFastLineSeries, TProductVar>;
+    // FSeries: TDictionary<TProductVar, TFastLineSeries>;
+    // FSeriesInfo: TDictionary<TFastLineSeries, TProductVar>;
 
     for xx in FSeriesInfo do
         xx.Key.ParentChart := nil;
@@ -565,10 +528,19 @@ begin
 end;
 
 procedure TFormCurrentParty.SetProductsComport(Sender: TObject);
+var
+    ACol: Integer;
+    s: string;
 begin
-    ProductsClient.SetProductsComport(GetSelectedProductsIDs,
-      (Sender AS TMenuItem).Caption);
-    upload;
+    s := (Sender AS TMenuItem).Caption;
+    ProductsClient.SetProductsComport(GetSelectedProductsIDs, s);
+    with StringGrid1, Selection do
+        for ACol := Left to Right do
+        begin
+            FParty.Products[ACol - 1].Comport := s;
+            Cells[ACol, Cols[0].IndexOf('СОМ порт')] := s;
+
+        end;
 end;
 
 procedure TFormCurrentParty.setMainFormCaption;

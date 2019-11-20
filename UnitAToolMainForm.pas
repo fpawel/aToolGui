@@ -6,7 +6,8 @@ uses
     Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
     System.Classes, Vcl.Graphics,
     Vcl.Controls, Vcl.Forms, Vcl.Dialogs, System.ImageList, Vcl.ImgList,
-    Vcl.Menus, UnitFormSelectCurrentParty, VclTee.Chart, Vcl.ComCtrls;
+    Vcl.Menus, UnitFormSelectCurrentParty, VclTee.Chart, Vcl.ComCtrls,
+  Vcl.ExtCtrls, UnitFormInterrogate;
 
 type
     TAToolMainForm = class(TForm)
@@ -20,6 +21,7 @@ type
         PageControlMain: TPageControl;
         TabSheetParty: TTabSheet;
     TabSheetConsole: TTabSheet;
+    GridPanel1: TGridPanel;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -27,6 +29,7 @@ type
         procedure PageControlMainDrawTab(Control: TCustomTabControl;
           TabIndex: Integer; const Rect: TRect; Active: Boolean);
         procedure N4Click(Sender: TObject);
+    procedure FormResize(Sender: TObject);
     private
         { Private declarations }
         procedure AppException(Sender: TObject; e: Exception);
@@ -61,8 +64,14 @@ begin
     Application.OnException := AppException;
 end;
 
+procedure TAToolMainForm.FormResize(Sender: TObject);
+begin
+    FormInterrogate.setupLastColWidth;
+end;
+
 procedure TAToolMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+    OnResize := nil;
     with FormCurrentParty do
     begin
         StringGrid1.OnSetEditText := nil;
@@ -92,7 +101,16 @@ begin
     with FormCurrentParty do
     begin
         BorderStyle := bsNone;
-        parent := TabSheetParty;
+        parent := GridPanel1;
+        Align := alClient;
+        upload;
+        Show;
+    end;
+
+    with FormInterrogate do
+    begin
+        BorderStyle := bsNone;
+        parent := GridPanel1;
         Align := alClient;
         upload;
         Show;

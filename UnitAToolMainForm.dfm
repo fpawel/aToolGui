@@ -14,6 +14,7 @@ object AToolMainForm: TAToolMainForm
   OldCreateOrder = False
   OnClose = FormClose
   OnCreate = FormCreate
+  OnResize = FormResize
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 16
@@ -35,12 +36,36 @@ object AToolMainForm: TAToolMainForm
     object TabSheetParty: TTabSheet
       Caption = #1055#1072#1088#1090#1080#1103
       ImageIndex = 4
+      object GridPanel1: TGridPanel
+        Left = 0
+        Top = 0
+        Width = 702
+        Height = 365
+        Align = alClient
+        Caption = 'GridPanel1'
+        ColumnCollection = <
+          item
+            Value = 100.000000000000000000
+          end>
+        ControlCollection = <>
+        RowCollection = <
+          item
+            Value = 50.000000000000000000
+          end
+          item
+            Value = 50.000000000000000000
+          end>
+        ShowCaption = False
+        TabOrder = 0
+        ExplicitLeft = 104
+        ExplicitTop = 48
+        ExplicitWidth = 185
+        ExplicitHeight = 41
+      end
     end
     object TabSheetConsole: TTabSheet
       Caption = #1050#1086#1085#1089#1086#1083#1100
       ImageIndex = 1
-      ExplicitLeft = 108
-      ExplicitTop = 0
     end
   end
   object MainMenu1: TMainMenu

@@ -154,6 +154,10 @@
             <Form>FormChart</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="UnitFormInterrogate.pas">
+            <Form>FormInterrogate</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
