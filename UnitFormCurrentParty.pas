@@ -70,6 +70,8 @@ type
         procedure upload;
 
         function GetSeriesInfo(ser: TFastLineSeries): TProductVar;
+        function GetProductParam(AProductID: int64; AParamAddr: Integer)
+          : IProductParam;
 
     end;
 
@@ -389,8 +391,7 @@ begin
     end;
     p := FParty.Products[ACol - 1];
 
-    StringGrid_DrawCellText(StringGrid1, ACol, ARow, Rect,
-      ta, AText);
+    StringGrid_DrawCellText(StringGrid1, ACol, ARow, Rect, ta, AText);
     StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
 end;
 
@@ -417,7 +418,7 @@ begin
     with StringGrid1 do
     begin
         ColCount := FParty.Products.Count + 1;
-        RowCount := 4 + FParty.Params.Count;
+        RowCount := 4 + FParty.ParamAddresses.Count;
         if FParty.Products.Count = 0 then
             exit;
 
@@ -439,14 +440,26 @@ begin
             Cells[ACol, 3] := IntToStr(p.addr);
         end;
 
-        for n := 0 to FParty.Params.Count - 1 do
+        for n := 0 to FParty.ParamAddresses.Count - 1 do
         begin
             ARow := n + 4;
-            X := FParty.Params[n];
+            X := FParty.ParamAddresses[n];
             Cells[0, ARow] := Format('%s %d', ['$' + IntToHex(X, 4), X]);
         end;
     end;
 
+end;
+
+function TFormCurrentParty.GetProductParam(AProductID: int64;
+  AParamAddr: Integer): IProductParam;
+var p:IProductParam;
+begin
+    for p in FParty.ProductParams do
+        if (p.ProductID = AProductID) AND (p.ParamAddr = AParamAddr)
+        then
+            exit(p);
+    raise Exception.Create('not found: product ' + IntToStr(AProductID) +
+      ': param: ' + IntToStr(AParamAddr));
 end;
 
 procedure TFormCurrentParty.setupSeries;
@@ -454,7 +467,7 @@ var
     ser: TFastLineSeries;
     p: IProduct;
     VarID: SmallInt;
-    pvs: IProductVarSeries;
+    pvs: IProductParam;
     xx: TPair<TFastLineSeries, TProductVar>;
 
 begin
@@ -473,7 +486,7 @@ begin
     FSeriesInfo.Clear;
 
     for p in FParty.Products do
-        for VarID in FParty.Params do
+        for VarID in FParty.ParamAddresses do
         begin
             ser := TFastLineSeries.Create(nil);
             ser.XValues.DateTime := true;
@@ -483,14 +496,15 @@ begin
             FSeries.Add(TProductVar.Create(p.ProductID, VarID), ser);
             FSeriesInfo.Add(ser, TProductVar.Create(p.ProductID, VarID));
 
-            for pvs in FParty.Series do
-                if (pvs.ProductID = p.ProductID) AND (pvs.TheVar = VarID) then
+            for pvs in FParty.ProductParams do
+                if (pvs.ProductID = p.ProductID) AND (pvs.ParamAddr = VarID)
+                then
                 begin
                     if pvs.Chart <> '' then
                     begin
                         ser.ParentChart := AToolMainForm.GetChartByName
                           (pvs.Chart);
-                        ser.Active := pvs.Active;
+                        ser.Active := pvs.SeriesActive;
                     end;
 
                 end;
@@ -562,6 +576,7 @@ var
     ACol, ARow, AVar: Integer;
     p: IProduct;
     pv: TProductVar;
+    prod_param: IProductParam;
     ser: TFastLineSeries;
     chartName: string;
 begin
@@ -570,13 +585,14 @@ begin
             for ARow := Top to Bottom do
             begin
                 p := FParty.Products[ACol - 1];
-                AVar := FParty.Params[ARow - 4];
+                AVar := FParty.ParamAddresses[ARow - 4];
+                prod_param := GetProductParam(p.ProductID, AVar);
+                prod_param.Chart := chartName;
+                ProductsClient.setProductParam(prod_param);
                 pv := TProductVar.Create(p.ProductID, AVar);
                 ser := FSeries[pv];
                 chartName := (Sender AS TMenuItem).Caption;
                 ser.ParentChart := AToolMainForm.GetChartByName(chartName);
-                ProductsClient.setProductVarSeriesChart(p.ProductID, AVar,
-                  chartName);
                 (ser.ParentChart.Parent AS TFormChart).setupStringGrid;
             end;
     AToolMainForm.DeleteEmptyCharts;

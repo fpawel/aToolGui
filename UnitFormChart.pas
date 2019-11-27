@@ -31,7 +31,7 @@ implementation
 
 {$R *.dfm}
 
-uses stringgridutils, UnitFormCurrentParty;
+uses apitypes, stringgridutils, UnitFormCurrentParty;
 
 procedure TFormChart.SetupStringGrid;
 begin
@@ -130,6 +130,7 @@ procedure TFormChart.StringGrid1MouseDown(Sender: TObject; Button: TMouseButton;
 var
     ACol, ARow: Integer;
     ser: TFastLineSeries;
+    prod_param:IProductParam;
 begin
     if not( ssLeft in Shift) then
         exit;
@@ -142,10 +143,11 @@ begin
         ser := Chart1.Series[ARow - 1] AS TFastLineSeries;
         ser.Active := not ser.Active;
         Cells[ACol, ARow] := Cells[ACol, ARow];
-        with FormCurrentParty.GetSeriesInfo(ser) do
-            ProductsClient.setProductVarSeriesActive(ProductID, VarID,
-              ser.Active);
 
+        with FormCurrentParty.GetSeriesInfo(ser) do
+            prod_param := FormCurrentParty.GetProductParam(ProductID,VarID);
+        prod_param.SeriesActive := ser.Active;
+        ProductsClient.setProductParam(prod_param);
     end;
 end;
 
