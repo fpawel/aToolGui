@@ -92,7 +92,6 @@ begin
         exit;
     ser := Chart1.Series[ARow - 1] AS TFastLineSeries;
 
-
     pv := FormCurrentParty.GetSeriesInfo(ser);
     case ACol of
         0:
@@ -130,24 +129,24 @@ procedure TFormChart.StringGrid1MouseDown(Sender: TObject; Button: TMouseButton;
 var
     ACol, ARow: Integer;
     ser: TFastLineSeries;
-    prod_param:IProductParam;
+    prod_param: IProductParam;
 begin
-    if not( ssLeft in Shift) then
+    if not(ssLeft in Shift) then
         exit;
 
     with StringGrid1 do
     begin
         MouseToCell(X, Y, ACol, ARow);
-        if (ARow < 1)  or (ACol <> 0)then
+        if (ARow < 1) or (ACol <> 0) then
             exit;
         ser := Chart1.Series[ARow - 1] AS TFastLineSeries;
         ser.Active := not ser.Active;
         Cells[ACol, ARow] := Cells[ACol, ARow];
 
         with FormCurrentParty.GetSeriesInfo(ser) do
-            prod_param := FormCurrentParty.GetProductParam(ProductID,VarID);
+            prod_param := productsclient.GetProductParam(ProductID, VarID);
         prod_param.SeriesActive := ser.Active;
-        ProductsClient.setProductParam(prod_param);
+        productsclient.setProductParam(prod_param);
     end;
 end;
 

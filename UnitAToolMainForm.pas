@@ -7,7 +7,7 @@ uses
     System.Classes, Vcl.Graphics,
     Vcl.Controls, Vcl.Forms, Vcl.Dialogs, System.ImageList, Vcl.ImgList,
     Vcl.Menus, UnitFormSelectCurrentParty, VclTee.Chart, Vcl.ComCtrls,
-  Vcl.ExtCtrls, UnitFormInterrogate;
+  Vcl.ExtCtrls, UnitFormInterrogate, Vcl.StdCtrls;
 
 type
     TAToolMainForm = class(TForm)
@@ -16,12 +16,13 @@ type
         ImageList4: TImageList;
         N7: TMenuItem;
         MenuRun: TMenuItem;
-        MenuStop: TMenuItem;
         N3: TMenuItem;
         PageControlMain: TPageControl;
         TabSheetParty: TTabSheet;
     TabSheetConsole: TTabSheet;
     GridPanel1: TGridPanel;
+    GroupBox2: TGroupBox;
+    GroupBox1: TGroupBox;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -30,6 +31,7 @@ type
           TabIndex: Integer; const Rect: TRect; Active: Boolean);
         procedure N4Click(Sender: TObject);
     procedure FormResize(Sender: TObject);
+    procedure MenuRunClick(Sender: TObject);
     private
         { Private declarations }
         procedure AppException(Sender: TObject; e: Exception);
@@ -101,7 +103,7 @@ begin
     with FormCurrentParty do
     begin
         BorderStyle := bsNone;
-        parent := GridPanel1;
+        parent := GroupBox1;
         Align := alClient;
         upload;
         Show;
@@ -110,7 +112,7 @@ begin
     with FormInterrogate do
     begin
         BorderStyle := bsNone;
-        parent := GridPanel1;
+        parent := GroupBox2;
         Align := alClient;
         upload;
         Show;
@@ -121,6 +123,15 @@ end;
 procedure TAToolMainForm.HandleCurrentPartyChanged(var Message: TMessage);
 begin
     FormCurrentParty.upload;
+end;
+
+procedure TAToolMainForm.MenuRunClick(Sender: TObject);
+begin
+    if ProductsClient.Connected then
+        ProductsClient.Disconnect
+    else
+        ProductsClient.Connect;
+
 end;
 
 procedure TAToolMainForm.N4Click(Sender: TObject);

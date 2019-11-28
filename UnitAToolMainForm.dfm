@@ -47,7 +47,17 @@ object AToolMainForm: TAToolMainForm
           item
             Value = 100.000000000000000000
           end>
-        ControlCollection = <>
+        ControlCollection = <
+          item
+            Column = 0
+            Control = GroupBox2
+            Row = 1
+          end
+          item
+            Column = 0
+            Control = GroupBox1
+            Row = 0
+          end>
         RowCollection = <
           item
             Value = 50.000000000000000000
@@ -57,10 +67,40 @@ object AToolMainForm: TAToolMainForm
           end>
         ShowCaption = False
         TabOrder = 0
-        ExplicitLeft = 104
-        ExplicitTop = 48
-        ExplicitWidth = 185
-        ExplicitHeight = 41
+        object GroupBox2: TGroupBox
+          AlignWithMargins = True
+          Left = 6
+          Top = 187
+          Width = 692
+          Height = 172
+          Margins.Left = 5
+          Margins.Top = 5
+          Margins.Bottom = 5
+          Align = alClient
+          Caption = #1054#1087#1088#1086#1089
+          TabOrder = 0
+          ExplicitLeft = 58
+          ExplicitTop = 279
+          ExplicitWidth = 185
+          ExplicitHeight = 105
+        end
+        object GroupBox1: TGroupBox
+          AlignWithMargins = True
+          Left = 6
+          Top = 6
+          Width = 692
+          Height = 171
+          Margins.Left = 5
+          Margins.Top = 5
+          Margins.Bottom = 5
+          Align = alClient
+          Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1087#1088#1080#1073#1086#1088#1086#1074
+          TabOrder = 1
+          ExplicitLeft = 58
+          ExplicitTop = 279
+          ExplicitWidth = 185
+          ExplicitHeight = 105
+        end
       end
     end
     object TabSheetConsole: TTabSheet
@@ -75,9 +115,7 @@ object AToolMainForm: TAToolMainForm
       Caption = #1054#1087#1088#1086#1089
       object MenuRun: TMenuItem
         Caption = #1047#1072#1087#1091#1089#1090#1080#1090#1100
-      end
-      object MenuStop: TMenuItem
-        Caption = #1054#1089#1090#1072#1085#1086#1074#1080#1090#1100
+        OnClick = MenuRunClick
       end
     end
     object N3: TMenuItem

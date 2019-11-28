@@ -53,8 +53,6 @@ object FormCurrentParty: TFormCurrentParty
       OnKeyPress = StringGrid1KeyPress
       OnSelectCell = StringGrid1SelectCell
       OnSetEditText = StringGrid1SetEditText
-      ExplicitLeft = 6
-      ExplicitTop = 6
     end
   end
   object ImageList2: TImageList
@@ -529,6 +527,10 @@ object FormCurrentParty: TFormCurrentParty
       object N7: TMenuItem
         Caption = #1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1099#1081' '#1075#1088#1072#1092#1082
         OnClick = N7Click
+      end
+      object MenuDeleteChart: TMenuItem
+        Caption = #1053#1077' '#1074#1099#1074#1086#1076#1080#1090#1100' '#1085#1072' '#1075#1088#1072#1092#1080#1082
+        OnClick = MenuDeleteChartClick
       end
       object N8: TMenuItem
         Caption = '-'

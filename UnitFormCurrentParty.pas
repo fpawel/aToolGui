@@ -34,6 +34,7 @@ type
         MenuSetChart: TMenuItem;
         N7: TMenuItem;
         N8: TMenuItem;
+    MenuDeleteChart: TMenuItem;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
           Rect: TRect; State: TGridDrawState);
         procedure StringGrid1SelectCell(Sender: TObject; ACol, ARow: Integer;
@@ -50,6 +51,7 @@ type
         procedure N5Click(Sender: TObject);
         procedure FormCreate(Sender: TObject);
         procedure N7Click(Sender: TObject);
+    procedure MenuDeleteChartClick(Sender: TObject);
     private
         { Private declarations }
         FSeries: TDictionary<TProductVar, TFastLineSeries>;
@@ -70,9 +72,6 @@ type
         procedure upload;
 
         function GetSeriesInfo(ser: TFastLineSeries): TProductVar;
-        function GetProductParam(AProductID: int64; AParamAddr: Integer)
-          : IProductParam;
-
     end;
 
 var
@@ -214,7 +213,7 @@ begin
     if MenuSetChart.Visible then
     begin
 
-        while MenuSetChart.Count > 2 do
+        while MenuSetChart.Count > 3 do
         begin
             MenuSetChart.Items[MenuSetChart.Count - 1].Free
         end;
@@ -450,18 +449,6 @@ begin
 
 end;
 
-function TFormCurrentParty.GetProductParam(AProductID: int64;
-  AParamAddr: Integer): IProductParam;
-var p:IProductParam;
-begin
-    for p in FParty.ProductParams do
-        if (p.ProductID = AProductID) AND (p.ParamAddr = AParamAddr)
-        then
-            exit(p);
-    raise Exception.Create('not found: product ' + IntToStr(AProductID) +
-      ': param: ' + IntToStr(AParamAddr));
-end;
-
 procedure TFormCurrentParty.setupSeries;
 var
     ser: TFastLineSeries;
@@ -496,19 +483,12 @@ begin
             FSeries.Add(TProductVar.Create(p.ProductID, VarID), ser);
             FSeriesInfo.Add(ser, TProductVar.Create(p.ProductID, VarID));
 
-            for pvs in FParty.ProductParams do
-                if (pvs.ProductID = p.ProductID) AND (pvs.ParamAddr = VarID)
-                then
-                begin
-                    if pvs.Chart <> '' then
-                    begin
-                        ser.ParentChart := AToolMainForm.GetChartByName
-                          (pvs.Chart);
-                        ser.Active := pvs.SeriesActive;
-                    end;
-
-                end;
-
+            pvs := ProductsClient.getProductParam(p.ProductID, VarID);
+            if pvs.Chart <> '' then
+            begin
+                ser.ParentChart := AToolMainForm.GetChartByName(pvs.Chart);
+                ser.Active := pvs.SeriesActive;
+            end;
         end;
 end;
 
@@ -571,6 +551,11 @@ begin
     result := FSeriesInfo[ser];
 end;
 
+procedure TFormCurrentParty.MenuDeleteChartClick(Sender: TObject);
+begin
+    MenuSetChartClick(Sender);
+end;
+
 procedure TFormCurrentParty.MenuSetChartClick(Sender: TObject);
 var
     ACol, ARow, AVar: Integer;
@@ -580,20 +565,30 @@ var
     ser: TFastLineSeries;
     chartName: string;
 begin
+    chartName := (Sender AS TMenuItem).Caption;
+    if Sender = MenuDeleteChart then
+        chartName := '';
+
+
     with StringGrid1.Selection do
         for ACol := Left to Right do
             for ARow := Top to Bottom do
             begin
                 p := FParty.Products[ACol - 1];
                 AVar := FParty.ParamAddresses[ARow - 4];
-                prod_param := GetProductParam(p.ProductID, AVar);
+                prod_param := ProductsClient.getProductParam(p.ProductID, AVar);
                 prod_param.Chart := chartName;
                 ProductsClient.setProductParam(prod_param);
                 pv := TProductVar.Create(p.ProductID, AVar);
                 ser := FSeries[pv];
-                chartName := (Sender AS TMenuItem).Caption;
-                ser.ParentChart := AToolMainForm.GetChartByName(chartName);
-                (ser.ParentChart.Parent AS TFormChart).setupStringGrid;
+                if chartName <> '' then
+                begin
+                    ser.ParentChart := AToolMainForm.GetChartByName(chartName);
+                    (ser.ParentChart.Parent AS TFormChart).setupStringGrid;
+                end
+                else
+                    ser.ParentChart := nil;
+
             end;
     AToolMainForm.DeleteEmptyCharts;
     AToolMainForm.PageControlMain.ActivePageIndex := 0;
