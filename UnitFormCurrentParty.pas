@@ -151,7 +151,6 @@ begin
               IncHour(unixMillisToDateTime(CreatedAt), -3))]));
             if FormCurrentParty.FParty.PartyID = PartyID then
                 FormSelectCurrentParty.ListBox1.ItemIndex := i;
-
         end;
     if (FormSelectCurrentParty.ShowModal <> mrOk) or
       (FormSelectCurrentParty.ListBox1.ItemIndex = -1) then
@@ -259,7 +258,6 @@ procedure TFormCurrentParty.StringGrid1SetEditText(Sender: TObject;
   ACol, ARow: Integer; const Value: string);
 var
     p: IProduct;
-
     r: TRect;
     pt: TPoint;
     sel: TGridRect;
@@ -282,7 +280,7 @@ begin
                 if ARow = Cols[0].IndexOf('Адрес') then
                 begin
                     p.addr := StrToInt(Value);
-                    ProductsClient.setProduct(p);
+                    ProductsClient.setProductAddr(p.ProductID, p.Addr);
                 end;
 
             except

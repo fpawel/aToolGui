@@ -11,6 +11,7 @@ object FormInterrogate: TFormInterrogate
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 18
   object StringGrid1: TStringGrid
@@ -31,9 +32,7 @@ object FormInterrogate: TFormInterrogate
     GradientEndColor = clBlack
     TabOrder = 0
     OnDrawCell = StringGrid1DrawCell
-    ExplicitLeft = -237
-    ExplicitTop = -135
-    ExplicitWidth = 872
-    ExplicitHeight = 434
+    ExplicitLeft = 8
+    ExplicitTop = -2
   end
 end

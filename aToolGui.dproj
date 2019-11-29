@@ -84,7 +84,7 @@
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
         <Debugger_IncludeSystemVars>true</Debugger_IncludeSystemVars>
-        <Debugger_EnvVars>ATOOL_API_PORT=60002;$(Debugger_EnvVars)</Debugger_EnvVars>
+        <Debugger_EnvVars>ATOOL_API_PORT=60002;ATOOL_GUI_API_PORT=60003;$(Debugger_EnvVars)</Debugger_EnvVars>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <DCC_ExeOutput>$(GOPATH)\src\github.com\fpawel\atool\build</DCC_ExeOutput>
@@ -158,6 +158,13 @@
             <Form>FormInterrogate</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="grijjy\Grijjy.Bson.IO.pas"/>
+        <DCCReference Include="grijjy\Grijjy.Bson.pas"/>
+        <DCCReference Include="grijjy\Grijjy.Bson.Serialization.pas"/>
+        <DCCReference Include="grijjy\Grijjy.Collections.pas"/>
+        <DCCReference Include="grijjy\Grijjy.SysUtils.pas"/>
+        <DCCReference Include="grijjy\Grijjy.DateUtils.pas"/>
+        <DCCReference Include="grijjy\Grijjy.BinaryCoding.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

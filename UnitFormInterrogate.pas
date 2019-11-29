@@ -9,22 +9,33 @@ uses
     stringutils;
 
 type
+    TCommTransaction = record
+        Request: string;
+        Result: string;
+        Comport: string;
+        Ok: boolean;
+    end;
+
     TFormInterrogate = class(TForm)
         StringGrid1: TStringGrid;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
           Rect: TRect; State: TGridDrawState);
+        procedure FormCreate(Sender: TObject);
     private
         { Private declarations }
+
     public
         { Public declarations }
-        procedure Upload;
-        procedure setupLastColWidth;
+        procedure setupColsWidths;
+        procedure AddCommTransaction(ACommTransaction: TCommTransaction);
     end;
 
 var
     FormInterrogate: TFormInterrogate;
 
 implementation
+
+uses myutils;
 
 {$R *.dfm}
 
@@ -39,7 +50,7 @@ var
 
     function ColIs(s: string): boolean;
     begin
-        result := ARow = grd.Rows[0].IndexOf(s);
+        Result := ARow = grd.Rows[0].IndexOf(s);
     end;
 
 begin
@@ -50,83 +61,64 @@ begin
     cnv.Font.Assign(grd.Font);
     AText := grd.Cells[ACol, ARow];
 
-    if (ARow = 0) or (ACol = 0) then
-        cnv.Brush.Color := cl3DLight;
-
-    if (gdSelected in State) or (ARow = 0) and (ACol = grd.Col) or (ACol = 0)
-      AND (ARow = grd.Row) then
-    begin
+    if (gdSelected in State) then
         cnv.Brush.Color := clGradientInactiveCaption;
-        // cnv.Font.Color := clBlue;
-        if (ACol = 0) or (ARow = 0) then
-            cnv.Font.Style := [fsBold];
-
-    end;
-
-    ta := taLeftJustify;
-    if TryStrToFloat2(grd.Cells[ACol, ARow], floatValue) then
-        ta := taRightJustify;
-    if ColIs('Адрес') then
-    begin
-        cnv.Font.Color := clNavy;
-    end;
-    if ARow = 0 then
-    begin
-        grd.Canvas.FillRect(Rect);
-        StringGrid_DrawCellText(grd, ACol, ARow, Rect, ta, AText);
-        StringGrid_DrawCellBounds(grd.Canvas, ACol, ARow, Rect);
-        exit;
-    end;
-    if ACol = 0 then
-    begin
-        grd.Canvas.FillRect(Rect);
-        DrawCheckbox(grd, grd.Canvas, Rect, true, AText);
-        StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
-        exit;
-    end;
 
     StringGrid_DrawCellText(StringGrid1, ACol, ARow, Rect,
-      taRightJustify, AText);
+      taLeftJustify, AText);
     StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
-
 end;
 
-procedure TFormInterrogate.setupLastColWidth;
-var
-    ACol, lastCollWidth: Integer;
-begin
-    With StringGrid1 do
-    begin
-        lastCollWidth := StringGrid1.Width - 50;
-        for ACol := 0 to ColCount - 2 do
-            Dec(lastCollWidth, ColWidths[ACol]);
-        if ColWidths[ColCount - 1] <> lastCollWidth then
-        begin
-            ColWidths[ColCount - 1] := lastCollWidth;
-        end;
-    end;
-
-end;
-
-procedure TFormInterrogate.Upload;
+procedure TFormInterrogate.FormCreate(Sender: TObject);
 begin
     with StringGrid1 do
     begin
-        ColCount := 9;
-        RowCount := 10;
-        FixedCols := 1;
-        FixedRows := 1;
-        ColWidths[0] := 30;
-        Cells[0, 0] := '';
-        Cells[1, 0] := 'СОМ порт';
-        Cells[2, 0] := 'Прибор';
-        Cells[3, 0] := '№';
-        Cells[4, 0] := 'Адрес';
-        Cells[5, 0] := 'Регистр';
-        Cells[6, 0] := 'Кол-во';
-        Cells[7, 0] := 'Запрос';
-        Cells[8, 0] := 'Ответ';
+        ColCount := 4;
+        RowCount := 1;
+        FixedCols := 0;
+        FixedRows := 0;
     end;
+end;
+
+procedure TFormInterrogate.AddCommTransaction(ACommTransaction
+  : TCommTransaction);
+var
+    r: TStrings;
+    sel: TGridRect;
+begin
+    with StringGrid1 do
+    begin
+        if Cells[0, 0] <> '' then
+            RowCount := RowCount + 1;
+        r := Rows[RowCount - 1];
+        r[0] := TimeToStr(now);
+        r[1] := ACommTransaction.Comport;
+        r[2] := ACommTransaction.Request;
+        r[3] := ACommTransaction.Result;
+        r.Objects[0] := TPrimitiveBox<boolean>(ACommTransaction.Ok);
+        Row := RowCount - 1;
+        // sel.Left := 0;
+        // sel.Right := 0;
+        // sel.Top := RowCount - 1;
+        // sel.Bottom := RowCount - 1;
+        // Selection := sel;
+    end;
+
+end;
+
+procedure TFormInterrogate.setupColsWidths;
+var
+    w: Integer;
+begin
+    With StringGrid1 do
+    begin
+        ColWidths[0] := 80;
+        ColWidths[1] := 60;
+        w := StringGrid1.Width - 50 - ColWidths[0] - ColWidths[1];
+        ColWidths[2] := w div 2;
+        ColWidths[3] := w div 2;
+    end;
+
 end;
 
 end.

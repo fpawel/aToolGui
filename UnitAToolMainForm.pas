@@ -7,22 +7,25 @@ uses
     System.Classes, Vcl.Graphics,
     Vcl.Controls, Vcl.Forms, Vcl.Dialogs, System.ImageList, Vcl.ImgList,
     Vcl.Menus, UnitFormSelectCurrentParty, VclTee.Chart, Vcl.ComCtrls,
-  Vcl.ExtCtrls, UnitFormInterrogate, Vcl.StdCtrls;
+    Vcl.ExtCtrls, UnitFormInterrogate, Vcl.StdCtrls;
 
 type
+
+    TCopyDataCmd = (cdcCommTransaction);
+
     TAToolMainForm = class(TForm)
         MainMenu1: TMainMenu;
         N4: TMenuItem;
         ImageList4: TImageList;
-        N7: TMenuItem;
-        MenuRun: TMenuItem;
         N3: TMenuItem;
         PageControlMain: TPageControl;
         TabSheetParty: TTabSheet;
-    TabSheetConsole: TTabSheet;
-    GridPanel1: TGridPanel;
-    GroupBox2: TGroupBox;
-    GroupBox1: TGroupBox;
+        TabSheetConsole: TTabSheet;
+        GridPanel1: TGridPanel;
+        GroupBox2: TGroupBox;
+        GroupBox1: TGroupBox;
+    Panel1: TPanel;
+    ButtonRunStop: TButton;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -30,14 +33,20 @@ type
         procedure PageControlMainDrawTab(Control: TCustomTabControl;
           TabIndex: Integer; const Rect: TRect; Active: Boolean);
         procedure N4Click(Sender: TObject);
-    procedure FormResize(Sender: TObject);
-    procedure MenuRunClick(Sender: TObject);
+        procedure FormResize(Sender: TObject);
+    procedure ButtonRunStopClick(Sender: TObject);
     private
         { Private declarations }
+        FEnableCopyData: Boolean;
         procedure AppException(Sender: TObject; e: Exception);
         function ExceptionDialog(e: Exception): Boolean;
         procedure HandleCurrentPartyChanged(var Message: TMessage);
           message WM_USER + 1;
+        procedure HandleStartWork(var Message: TMessage);
+          message WM_USER + 2;
+        procedure HandleStopWork(var Message: TMessage);
+          message WM_USER + 3;
+        procedure HandleCopydata(var Message: TMessage); message WM_COPYDATA;
     public
         { Public declarations }
         function GetChartByName(AName: string): TChart;
@@ -59,31 +68,13 @@ uses dateutils, myutils, api, UnitApiClient,
     logfile, apitypes, vclutils, UnitFormCharts,
     UnitFormChart, System.Generics.Collections;
 
-const PageIndexChart = 2;
+const
+    PageIndexChart = 2;
 
 procedure TAToolMainForm.FormCreate(Sender: TObject);
 begin
     Application.OnException := AppException;
-end;
 
-procedure TAToolMainForm.FormResize(Sender: TObject);
-begin
-    FormInterrogate.setupLastColWidth;
-end;
-
-procedure TAToolMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
-begin
-    OnResize := nil;
-    with FormCurrentParty do
-    begin
-        StringGrid1.OnSetEditText := nil;
-        StringGrid1.EditorMode := False;
-    end;
-    try
-        ProductsClient.setClientWindow(HWND_TOP);
-    except
-
-    end;
 end;
 
 procedure TAToolMainForm.FormShow(Sender: TObject);
@@ -98,7 +89,7 @@ begin
     ProductsClient := TProductsService.TClient.Create(Protocol);
     Transport.Open;
 
-    ProductsClient.setClientWindow(Handle);
+    ProductsClient.openGuiClient(Handle);
 
     with FormCurrentParty do
     begin
@@ -114,8 +105,72 @@ begin
         BorderStyle := bsNone;
         parent := GroupBox2;
         Align := alClient;
-        upload;
         Show;
+    end;
+
+    if ProductsClient.Connected then
+    begin
+        ButtonRunStop.Caption := 'Остановить';
+    end
+    else
+    begin
+        ButtonRunStop.Caption := 'Запустить';
+    end;
+
+    FEnableCopyData := true;
+end;
+
+procedure TAToolMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+    OnResize := nil;
+    FEnableCopyData := false;
+    with FormCurrentParty do
+    begin
+        StringGrid1.OnSetEditText := nil;
+        StringGrid1.EditorMode := false;
+    end;
+    try
+        ProductsClient.closeGuiClient;
+    except
+
+    end;
+
+
+end;
+
+procedure TAToolMainForm.FormResize(Sender: TObject);
+begin
+    FormInterrogate.setupColsWidths;
+end;
+
+procedure TAToolMainForm.HandleStartWork(var Message: TMessage);
+begin
+    ButtonRunStop.Caption := 'Остановить опрос';
+
+end;
+
+procedure TAToolMainForm.HandleStopWork(var Message: TMessage);
+begin
+    ButtonRunStop.Caption := 'Запустить опрос';
+end;
+
+
+procedure TAToolMainForm.HandleCopydata(var Message: TMessage);
+var
+    cd: PCOPYDATASTRUCT;
+begin
+    if FEnableCopyData = false then
+        exit;
+    cd := PCOPYDATASTRUCT(Message.LParam);
+    Message.Result := 1;
+
+    Message.Result := 1;
+    case TCopyDataCmd(Message.WParam) of
+        cdcCommTransaction:
+            FormInterrogate.AddCommTransaction
+              (TJsonCD.unmarshal<TCommTransaction>(Message));
+    else
+        raise Exception.Create('wrong message: ' + IntToStr(Message.WParam));
     end;
 
 end;
@@ -123,15 +178,6 @@ end;
 procedure TAToolMainForm.HandleCurrentPartyChanged(var Message: TMessage);
 begin
     FormCurrentParty.upload;
-end;
-
-procedure TAToolMainForm.MenuRunClick(Sender: TObject);
-begin
-    if ProductsClient.Connected then
-        ProductsClient.Disconnect
-    else
-        ProductsClient.Connect;
-
 end;
 
 procedure TAToolMainForm.N4Click(Sender: TObject);
@@ -145,11 +191,11 @@ var
 begin
     PageControl := Sender as TPageControl;
     PageControl.Repaint;
-//    if PageControl.ActivePage = TabSheetParty then
-//        //FormCurrentParty.upload
-//    else
-//    if PageControl.ActivePageIndex >= PageIndexChart then
-//        (PageControl.ActivePage.Controls[0] AS TFormChart).SetupStringGrid;
+    // if PageControl.ActivePage = TabSheetParty then
+    // //FormCurrentParty.upload
+    // else
+    // if PageControl.ActivePageIndex >= PageIndexChart then
+    // (PageControl.ActivePage.Controls[0] AS TFormChart).SetupStringGrid;
 
 end;
 
@@ -158,7 +204,7 @@ procedure TAToolMainForm.PageControlMainDrawTab(Control: TCustomTabControl;
 var
     i: Integer;
     PageControl: TPageControl;
-    AText:string;
+    AText: string;
 
     x, y: Integer;
     txt_height: double;
@@ -199,7 +245,10 @@ procedure TAToolMainForm.AppException(Sender: TObject; e: Exception);
 begin
     LogfileWriteException(e);
     if ExceptionDialog(e) then
+    begin
+        OnClose := nil;
         Close;
+    end;
 end;
 
 function TAToolMainForm.ExceptionDialog(e: Exception): Boolean;
@@ -228,9 +277,17 @@ begin
         BorderStyle := bsNone;
         parent := tbs;
         Align := alClient;
-        result := Chart1;
+        Result := Chart1;
         Show;
     end;
+end;
+
+procedure TAToolMainForm.ButtonRunStopClick(Sender: TObject);
+begin
+    if ProductsClient.Connected then
+        ProductsClient.Disconnect
+    else
+        ProductsClient.Connect;
 end;
 
 procedure TAToolMainForm.DeleteAllCharts;
@@ -249,7 +306,6 @@ begin
         for i := PageIndexChart to PageCount - 1 do
             (Pages[i].Controls[0] AS TFormChart).SetupStringGrid;
 end;
-
 
 procedure TAToolMainForm.DeleteEmptyCharts;
 var

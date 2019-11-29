@@ -38,9 +38,9 @@ object AToolMainForm: TAToolMainForm
       ImageIndex = 4
       object GridPanel1: TGridPanel
         Left = 0
-        Top = 0
+        Top = 35
         Width = 702
-        Height = 365
+        Height = 330
         Align = alClient
         Caption = 'GridPanel1'
         ColumnCollection = <
@@ -67,39 +67,62 @@ object AToolMainForm: TAToolMainForm
           end>
         ShowCaption = False
         TabOrder = 0
+        ExplicitTop = 0
+        ExplicitHeight = 365
         object GroupBox2: TGroupBox
           AlignWithMargins = True
           Left = 6
-          Top = 187
+          Top = 170
           Width = 692
-          Height = 172
+          Height = 154
           Margins.Left = 5
           Margins.Top = 5
           Margins.Bottom = 5
           Align = alClient
           Caption = #1054#1087#1088#1086#1089
           TabOrder = 0
-          ExplicitLeft = 58
-          ExplicitTop = 279
-          ExplicitWidth = 185
-          ExplicitHeight = 105
+          ExplicitTop = 187
+          ExplicitHeight = 172
         end
         object GroupBox1: TGroupBox
           AlignWithMargins = True
           Left = 6
           Top = 6
           Width = 692
-          Height = 171
+          Height = 154
           Margins.Left = 5
           Margins.Top = 5
           Margins.Bottom = 5
           Align = alClient
           Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1087#1088#1080#1073#1086#1088#1086#1074
           TabOrder = 1
-          ExplicitLeft = 58
-          ExplicitTop = 279
-          ExplicitWidth = 185
-          ExplicitHeight = 105
+          ExplicitHeight = 171
+        end
+      end
+      object Panel1: TPanel
+        Left = 0
+        Top = 0
+        Width = 702
+        Height = 35
+        Align = alTop
+        BevelOuter = bvNone
+        Caption = 'Panel1'
+        ShowCaption = False
+        TabOrder = 1
+        ExplicitTop = -2
+        object ButtonRunStop: TButton
+          AlignWithMargins = True
+          Left = 5
+          Top = 3
+          Width = 132
+          Height = 27
+          Margins.Left = 5
+          Margins.Right = 5
+          Margins.Bottom = 5
+          Align = alLeft
+          Caption = #1047#1072#1087#1091#1089#1090#1080#1090#1100' '#1086#1087#1088#1086#1089
+          TabOrder = 0
+          OnClick = ButtonRunStopClick
         end
       end
     end
@@ -111,13 +134,6 @@ object AToolMainForm: TAToolMainForm
   object MainMenu1: TMainMenu
     Left = 408
     Top = 152
-    object N7: TMenuItem
-      Caption = #1054#1087#1088#1086#1089
-      object MenuRun: TMenuItem
-        Caption = #1047#1072#1087#1091#1089#1090#1080#1090#1100
-        OnClick = MenuRunClick
-      end
-    end
     object N3: TMenuItem
       Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099
       object N4: TMenuItem

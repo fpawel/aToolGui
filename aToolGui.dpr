@@ -35,18 +35,26 @@ uses
   UnitFormVar in 'UnitFormVar.pas' {FormVar},
   UnitFormSelectCurrentParty in 'UnitFormSelectCurrentParty.pas' {FormSelectCurrentParty},
   UnitFormChart in 'UnitFormChart.pas' {FormChart},
-  UnitFormInterrogate in 'UnitFormInterrogate.pas' {FormInterrogate};
+  UnitFormInterrogate in 'UnitFormInterrogate.pas' {FormInterrogate},
+  Grijjy.Bson.IO in 'grijjy\Grijjy.Bson.IO.pas',
+  Grijjy.Bson in 'grijjy\Grijjy.Bson.pas',
+  Grijjy.Bson.Serialization in 'grijjy\Grijjy.Bson.Serialization.pas',
+  Grijjy.Collections in 'grijjy\Grijjy.Collections.pas',
+  Grijjy.SysUtils in 'grijjy\Grijjy.SysUtils.pas',
+  Grijjy.DateUtils in 'grijjy\Grijjy.DateUtils.pas',
+  Grijjy.BinaryCoding in 'grijjy\Grijjy.BinaryCoding.pas';
 
 {$R *.res}
 
 begin
-  Application.Initialize;
-  Application.MainFormOnTaskbar := True;
-  Application.CreateForm(TAToolMainForm, AToolMainForm);
+    Application.Initialize;
+    Application.MainFormOnTaskbar := True;
+    Application.CreateForm(TAToolMainForm, AToolMainForm);
   Application.CreateForm(TFormCurrentParty, FormCurrentParty);
   Application.CreateForm(TFormPopup, FormPopup);
   Application.CreateForm(TFormVar, FormVar);
   Application.CreateForm(TFormSelectCurrentParty, FormSelectCurrentParty);
   Application.CreateForm(TFormInterrogate, FormInterrogate);
   Application.Run;
+
 end.
