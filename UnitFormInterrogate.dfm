@@ -32,7 +32,5 @@ object FormInterrogate: TFormInterrogate
     GradientEndColor = clBlack
     TabOrder = 0
     OnDrawCell = StringGrid1DrawCell
-    ExplicitLeft = 8
-    ExplicitTop = -2
   end
 end

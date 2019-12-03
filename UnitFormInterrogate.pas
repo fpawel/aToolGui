@@ -39,6 +39,15 @@ uses myutils;
 
 {$R *.dfm}
 
+procedure StringGrid_DeleteRow(Grid: TStringGrid; ARow: Integer);
+var
+    i: Integer;
+begin
+    for i := ARow to Grid.RowCount - 2 do
+        Grid.Rows[i].Assign(Grid.Rows[i + 1]);
+    Grid.RowCount := Grid.RowCount - 1;
+end;
+
 procedure TFormInterrogate.StringGrid1DrawCell(Sender: TObject;
   ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
 var
@@ -97,6 +106,8 @@ begin
         r[3] := ACommTransaction.Result;
         r.Objects[0] := TPrimitiveBox<boolean>(ACommTransaction.Ok);
         Row := RowCount - 1;
+        if RowCount > 1000 then
+            StringGrid_DeleteRow(StringGrid1,0);
         // sel.Left := 0;
         // sel.Right := 0;
         // sel.Top := RowCount - 1;

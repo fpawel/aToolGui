@@ -51,8 +51,11 @@ object FormCurrentParty: TFormCurrentParty
       OnDblClick = StringGrid1DblClick
       OnDrawCell = StringGrid1DrawCell
       OnKeyPress = StringGrid1KeyPress
+      OnMouseDown = StringGrid1MouseDown
       OnSelectCell = StringGrid1SelectCell
       OnSetEditText = StringGrid1SetEditText
+      ExplicitLeft = 6
+      ExplicitTop = 0
     end
   end
   object ImageList2: TImageList

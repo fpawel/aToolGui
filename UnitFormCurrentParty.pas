@@ -52,11 +52,12 @@ type
         procedure FormCreate(Sender: TObject);
         procedure N7Click(Sender: TObject);
     procedure MenuDeleteChartClick(Sender: TObject);
+    procedure StringGrid1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     private
         { Private declarations }
         FSeries: TDictionary<TProductVar, TFastLineSeries>;
         FSeriesInfo: TDictionary<TFastLineSeries, TProductVar>;
-
         Last_Edited_Col, Last_Edited_Row: Integer;
         procedure SetProductsComport(Sender: TObject);
         procedure SetProductsDevice(Sender: TObject);
@@ -77,12 +78,16 @@ type
 var
     FormCurrentParty: TFormCurrentParty;
 
+
+
 implementation
 
 uses stringgridutils, stringutils, dateutils,
     vclutils, UnitFormPopup, UnitApiClient, myutils, UnitAToolMainForm;
 
 {$R *.dfm}
+
+const FirstParamRow = 5;
 
 procedure TFormCurrentParty.FormCreate(Sender: TObject);
 begin
@@ -206,7 +211,7 @@ begin
 
     with StringGrid1 do
     begin
-        MenuSetChart.Visible := (Col > 0) AND (Row > 3);
+        MenuSetChart.Visible := (Col > 0) AND (Row >= FirstParamRow);
         MenuSetChartSeparator.Visible := MenuSetChart.Visible;
     end;
     if MenuSetChart.Visible then
@@ -386,7 +391,17 @@ begin
         StringGrid_DrawCellBounds(StringGrid1.Canvas, ACol, ARow, Rect);
         exit;
     end;
+
     p := FParty.Products[ACol - 1];
+
+
+    if ARow = 0 then
+    begin
+        grd.Canvas.FillRect(Rect);
+        StringGrid_DrawCheckBoxCell(StringGrid1, ACol, ARow, Rect, State, p.Active);
+        StringGrid_DrawCellBounds(StringGrid1.Canvas, ACol, ARow, Rect);
+        exit;
+    end;
 
     StringGrid_DrawCellText(StringGrid1, ACol, ARow, Rect, ta, AText);
     StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
@@ -406,6 +421,25 @@ begin
         end;
 end;
 
+procedure TFormCurrentParty.StringGrid1MouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+    ACol, ARow: Integer;
+    p:IProduct;
+begin
+    if (GetAsyncKeyState(VK_LBUTTON) >= 0) then
+        exit;
+    StringGrid1.MouseToCell(X, Y, ACol, ARow);
+    if (ARow > 0) or (Acol = 0) then
+        exit;
+    p := FParty.Products[ACol-1];
+    p.Active := not p.Active;
+    ProductsClient.setProductActive(p.ProductID, p.Active);
+    With StringGrid1 do
+        Cells[ACol,0] := Cells[ACol,0];
+
+end;
+
 procedure TFormCurrentParty.setupStringGrid;
 var
     place, n, X, ARow, ACol: Integer;
@@ -415,7 +449,7 @@ begin
     with StringGrid1 do
     begin
         ColCount := FParty.Products.Count + 1;
-        RowCount := 4 + FParty.ParamAddresses.Count;
+        RowCount := FirstParamRow + FParty.ParamAddresses.Count;
         if FParty.Products.Count = 0 then
             exit;
 
@@ -427,6 +461,8 @@ begin
         Cells[0, 1] := 'Тип';
         Cells[0, 2] := 'СОМ порт';
         Cells[0, 3] := 'Адрес';
+        Cells[0, 4] := 'Связь';
+
 
         for ACol := 1 to ColCount - 1 do
         begin
@@ -439,7 +475,7 @@ begin
 
         for n := 0 to FParty.ParamAddresses.Count - 1 do
         begin
-            ARow := n + 4;
+            ARow := n + FirstParamRow;
             X := FParty.ParamAddresses[n];
             Cells[0, ARow] := Format('%s %d', ['$' + IntToHex(X, 4), X]);
         end;
@@ -573,7 +609,7 @@ begin
             for ARow := Top to Bottom do
             begin
                 p := FParty.Products[ACol - 1];
-                AVar := FParty.ParamAddresses[ARow - 4];
+                AVar := FParty.ParamAddresses[ARow - FirstParamRow];
                 prod_param := ProductsClient.getProductParam(p.ProductID, AVar);
                 prod_param.Chart := chartName;
                 ProductsClient.setProductParam(prod_param);
