@@ -42,7 +42,8 @@ uses
   Grijjy.Collections in 'grijjy\Grijjy.Collections.pas',
   Grijjy.SysUtils in 'grijjy\Grijjy.SysUtils.pas',
   Grijjy.DateUtils in 'grijjy\Grijjy.DateUtils.pas',
-  Grijjy.BinaryCoding in 'grijjy\Grijjy.BinaryCoding.pas';
+  Grijjy.BinaryCoding in 'grijjy\Grijjy.BinaryCoding.pas',
+  UnitMeasurement in 'UnitMeasurement.pas';
 
 {$R *.res}
 

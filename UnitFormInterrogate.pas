@@ -4,12 +4,14 @@ interface
 
 uses
     Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-    System.Classes, Vcl.Graphics,
+    System.Classes, Vcl.Graphics,System.Generics.Collections,
     Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, stringgridutils,
-    stringutils;
+    stringutils, System.ImageList, Vcl.ImgList, UnitFormCurrentParty;
 
 type
+
     TCommTransaction = record
+        Addr: byte;
         Request: string;
         Result: string;
         Comport: string;
@@ -23,11 +25,13 @@ type
         procedure FormCreate(Sender: TObject);
     private
         { Private declarations }
+        FOk:TList<BOOLean>;
+
 
     public
         { Public declarations }
         procedure setupColsWidths;
-        procedure AddCommTransaction(ACommTransaction: TCommTransaction);
+        procedure AddCommTransaction(C: TCommTransaction);
     end;
 
 var
@@ -39,13 +43,19 @@ uses myutils;
 
 {$R *.dfm}
 
-procedure StringGrid_DeleteRow(Grid: TStringGrid; ARow: Integer);
+procedure TFormInterrogate.FormCreate(Sender: TObject);
 var
     i: Integer;
 begin
-    for i := ARow to Grid.RowCount - 2 do
-        Grid.Rows[i].Assign(Grid.Rows[i + 1]);
-    Grid.RowCount := Grid.RowCount - 1;
+    with StringGrid1 do
+    begin
+        ColCount := 4;
+        RowCount := 1;
+        FixedCols := 0;
+        FixedRows := 0;
+    end;
+    FOk:=TList<BOOLean>.create;
+    FOk.Add(true);
 end;
 
 procedure TFormInterrogate.StringGrid1DrawCell(Sender: TObject;
@@ -73,41 +83,38 @@ begin
     if (gdSelected in State) then
         cnv.Brush.Color := clGradientInactiveCaption;
 
+    if not FOk[Arow] then
+        cnv.Font.Color := clRed;
+
+
     StringGrid_DrawCellText(StringGrid1, ACol, ARow, Rect,
       taLeftJustify, AText);
     StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
 end;
 
-procedure TFormInterrogate.FormCreate(Sender: TObject);
-begin
-    with StringGrid1 do
-    begin
-        ColCount := 4;
-        RowCount := 1;
-        FixedCols := 0;
-        FixedRows := 0;
-    end;
-end;
-
-procedure TFormInterrogate.AddCommTransaction(ACommTransaction
-  : TCommTransaction);
+procedure TFormInterrogate.AddCommTransaction(C: TCommTransaction);
 var
     r: TStrings;
     sel: TGridRect;
 begin
+    FormCurrentParty.SetProductConnection(c.Ok, c.Comport, c.Addr);
     with StringGrid1 do
     begin
         if Cells[0, 0] <> '' then
             RowCount := RowCount + 1;
         r := Rows[RowCount - 1];
         r[0] := TimeToStr(now);
-        r[1] := ACommTransaction.Comport;
-        r[2] := ACommTransaction.Request;
-        r[3] := ACommTransaction.Result;
-        r.Objects[0] := TPrimitiveBox<boolean>(ACommTransaction.Ok);
+        r[1] := C.Comport;
+        r[2] := C.Request;
+        r[3] := C.Result;
         Row := RowCount - 1;
+        FOk.Add(c.Ok);
+
         if RowCount > 1000 then
-            StringGrid_DeleteRow(StringGrid1,0);
+        begin
+            StringGrid_DeleteRow(StringGrid1, 0);
+            FOk.Delete(0);
+        end;
         // sel.Left := 0;
         // sel.Right := 0;
         // sel.Top := RowCount - 1;

@@ -7,16 +7,16 @@ uses
     System.Classes, Vcl.Graphics,
     Vcl.Controls, Vcl.Forms, Vcl.Dialogs, System.ImageList, Vcl.ImgList,
     Vcl.Menus, UnitFormSelectCurrentParty, VclTee.Chart, Vcl.ComCtrls,
-    Vcl.ExtCtrls, UnitFormInterrogate, Vcl.StdCtrls;
+    Vcl.ExtCtrls, UnitFormInterrogate, Vcl.StdCtrls, Vcl.Buttons;
 
 type
 
-    TCopyDataCmd = (cdcCommTransaction);
+    TCopyDataCmd = (cdcNewCommTransaction, cdcNewProductParamValue,
+      cdcNewChart);
 
     TAToolMainForm = class(TForm)
         MainMenu1: TMainMenu;
         N4: TMenuItem;
-        ImageList4: TImageList;
         N3: TMenuItem;
         PageControlMain: TPageControl;
         TabSheetParty: TTabSheet;
@@ -24,8 +24,8 @@ type
         GridPanel1: TGridPanel;
         GroupBox2: TGroupBox;
         GroupBox1: TGroupBox;
-    Panel1: TPanel;
-    ButtonRunStop: TButton;
+        Panel1: TPanel;
+        ButtonRunStop: TButton;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -34,7 +34,7 @@ type
           TabIndex: Integer; const Rect: TRect; Active: Boolean);
         procedure N4Click(Sender: TObject);
         procedure FormResize(Sender: TObject);
-    procedure ButtonRunStopClick(Sender: TObject);
+        procedure ButtonRunStopClick(Sender: TObject);
     private
         { Private declarations }
         FEnableCopyData: Boolean;
@@ -42,10 +42,8 @@ type
         function ExceptionDialog(e: Exception): Boolean;
         procedure HandleCurrentPartyChanged(var Message: TMessage);
           message WM_USER + 1;
-        procedure HandleStartWork(var Message: TMessage);
-          message WM_USER + 2;
-        procedure HandleStopWork(var Message: TMessage);
-          message WM_USER + 3;
+        procedure HandleStartWork(var Message: TMessage); message WM_USER + 2;
+        procedure HandleStopWork(var Message: TMessage); message WM_USER + 3;
         procedure HandleCopydata(var Message: TMessage); message WM_COPYDATA;
     public
         { Public declarations }
@@ -110,11 +108,11 @@ begin
 
     if ProductsClient.Connected then
     begin
-        ButtonRunStop.Caption := 'Остановить';
+        ButtonRunStop.Caption := 'Остановить опрос';
     end
     else
     begin
-        ButtonRunStop.Caption := 'Запустить';
+        ButtonRunStop.Caption := 'Запустить опрос';
     end;
 
     FEnableCopyData := true;
@@ -135,7 +133,6 @@ begin
 
     end;
 
-
 end;
 
 procedure TAToolMainForm.FormResize(Sender: TObject);
@@ -154,7 +151,6 @@ begin
     ButtonRunStop.Caption := 'Запустить опрос';
 end;
 
-
 procedure TAToolMainForm.HandleCopydata(var Message: TMessage);
 var
     cd: PCOPYDATASTRUCT;
@@ -166,9 +162,15 @@ begin
 
     Message.Result := 1;
     case TCopyDataCmd(Message.WParam) of
-        cdcCommTransaction:
+        cdcNewCommTransaction:
             FormInterrogate.AddCommTransaction
               (TJsonCD.unmarshal<TCommTransaction>(Message));
+        cdcNewProductParamValue:
+            FormCurrentParty.AddNewProductParamValue
+              (TJsonCD.unmarshal<TProductParamValue>(Message));
+        cdcNewChart:
+        
+
     else
         raise Exception.Create('wrong message: ' + IntToStr(Message.WParam));
     end;

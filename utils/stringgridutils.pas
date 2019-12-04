@@ -40,9 +40,20 @@ Procedure StringGrid_MoveColumn(G: TStringGrid; OldPosition: integer;
 procedure StringGrid_DrawCellText(StringGrid1: TStringGrid; acol, arow: integer;
   Rect: TRect; ta: TAlignment; text: string);
 
+procedure StringGrid_DeleteRow(Grid: TStringGrid; ARow: Integer);
+
 implementation
 
 uses Clipbrd, winapi.windows, system.math, winapi.uxtheme, stringutils;
+
+procedure StringGrid_DeleteRow(Grid: TStringGrid; ARow: Integer);
+var
+    i: Integer;
+begin
+    for i := ARow to Grid.RowCount - 2 do
+        Grid.Rows[i].Assign(Grid.Rows[i + 1]);
+    Grid.RowCount := Grid.RowCount - 1;
+end;
 
 Procedure StringGrid_MoveColumn(G: TStringGrid; OldPosition: integer;
   NewPosition: integer);
