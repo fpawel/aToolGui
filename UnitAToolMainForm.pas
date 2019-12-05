@@ -7,7 +7,8 @@ uses
     System.Classes, Vcl.Graphics,
     Vcl.Controls, Vcl.Forms, Vcl.Dialogs, System.ImageList, Vcl.ImgList,
     Vcl.Menus, UnitFormSelectCurrentParty, VclTee.Chart, Vcl.ComCtrls,
-    Vcl.ExtCtrls, UnitFormInterrogate, Vcl.StdCtrls, Vcl.Buttons;
+    Vcl.ExtCtrls, UnitFormInterrogate, Vcl.StdCtrls, Vcl.Buttons,
+    UnitMeasurement;
 
 type
 
@@ -169,7 +170,8 @@ begin
             FormCurrentParty.AddNewProductParamValue
               (TJsonCD.unmarshal<TProductParamValue>(Message));
         cdcNewChart:
-        
+            FormCurrentParty.AddMeasurements
+              (TMeasurement.Deserialize(cd.lpData));
 
     else
         raise Exception.Create('wrong message: ' + IntToStr(Message.WParam));
@@ -301,7 +303,6 @@ end;
 
 procedure TAToolMainForm.SetupSeriesStringGrids;
 var
-    xs: TList<TTabSheet>;
     i: Integer;
 begin
     with PageControlMain do

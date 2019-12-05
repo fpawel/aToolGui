@@ -100,26 +100,26 @@ begin
     FormCurrentParty.SetProductConnection(c.Ok, c.Comport, c.Addr);
     with StringGrid1 do
     begin
+        if RowCount > 100 then
+        begin
+            StringGrid_DeleteRow(StringGrid1, 0);
+            FOk.Delete(0);
+        end;
+
         if Cells[0, 0] <> '' then
+        begin
             RowCount := RowCount + 1;
+            FOk.Add(c.Ok);
+        end;
+
         r := Rows[RowCount - 1];
         r[0] := TimeToStr(now);
         r[1] := C.Comport;
         r[2] := C.Request;
         r[3] := C.Result;
-        Row := RowCount - 1;
-        FOk.Add(c.Ok);
+        FOk[RowCount - 1] := c.Ok;
 
-        if RowCount > 1000 then
-        begin
-            StringGrid_DeleteRow(StringGrid1, 0);
-            FOk.Delete(0);
-        end;
-        // sel.Left := 0;
-        // sel.Right := 0;
-        // sel.Top := RowCount - 1;
-        // sel.Bottom := RowCount - 1;
-        // Selection := sel;
+        Row := RowCount - 1;
     end;
 
 end;

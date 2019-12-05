@@ -9,7 +9,7 @@ uses
     Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, Vcl.StdCtrls,
     Vcl.Imaging.pngimage, Vcl.ExtCtrls, System.ImageList, Vcl.ImgList,
     Vcl.Menus, Vcl.ComCtrls, Vcl.ToolWin, types, apitypes, Thrift.Collections,
-    UnitFormSelectCurrentParty, UnitFormChart;
+    UnitFormSelectCurrentParty, UnitFormChart, UnitMeasurement;
 
 type
 
@@ -88,9 +88,12 @@ type
         FParty: IParty;
         procedure upload;
         function GetSeriesInfo(ser: TFastLineSeries): TProductVar;
+        function GetSeries(AProductID: int64; AParamAddr: word)
+          : TFastLineSeries;
         procedure SetProductConnection(ok: boolean; AComport: string;
           AAddr: byte);
         procedure AddNewProductParamValue(X: TProductParamValue);
+        procedure AddMeasurements(xs: TArray<TMeasurement>);
     end;
 
 var
@@ -586,6 +589,15 @@ begin
     setupStringGrid;
     setupSeries;
     AToolMainForm.SetupSeriesStringGrids;
+    ProductsClient.requestCurrentPartyChart;
+end;
+
+procedure TFormCurrentParty.AddMeasurements(xs: TArray<TMeasurement>);
+var
+    X: TMeasurement;
+begin
+    for X in xs do
+        GetSeries(X.ProductID, X.ParamAddr).AddXY(X.Time, X.Value);
 end;
 
 function TFormCurrentParty.GetSelectedProductsIDs
@@ -638,6 +650,16 @@ begin
     result := FSeriesInfo[ser];
 end;
 
+function TFormCurrentParty.GetSeries(AProductID: int64; AParamAddr: word)
+  : TFastLineSeries;
+begin
+    if not FSeries.TryGetValue(TProductVar.Create(AProductID, AParamAddr),
+      result) then
+        raise Exception.Create
+          (Format('not found series: product_id: %d: var: %d',
+          [AProductID, AParamAddr]));
+end;
+
 procedure TFormCurrentParty.MenuDeleteChartClick(Sender: TObject);
 begin
     MenuSetChartClick(Sender);
@@ -688,8 +710,8 @@ begin
                 continue;
             StringGrid1.Cells[i + 1, FirstParamRow + j] := X.Value;
             if TryStrToFloat2(X.Value, v) and
-              FSeries.TryGetValue(TProductVar.Create(p.ProductID, AParamAddr), ser)
-            then
+              FSeries.TryGetValue(TProductVar.Create(p.ProductID, AParamAddr),
+              ser) then
             begin
                 ser.AddXY(now, v);
 

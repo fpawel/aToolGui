@@ -67,8 +67,6 @@ object AToolMainForm: TAToolMainForm
           end>
         ShowCaption = False
         TabOrder = 0
-        ExplicitTop = 35
-        ExplicitHeight = 330
         object GroupBox2: TGroupBox
           AlignWithMargins = True
           Left = 6
@@ -81,8 +79,6 @@ object AToolMainForm: TAToolMainForm
           Align = alClient
           Caption = #1054#1087#1088#1086#1089
           TabOrder = 0
-          ExplicitTop = 170
-          ExplicitHeight = 154
         end
         object GroupBox1: TGroupBox
           AlignWithMargins = True
@@ -96,7 +92,6 @@ object AToolMainForm: TAToolMainForm
           Align = alClient
           Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1087#1088#1080#1073#1086#1088#1086#1074
           TabOrder = 1
-          ExplicitHeight = 154
         end
       end
       object Panel1: TPanel
