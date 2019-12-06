@@ -19,6 +19,7 @@ type
           Shift: TShiftState; X, Y: Integer);
     private
         { Private declarations }
+        function SeriesOfColRow(ACol, ARow: Integer): TFastLineSeries;
     public
         { Public declarations }
         procedure SetupStringGrid;
@@ -33,22 +34,25 @@ implementation
 
 uses apitypes, stringgridutils, UnitFormCurrentParty;
 
+const
+    col_count = 7;
+
+function TFormChart.SeriesOfColRow(ACol, ARow: Integer): TFastLineSeries;
+var
+    n: Integer;
+begin
+    n := ARow * col_count + ACol;
+    if n >= Chart1.SeriesCount then
+        exit(nil);
+    exit(Chart1.Series[n] AS TFastLineSeries);
+end;
+
 procedure TFormChart.SetupStringGrid;
 begin
     with StringGrid1 do
     begin
-        ColCount := 4;
-        RowCount := Chart1.SeriesCount + 1;
-        FixedCols := 0;
-        FixedRows := 1;
-        Cells[0, 0] := '';
-        Cells[1, 0] := 'Прибор';
-        Cells[2, 0] := 'Регистр';
-        Cells[3, 0] := 'Значение';
-        ColWidths[0] := 60;
-        ColWidths[1] := 60;
-        ColWidths[2] := 60;
-        ColWidths[3] := 80;
+        ColCount := col_count;
+        RowCount := Chart1.SeriesCount div col_count + 1;
     end;
     StringGrid_Redraw(StringGrid1);
 end;
@@ -63,6 +67,8 @@ var
     d: Integer;
     brushColor: TColor;
     r: TRect;
+    p: IProduct;
+    s: string;
     function newRect(l, t, r, b: Integer): TRect;
     begin
         Result.Left := l;
@@ -79,49 +85,38 @@ begin
     if gdSelected in State then
         cnv.Brush.Color := clGradientInactiveCaption;
     cnv.FillRect(Rect);
-    if ARow = 0 then
+
+    ser := SeriesOfColRow(ACol, ARow);
+    if not Assigned(ser) then
     begin
-        cnv.Brush.Color := cl3DLight;
-        StringGrid_DrawCellText(StringGrid1, ACol, ARow, Rect, taCenter,
-          StringGrid1.Cells[ACol, ARow]);
-        StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
         exit;
     end;
-
-    if ARow - 1 >= Chart1.SeriesCount then
-        exit;
-    ser := Chart1.Series[ARow - 1] AS TFastLineSeries;
 
     pv := FormCurrentParty.GetSeriesInfo(ser);
-    case ACol of
-        0:
-            begin
-                StringGrid_DrawCheckBoxCell(StringGrid1, ACol, ARow, Rect,
-                  State, ser.Active);
-                r := Rect;
+    p := FormCurrentParty.GetProductByID(pv.ProductID);
 
-                r.Left := r.Left + 20;
+    StringGrid_DrawCheckBoxCell(StringGrid1, ACol, ARow, Rect, State,
+      ser.Active);
+    r := Rect;
+    r.Left := r.Left + 20;
+    r.Right := r.Left + 30;
 
-                d := round(r.Top + r.Height / 2);
-                brushColor := cnv.Brush.Color;
-                cnv.Brush.Color := ser.SeriesColor;
-                cnv.FillRect(newRect(r.Left + 5, d - 2, r.Right - 5, d + 2));
-                cnv.Brush.Color := brushColor;
-            end;
-        1:
-            AText := IntToStr(pv.ProductID);
+    d := round(r.Top + r.Height / 2);
+    brushColor := cnv.Brush.Color;
+    cnv.Brush.Color := ser.SeriesColor;
+    cnv.FillRect(newRect(r.Left + 5, d - 2, r.Right - 5, d + 2));
+    cnv.Brush.Color := brushColor;
 
-        2:
-            AText := IntToStr(pv.VarID);
-    end;
+    r.Left := r.Right;
+    r.Right := Rect.Right;
+    StringGrid_DrawCellText(StringGrid1, ACol, ARow, r, taLeftJustify,
+      Format('%s:%d:%d', [p.Comport, p.Addr, pv.ParamAddr]));
 
-    if (ACol = 3) AND (ser.YValues.Count > 0) then
-        AText := FloatToStr(ser.YValues[ser.YValues.Count - 1]);
+    // r.Left := r.Right + 1;
+    // r.Right := Rect.Right;
+    // StringGrid_DrawCellText(StringGrid1, ACol, ARow, r, taLeftJustify,
+    // Format('%s',[p.Device]));
 
-    if AText <> '' then
-        StringGrid_DrawCellText(StringGrid1, ACol, ARow, Rect,
-          taLeftJustify, AText);
-    // StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
 end;
 
 procedure TFormChart.StringGrid1MouseDown(Sender: TObject; Button: TMouseButton;
@@ -130,6 +125,7 @@ var
     ACol, ARow: Integer;
     ser: TFastLineSeries;
     prod_param: IProductParam;
+    Rect: TRect;
 begin
     if not(ssLeft in Shift) then
         exit;
@@ -137,16 +133,24 @@ begin
     with StringGrid1 do
     begin
         MouseToCell(X, Y, ACol, ARow);
-        if (ARow < 1) or (ACol <> 0) then
+        Rect := StringGrid1.CellRect(ACol, ARow);
+        ser := SeriesOfColRow(ACol, ARow);
+        if not Assigned(ser) then
             exit;
-        ser := Chart1.Series[ARow - 1] AS TFastLineSeries;
-        ser.Active := not ser.Active;
-        Cells[ACol, ARow] := Cells[ACol, ARow];
 
-        with FormCurrentParty.GetSeriesInfo(ser) do
-            prod_param := productsclient.GetProductParam(ProductID, VarID);
-        prod_param.SeriesActive := ser.Active;
-        productsclient.setProductParam(prod_param);
+
+        if X < Rect.Left + 30 then
+        begin
+            ser.Active := not ser.Active;
+            Cells[ACol, ARow] := Cells[ACol, ARow];
+
+            with FormCurrentParty.GetSeriesInfo(ser) do
+                prod_param := productsclient.GetProductParam(ProductID,
+                  ParamAddr);
+            prod_param.SeriesActive := ser.Active;
+            productsclient.setProductParam(prod_param);
+        end;
+
     end;
 end;
 

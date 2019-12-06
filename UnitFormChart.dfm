@@ -2,7 +2,7 @@ object FormChart: TFormChart
   Left = 0
   Top = 0
   Caption = 'FormChart'
-  ClientHeight = 299
+  ClientHeight = 371
   ClientWidth = 1010
   Color = clWhite
   Font.Charset = DEFAULT_CHARSET
@@ -14,10 +14,10 @@ object FormChart: TFormChart
   PixelsPerInch = 96
   TextHeight = 18
   object Chart1: TChart
-    Left = 284
+    Left = 0
     Top = 0
-    Width = 726
-    Height = 299
+    Width = 1010
+    Height = 245
     Legend.Alignment = laBottom
     Legend.Brush.Style = bsHorizontal
     Legend.CheckBoxes = True
@@ -48,18 +48,22 @@ object FormChart: TFormChart
     BevelOuter = bvNone
     Color = clWindow
     TabOrder = 0
+    ExplicitLeft = 284
+    ExplicitWidth = 726
+    ExplicitHeight = 299
     DefaultCanvas = 'TGDIPlusCanvas'
     ColorPaletteIndex = 13
   end
   object StringGrid1: TStringGrid
     AlignWithMargins = True
     Left = 3
-    Top = 3
-    Width = 278
-    Height = 293
-    Align = alLeft
+    Top = 248
+    Width = 1004
+    Height = 120
+    Align = alBottom
     BorderStyle = bsNone
     ColCount = 4
+    DefaultColWidth = 200
     DefaultRowHeight = 22
     DefaultDrawing = False
     FixedColor = clBackground
@@ -67,14 +71,10 @@ object FormChart: TFormChart
     RowCount = 1
     FixedRows = 0
     GradientEndColor = clBlack
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing]
     TabOrder = 1
     OnDrawCell = StringGrid1DrawCell
     OnMouseDown = StringGrid1MouseDown
-    ColWidths = (
-      64
-      64
-      64
-      64)
     RowHeights = (
       22)
   end

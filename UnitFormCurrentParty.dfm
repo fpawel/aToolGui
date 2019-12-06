@@ -537,5 +537,12 @@ object FormCurrentParty: TFormCurrentParty
         Caption = '-'
       end
     end
+    object N4: TMenuItem
+      Caption = '-'
+    end
+    object N9: TMenuItem
+      Caption = #1050#1086#1085#1092#1080#1075#1091#1088#1072#1094#1080#1103
+      OnClick = N9Click
+    end
   end
 end

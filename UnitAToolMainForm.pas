@@ -16,12 +16,8 @@ type
       cdcNewChart);
 
     TAToolMainForm = class(TForm)
-        MainMenu1: TMainMenu;
-        N4: TMenuItem;
-        N3: TMenuItem;
         PageControlMain: TPageControl;
         TabSheetParty: TTabSheet;
-        TabSheetConsole: TTabSheet;
         GridPanel1: TGridPanel;
         GroupBox2: TGroupBox;
         GroupBox1: TGroupBox;
@@ -33,7 +29,6 @@ type
         procedure PageControlMainChange(Sender: TObject);
         procedure PageControlMainDrawTab(Control: TCustomTabControl;
           TabIndex: Integer; const Rect: TRect; Active: Boolean);
-        procedure N4Click(Sender: TObject);
         procedure FormResize(Sender: TObject);
         procedure ButtonRunStopClick(Sender: TObject);
     private
@@ -68,7 +63,7 @@ uses dateutils, myutils, api, UnitApiClient,
     UnitFormChart, System.Generics.Collections;
 
 const
-    PageIndexChart = 2;
+    PageIndexChart = 1;
 
 procedure TAToolMainForm.FormCreate(Sender: TObject);
 begin
@@ -182,11 +177,6 @@ end;
 procedure TAToolMainForm.HandleCurrentPartyChanged(var Message: TMessage);
 begin
     FormCurrentParty.upload;
-end;
-
-procedure TAToolMainForm.N4Click(Sender: TObject);
-begin
-    ProductsClient.EditConfig;
 end;
 
 procedure TAToolMainForm.PageControlMainChange(Sender: TObject);

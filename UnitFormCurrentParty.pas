@@ -27,7 +27,7 @@ type
     end;
 
     TProductVar = record
-        ProductID, VarID: int64;
+        ProductID, ParamAddr: int64;
         constructor Create(AProductID, AVarID: int64);
     end;
 
@@ -48,6 +48,8 @@ type
         N7: TMenuItem;
         N8: TMenuItem;
         MenuDeleteChart: TMenuItem;
+    N4: TMenuItem;
+    N9: TMenuItem;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: integer;
           Rect: TRect; State: TGridDrawState);
         procedure StringGrid1SelectCell(Sender: TObject; ACol, ARow: integer;
@@ -67,6 +69,7 @@ type
         procedure MenuDeleteChartClick(Sender: TObject);
         procedure StringGrid1MouseDown(Sender: TObject; Button: TMouseButton;
           Shift: TShiftState; X, Y: integer);
+    procedure N9Click(Sender: TObject);
     private
         { Private declarations }
         FSeries: TDictionary<TProductVar, TFastLineSeries>;
@@ -94,6 +97,8 @@ type
           AAddr: byte);
         procedure AddNewProductParamValue(X: TProductParamValue);
         procedure AddMeasurements(xs: TArray<TMeasurement>);
+
+        function GetProductByID(AProductID:int64):IProduct;
     end;
 
 var
@@ -205,6 +210,11 @@ begin
     m.OnClick := MenuSetChartClick;
     MenuSetChart.Add(m);
     m.Click;
+end;
+
+procedure TFormCurrentParty.N9Click(Sender: TObject);
+begin
+    ProductsClient.EditConfig;
 end;
 
 procedure TFormCurrentParty.PopupMenu1Popup(Sender: TObject);
@@ -650,6 +660,18 @@ begin
     result := FSeriesInfo[ser];
 end;
 
+function TFormCurrentParty.GetProductByID(AProductID:int64):IProduct;
+Var p:IProduct;
+begin
+    for p in FParty.Products do
+        if p.ProductID = AProductID then
+            exit(p);
+    raise Exception.Create('product_id is not valid: ' + IntToStr(AProductID));
+
+
+
+end;
+
 function TFormCurrentParty.GetSeries(AProductID: int64; AParamAddr: word)
   : TFastLineSeries;
 begin
@@ -741,18 +763,24 @@ begin
             begin
                 p := FParty.Products[ACol - 1];
                 AVar := FParty.ParamAddresses[ARow - FirstParamRow];
-                prod_param := ProductsClient.getProductParam(p.ProductID, AVar);
-                prod_param.Chart := chartName;
-                ProductsClient.setProductParam(prod_param);
+
                 pv := TProductVar.Create(p.ProductID, AVar);
                 ser := FSeries[pv];
                 if chartName <> '' then
                 begin
                     ser.ParentChart := AToolMainForm.GetChartByName(chartName);
                     (ser.ParentChart.Parent AS TFormChart).setupStringGrid;
+                    ser.Active := true;
                 end
                 else
+                begin
                     ser.ParentChart := nil;
+                    ser.Active := false;
+                end;
+                prod_param := ProductsClient.getProductParam(p.ProductID, AVar);
+                prod_param.Chart := chartName;
+                prod_param.SeriesActive := true;
+                ProductsClient.setProductParam(prod_param);
 
             end;
     AToolMainForm.DeleteEmptyCharts;
@@ -762,7 +790,7 @@ end;
 constructor TProductVar.Create(AProductID, AVarID: int64);
 begin
     ProductID := AProductID;
-    VarID := AVarID;
+    ParamAddr := AVarID;
 end;
 
 end.
