@@ -21,15 +21,30 @@ procedure ConvertImagesToHighColor(ImageList: TImageList);
 
 function GetVCLControlAtPos(c: TWinControl; mousePos: TPoint): TWinControl;
 
+function GetVCLControlParentN(c: TWinControl; N: integer): TWinControl;
+
 implementation
 
 uses Winapi.commctrl, Winapi.Windows, SysUtils;
+
+function GetVCLControlParentN(c: TWinControl; N: integer): TWinControl;
+begin
+    Result := c;
+    while N > 0 do
+    begin
+        if not Assigned(Result.Parent) then
+            exit;
+        Result := Result.Parent;
+        Dec(N);
+    end;
+
+end;
+
 
 function GetVCLControlAtPos(c: TWinControl; mousePos: TPoint): TWinControl;
 var
     p: TPoint;
 begin
-
     p := c.ScreenToClient(mousePos);
     c := TWinControl(c.ControlAtPos(p, false, true));
     while Assigned(c) do

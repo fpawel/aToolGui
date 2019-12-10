@@ -39,17 +39,11 @@ type
         N1: TMenuItem;
         MenuProductsComport: TMenuItem;
         MenuProductsDevice: TMenuItem;
-        N2: TMenuItem;
-        N3: TMenuItem;
-        N5: TMenuItem;
-        N6: TMenuItem;
         MenuSetChartSeparator: TMenuItem;
         MenuSetChart: TMenuItem;
         N7: TMenuItem;
         N8: TMenuItem;
         MenuDeleteChart: TMenuItem;
-    N4: TMenuItem;
-    N9: TMenuItem;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: integer;
           Rect: TRect; State: TGridDrawState);
         procedure StringGrid1SelectCell(Sender: TObject; ACol, ARow: integer;
@@ -61,15 +55,11 @@ type
         procedure StringGrid1KeyPress(Sender: TObject; var Key: Char);
         procedure PopupMenu1Popup(Sender: TObject);
         procedure StringGrid1DblClick(Sender: TObject);
-        procedure N3Click(Sender: TObject);
-        procedure N6Click(Sender: TObject);
-        procedure N5Click(Sender: TObject);
         procedure FormCreate(Sender: TObject);
         procedure N7Click(Sender: TObject);
         procedure MenuDeleteChartClick(Sender: TObject);
         procedure StringGrid1MouseDown(Sender: TObject; Button: TMouseButton;
           Shift: TShiftState; X, Y: integer);
-    procedure N9Click(Sender: TObject);
     private
         { Private declarations }
         FSeries: TDictionary<TProductVar, TFastLineSeries>;
@@ -113,7 +103,7 @@ uses stringgridutils, stringutils, dateutils,
 {$R *.dfm}
 
 const
-    FirstParamRow = 4;
+    FirstParamRow = 3;
 
 procedure TFormCurrentParty.FormCreate(Sender: TObject);
 var
@@ -149,57 +139,6 @@ begin
     upload;
 end;
 
-procedure TFormCurrentParty.N3Click(Sender: TObject);
-var
-    strProductsCount: string;
-    ProductsCount: integer;
-begin
-    if not InputQuery('Создание новой партии приборов', 'Количество приборов.',
-      strProductsCount) or not TryStrToInt(strProductsCount, ProductsCount) then
-        exit;
-    ProductsClient.AddNewProducts(ProductsCount);
-    upload;
-
-end;
-
-procedure TFormCurrentParty.N5Click(Sender: TObject);
-var
-    str: string;
-    ProductsCount: integer;
-begin
-    if not InputQuery('Создание новой партии приборов', 'Количество приборов:',
-      str) or not TryStrToInt(str, ProductsCount) then
-        exit;
-    ProductsClient.CreateNewParty(ProductsCount);
-    upload;
-
-end;
-
-procedure TFormCurrentParty.N6Click(Sender: TObject);
-var
-    parties: IThriftList<IPartyInfo>;
-    i: integer;
-begin
-    parties := ProductsClient.listParties;
-
-    FormSelectCurrentParty.ListBox1.Clear;
-    for i := 0 to parties.Count - 1 do
-        with parties[i] do
-        begin
-            FormSelectCurrentParty.ListBox1.Items.Add
-              (Format('№%d %s', [PartyID, FormatDateTime('dd.MM.yy',
-              IncHour(unixMillisToDateTime(CreatedAt), -3))]));
-            if FormCurrentParty.FParty.PartyID = PartyID then
-                FormSelectCurrentParty.ListBox1.ItemIndex := i;
-        end;
-    if (FormSelectCurrentParty.ShowModal <> mrOk) or
-      (FormSelectCurrentParty.ListBox1.ItemIndex = -1) then
-        exit;
-    ProductsClient.setCurrentParty
-      (parties[FormSelectCurrentParty.ListBox1.ItemIndex].PartyID);
-    upload;
-end;
-
 procedure TFormCurrentParty.N7Click(Sender: TObject);
 var
     name: string;
@@ -211,11 +150,6 @@ begin
     m.OnClick := MenuSetChartClick;
     MenuSetChart.Add(m);
     m.Click;
-end;
-
-procedure TFormCurrentParty.N9Click(Sender: TObject);
-begin
-    ProductsClient.EditConfig;
 end;
 
 procedure TFormCurrentParty.PopupMenu1Popup(Sender: TObject);
@@ -525,19 +459,16 @@ begin
         FixedCols := 1;
         ColWidths[0] := 100;
 
-        Cells[0, 0] := 'Прибор';
+        Cells[0, 0] := 'СОМ порт';
         Cells[0, 1] := 'Тип';
-        Cells[0, 2] := 'СОМ порт';
-        Cells[0, 3] := 'Адрес';
-        Cells[0, 4] := 'Связь';
+        Cells[0, 2] := 'Адрес';
 
         for ACol := 1 to ColCount - 1 do
         begin
             p := FParty.Products[ACol - 1];
-            Cells[ACol, 0] := Format('%d', [p.ProductID]);
+            Cells[ACol, 0] := p.Comport;
             Cells[ACol, 1] := p.Device;
-            Cells[ACol, 2] := p.Comport;
-            Cells[ACol, 3] := IntToStr(p.Addr);
+            Cells[ACol, 2] := IntToStr(p.Addr);
         end;
 
         for n := 0 to FParamAddresses.Count - 1 do

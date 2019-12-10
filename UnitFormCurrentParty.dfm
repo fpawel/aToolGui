@@ -39,7 +39,7 @@ object FormCurrentParty: TFormCurrentParty
       Align = alClient
       BorderStyle = bsNone
       ColCount = 4
-      DefaultColWidth = 120
+      DefaultColWidth = 100
       DefaultDrawing = False
       FixedColor = clBackground
       FixedCols = 0
@@ -505,21 +505,6 @@ object FormCurrentParty: TFormCurrentParty
       AutoHotkeys = maManual
       Caption = #1042#1099#1073#1088#1072#1090#1100' '#1090#1080#1087' '#1087#1088#1080#1073#1086#1088#1072
     end
-    object N2: TMenuItem
-      Caption = '-'
-    end
-    object N3: TMenuItem
-      Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1087#1088#1080#1073#1086#1088#1099' '#1074' '#1079#1072#1075#1088#1091#1079#1082#1091'...'
-      OnClick = N3Click
-    end
-    object N5: TMenuItem
-      Caption = #1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1091#1102' '#1079#1072#1075#1088#1091#1079#1082#1091'...'
-      OnClick = N5Click
-    end
-    object N6: TMenuItem
-      Caption = #1054#1090#1082#1088#1099#1090#1100' '#1087#1088#1077#1076#1099#1076#1091#1097#1091#1102' '#1079#1072#1075#1088#1091#1079#1082#1091'...'
-      OnClick = N6Click
-    end
     object MenuSetChartSeparator: TMenuItem
       Caption = '-'
     end
@@ -536,13 +521,6 @@ object FormCurrentParty: TFormCurrentParty
       object N8: TMenuItem
         Caption = '-'
       end
-    end
-    object N4: TMenuItem
-      Caption = '-'
-    end
-    object N9: TMenuItem
-      Caption = #1050#1086#1085#1092#1080#1075#1091#1088#1072#1094#1080#1103
-      OnClick = N9Click
     end
   end
 end

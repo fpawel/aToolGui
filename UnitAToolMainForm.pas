@@ -8,7 +8,7 @@ uses
     Vcl.Controls, Vcl.Forms, Vcl.Dialogs, System.ImageList, Vcl.ImgList,
     Vcl.Menus, UnitFormSelectCurrentParty, VclTee.Chart, Vcl.ComCtrls,
     Vcl.ExtCtrls, UnitFormInterrogate, Vcl.StdCtrls, Vcl.Buttons,
-    UnitMeasurement;
+    UnitMeasurement, Thrift;
 
 type
 
@@ -21,8 +21,13 @@ type
         GridPanel1: TGridPanel;
         GroupBox2: TGroupBox;
         GroupBox1: TGroupBox;
-        Panel1: TPanel;
-        ButtonRunStop: TButton;
+        MainMenu1: TMainMenu;
+        N1: TMenuItem;
+        N2: TMenuItem;
+        N3: TMenuItem;
+        N4: TMenuItem;
+        N5: TMenuItem;
+        MenuRunStop: TMenuItem;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -30,7 +35,13 @@ type
         procedure PageControlMainDrawTab(Control: TCustomTabControl;
           TabIndex: Integer; const Rect: TRect; Active: Boolean);
         procedure FormResize(Sender: TObject);
-        procedure ButtonRunStopClick(Sender: TObject);
+        procedure MenuRunStopClick(Sender: TObject);
+        procedure N2Click(Sender: TObject);
+        procedure N3Click(Sender: TObject);
+        procedure N4Click(Sender: TObject);
+        procedure N5Click(Sender: TObject);
+        procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
+          WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     private
         { Private declarations }
         FEnableCopyData: Boolean;
@@ -71,6 +82,24 @@ begin
 
 end;
 
+procedure TAToolMainForm.FormMouseWheel(Sender: TObject; Shift: TShiftState;
+  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+var
+    c, c2: TWinControl;
+
+begin
+    c := GetVCLControlAtPos(self, MousePos);
+    if (c.Name = 'PanelX') or (c.Name = 'PanelY') then
+    begin
+        c2 := GetVCLControlParentN(c, 4);
+        if not Assigned(c2) or not(c2 is TFormChart) then
+            raise Exception.Create('FormMouseWheel: TFormChart not found');
+        (c2 as TFormChart).ChangeAxisOrder(c, WheelDelta);
+
+    end;
+
+end;
+
 procedure TAToolMainForm.FormShow(Sender: TObject);
 var
     Protocol: IProtocol;
@@ -104,11 +133,11 @@ begin
 
     if ProductsClient.Connected then
     begin
-        ButtonRunStop.Caption := 'Остановить опрос';
+        MenuRunStop.Caption := 'Остановить опрос';
     end
     else
     begin
-        ButtonRunStop.Caption := 'Запустить опрос';
+        MenuRunStop.Caption := 'Запустить опрос';
     end;
 
     FEnableCopyData := true;
@@ -138,13 +167,77 @@ end;
 
 procedure TAToolMainForm.HandleStartWork(var Message: TMessage);
 begin
-    ButtonRunStop.Caption := 'Остановить опрос';
+    MenuRunStop.Caption := 'Остановить опрос';
 
 end;
 
 procedure TAToolMainForm.HandleStopWork(var Message: TMessage);
 begin
-    ButtonRunStop.Caption := 'Запустить опрос';
+    MenuRunStop.Caption := 'Запустить опрос';
+end;
+
+procedure TAToolMainForm.MenuRunStopClick(Sender: TObject);
+begin
+    if ProductsClient.Connected then
+        ProductsClient.Disconnect
+    else
+        ProductsClient.Connect;
+end;
+
+procedure TAToolMainForm.N2Click(Sender: TObject);
+var
+    str: string;
+    ProductsCount: Integer;
+begin
+    if not InputQuery('Создание новой партии приборов', 'Количество приборов:',
+      str) or not TryStrToInt(str, ProductsCount) then
+        exit;
+    ProductsClient.CreateNewParty(ProductsCount);
+    FormCurrentParty.upload;
+
+end;
+
+procedure TAToolMainForm.N3Click(Sender: TObject);
+var
+    parties: IThriftList<IPartyInfo>;
+    i: Integer;
+begin
+    parties := ProductsClient.listParties;
+
+    FormSelectCurrentParty.ListBox1.Clear;
+    for i := 0 to parties.Count - 1 do
+        with parties[i] do
+        begin
+            FormSelectCurrentParty.ListBox1.Items.Add
+              (Format('№%d %s', [PartyID, FormatDateTime('dd.MM.yy',
+              IncHour(unixMillisToDateTime(CreatedAt), -3))]));
+            if FormCurrentParty.FParty.PartyID = PartyID then
+                FormSelectCurrentParty.ListBox1.ItemIndex := i;
+        end;
+    if (FormSelectCurrentParty.ShowModal <> mrOk) or
+      (FormSelectCurrentParty.ListBox1.ItemIndex = -1) then
+        exit;
+    ProductsClient.setCurrentParty
+      (parties[FormSelectCurrentParty.ListBox1.ItemIndex].PartyID);
+    FormCurrentParty.upload;
+end;
+
+procedure TAToolMainForm.N4Click(Sender: TObject);
+var
+    strProductsCount: string;
+    ProductsCount: Integer;
+begin
+    if not InputQuery('Создание новой партии приборов', 'Количество приборов.',
+      strProductsCount) or not TryStrToInt(strProductsCount, ProductsCount) then
+        exit;
+    ProductsClient.AddNewProducts(ProductsCount);
+    FormCurrentParty.upload;
+
+end;
+
+procedure TAToolMainForm.N5Click(Sender: TObject);
+begin
+    ProductsClient.EditConfig;
 end;
 
 procedure TAToolMainForm.HandleCopydata(var Message: TMessage);
@@ -238,9 +331,20 @@ end;
 procedure TAToolMainForm.AppException(Sender: TObject; e: Exception);
 begin
     LogfileWriteException(e);
+
+    if e is Thrift.TApplicationException then
+    begin
+        MessageBox(Handle, PChar(e.Message),
+          PChar(ExtractFileName(Application.ExeName)), MB_ICONERROR);
+        exit;
+    end;
+
     if ExceptionDialog(e) then
     begin
+        Application.OnException := nil;
         OnClose := nil;
+        OnResize := nil;
+        FEnableCopyData := false;
         Close;
     end;
 end;
@@ -248,8 +352,9 @@ end;
 function TAToolMainForm.ExceptionDialog(e: Exception): Boolean;
 begin
     Result := MessageBox(Handle, PChar(e.ClassName + #10#10 + e.Message +
-      #10#10), PChar(ExtractFileName(Application.ExeName)),
-      MB_ABORTRETRYIGNORE or MB_ICONERROR) = IDABORT;
+      #10#10'Ok - продолжить'#10#10'Отмена - закрыть приложение'),
+      PChar(ExtractFileName(Application.ExeName)), MB_OKCANCEL or MB_ICONERROR)
+      = IDCANCEL;
 end;
 
 function TAToolMainForm.GetChartByName(AName: string): TChart;
@@ -272,16 +377,9 @@ begin
         parent := tbs;
         Align := alClient;
         Result := Chart1;
+        AFormChart.Caption := AName;
         Show;
     end;
-end;
-
-procedure TAToolMainForm.ButtonRunStopClick(Sender: TObject);
-begin
-    if ProductsClient.Connected then
-        ProductsClient.Disconnect
-    else
-        ProductsClient.Connect;
 end;
 
 procedure TAToolMainForm.DeleteAllCharts;

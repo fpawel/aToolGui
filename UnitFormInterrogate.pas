@@ -133,8 +133,8 @@ begin
         ColWidths[0] := 80;
         ColWidths[1] := 60;
         w := StringGrid1.Width - 50 - ColWidths[0] - ColWidths[1];
-        ColWidths[2] := w div 2;
-        ColWidths[3] := w div 2;
+        ColWidths[2] := w div 3;
+        ColWidths[3] := w - ColWidths[2];
     end;
 
 end;
