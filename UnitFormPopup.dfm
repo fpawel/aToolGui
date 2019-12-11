@@ -2,8 +2,8 @@ object FormPopup: TFormPopup
   Left = 0
   Top = 0
   BorderStyle = bsSizeToolWin
-  ClientHeight = 170
-  ClientWidth = 729
+  ClientHeight = 110
+  ClientWidth = 755
   Color = clInfoBk
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,8 +14,8 @@ object FormPopup: TFormPopup
   OnCreate = FormCreate
   OnDeactivate = FormDeactivate
   DesignSize = (
-    729
-    170)
+    755
+    110)
   PixelsPerInch = 96
   TextHeight = 19
   object ImageError: TImage
@@ -236,11 +236,13 @@ object FormPopup: TFormPopup
   object Label1: TLabel
     Left = 104
     Top = 8
-    Width = 617
-    Height = 154
+    Width = 643
+    Height = 94
     Anchors = [akLeft, akTop, akRight, akBottom]
     AutoSize = False
     Caption = 'Label1'
     WordWrap = True
+    ExplicitWidth = 617
+    ExplicitHeight = 154
   end
 end

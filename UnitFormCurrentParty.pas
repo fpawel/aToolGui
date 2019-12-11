@@ -79,7 +79,7 @@ type
     public
         { Public declarations }
         FParty: IParty;
-        FParamAddresses:IThriftList<System.Integer>;
+        FParamAddresses: IThriftList<System.Integer>;
         procedure upload;
         function GetSeriesInfo(ser: TFastLineSeries): TProductVar;
         function GetSeries(AProductID: int64; AParamAddr: word)
@@ -89,7 +89,7 @@ type
         procedure AddNewProductParamValue(X: TProductParamValue);
         procedure AddMeasurements(xs: TArray<TMeasurement>);
 
-        function GetProductByID(AProductID:int64):IProduct;
+        function GetProductByID(AProductID: int64): IProduct;
     end;
 
 var
@@ -103,7 +103,7 @@ uses stringgridutils, stringutils, dateutils,
 {$R *.dfm}
 
 const
-    FirstParamRow = 3;
+    FirstParamRow = 4;
 
 procedure TFormCurrentParty.FormCreate(Sender: TObject);
 var
@@ -196,7 +196,7 @@ begin
             MenuSetChart.Items[MenuSetChart.Count - 1].Free
         end;
 
-        for i := 2 to AToolMainForm.PageControlMain.PageCount - 1 do
+        for i := PageIndexChart to AToolMainForm.PageControlMain.PageCount - 1 do
         begin
             m := TMenuItem.Create(nil);
             m.Caption := AToolMainForm.PageControlMain.Pages[i].Caption;
@@ -240,6 +240,30 @@ var
     r: TRect;
     pt: TPoint;
     sel: TGridRect;
+    new_value: integer;
+    edit_addr, edit_serial:boolean;
+    procedure undo_;
+    begin
+        with sel do
+        begin
+            Left := ACol;
+            Right := ACol;
+            Top := ARow;
+            Bottom := ARow;
+        end;
+        with StringGrid1 do
+        begin
+            Selection := sel;
+            StringGrid1.OnSetEditText := nil;
+            if edit_addr then
+                Cells[ACol, ARow] := IntToStr(p.Addr)
+            else if edit_serial then
+                Cells[ACol, ARow] := IntToStr(p.Serial);
+            OnSetEditText := StringGrid1SetEditText;
+        end;
+
+    end;
+
 begin
     if ARow = 0 then
         exit;
@@ -252,44 +276,40 @@ begin
             Last_Edited_Col := -1; // Indicate no cell is edited
             Last_Edited_Row := -1; // Indicate no cell is edited
             // Do whatever wanted after user has finish editing a cell
-            StringGrid1.OnSetEditText := nil;
+            edit_addr := ARow = Cols[0].IndexOf('Адрес');
+            edit_serial := ARow = Cols[0].IndexOf('Номер');
+
+            p := FParty.Products[ACol - 1];
+            if not ( edit_addr or edit_serial) then
+                exit;
+            if not TryStrToInt(Value, new_value) then
+            begin
+                undo_;
+                exit;
+            end;
+
             try
-                FormPopup.Hide;
-                p := FParty.Products[ACol - 1];
-                if ARow = Cols[0].IndexOf('Адрес') then
+                if edit_addr then
                 begin
-                    p.Addr := StrToInt(Value);
-                    ProductsClient.setProductAddr(p.ProductID, p.Addr);
+                    ProductsClient.setProductAddr(p.ProductID, new_value);
+                    p.Addr := new_value;
+                end
+                else if edit_serial then
+                begin
+                    ProductsClient.setProductSerial(p.ProductID, new_value);
+                    p.Serial := new_value;
                 end;
 
             except
                 on E: Exception do
-                    with FormPopup do
-                    begin
-                        try
-                            upload;
-                            with sel do
-                            begin
-                                Left := ACol;
-                                Right := ACol;
-                                Top := ARow;
-                                Bottom := ARow;
-                            end;
-                            Selection := sel;
-
-                        except
-                        end;
-                        Caption := 'Ошибка';
-                        ImageInfo.Hide;
-                        ImageError.Show;
-                        SetText(Format
-                          ('изменение сетевого адреса: место %d: "%s": %s',
-                          [ACol - 1, Value, E.Message]));
-                        ShowAtStringGridCell(StringGrid1);
-                        Label1.Font.Color := clRed;
-                    end;
+                begin
+                    undo_;
+                    E.Message :=
+                      Format('изменение сетевого адреса: место %d: "%s": %s',
+                      [ACol - 1, Value, E.Message]);
+                    raise;
+                end;
             end;
-            StringGrid1.OnSetEditText := StringGrid1SetEditText;
         end
         else
         begin // The cell is being editted
@@ -414,12 +434,17 @@ var
     n: integer;
 begin
     with StringGrid1 do
-        if not EditorMode and (Row = Cols[0].IndexOf('Адрес')) and
-          TryStrToInt(Key, n) then
+        if (Row = Cols[0].IndexOf('Адрес')) or (Row = Cols[0].IndexOf('Номер'))
+        then
         begin
-            Options := Options + [goEditing];
-            Cells[Col, Row] := Key;
-            EditorMode := true;
+
+            if not EditorMode and
+              TryStrToInt(Key, n) then
+            begin
+                Options := Options + [goEditing];
+                Cells[Col, Row] := Key;
+                EditorMode := true;
+            end;
         end;
 end;
 
@@ -462,6 +487,7 @@ begin
         Cells[0, 0] := 'СОМ порт';
         Cells[0, 1] := 'Тип';
         Cells[0, 2] := 'Адрес';
+        Cells[0, 3] := 'Номер';
 
         for ACol := 1 to ColCount - 1 do
         begin
@@ -469,6 +495,7 @@ begin
             Cells[ACol, 0] := p.Comport;
             Cells[ACol, 1] := p.Device;
             Cells[ACol, 2] := IntToStr(p.Addr);
+            Cells[ACol, 3] := IntToStr(p.Serial);
         end;
 
         for n := 0 to FParamAddresses.Count - 1 do
@@ -528,7 +555,7 @@ procedure TFormCurrentParty.upload;
 begin
     FParty := ProductsClient.getCurrentParty;
     ProductsClient.listParamAddresses;
-    FParamAddresses :=ProductsClient.ListParamAddresses;
+    FParamAddresses := ProductsClient.listParamAddresses;
     setMainFormCaption;
     setupStringGrid;
     setupSeries;
@@ -594,15 +621,14 @@ begin
     result := FSeriesInfo[ser];
 end;
 
-function TFormCurrentParty.GetProductByID(AProductID:int64):IProduct;
-Var p:IProduct;
+function TFormCurrentParty.GetProductByID(AProductID: int64): IProduct;
+Var
+    p: IProduct;
 begin
     for p in FParty.Products do
         if p.ProductID = AProductID then
             exit(p);
     raise Exception.Create('product_id is not valid: ' + IntToStr(AProductID));
-
-
 
 end;
 
@@ -639,7 +665,8 @@ begin
             else
                 p.Connection := 2;
             with StringGrid1 do
-                Cells[i + 1, ARow] := Cells[i + 1, ARow];
+                if not ( EditorMode AND (Col = i + 1) AND (Row = ARow) ) then
+                    Cells[i + 1, ARow] := Cells[i + 1, ARow];
         end;
         Inc(i);
     end;
@@ -666,8 +693,8 @@ begin
                 continue;
             StringGrid1.Cells[i + 1, FirstParamRow + j] := X.Value;
             if TryStrToFloat2(X.Value, v) and
-              FSeries.TryGetValue(TProductVar.Create(p.ProductID, AParamAddr),
-              ser) then
+              FSeries.TryGetValue(TProductVar.Create(p.ProductID,
+              AParamAddr), ser) then
             begin
                 ser.AddXY(now, v);
 

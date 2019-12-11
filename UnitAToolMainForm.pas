@@ -3,17 +3,25 @@ unit UnitAToolMainForm;
 interface
 
 uses
+    System.Generics.Collections,
     Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
     System.Classes, Vcl.Graphics,
     Vcl.Controls, Vcl.Forms, Vcl.Dialogs, System.ImageList, Vcl.ImgList,
     Vcl.Menus, UnitFormSelectCurrentParty, VclTee.Chart, Vcl.ComCtrls,
     Vcl.ExtCtrls, UnitFormInterrogate, Vcl.StdCtrls, Vcl.Buttons,
-    UnitMeasurement, Thrift;
+    UnitMeasurement, Thrift, UnitFormPopup2;
 
 type
 
-    TCopyDataCmd = (cdcNewCommTransaction, cdcNewProductParamValue,
-      cdcNewChart);
+    TCopyDataCmd = (cdcNewCommTransaction, cdcNewProductParamValue, cdcNewChart,
+      cdcPopup);
+
+    TPopupMessage = record
+        Text: string;
+        Ok: boolean;
+        constructor New(s: string);
+        constructor NewErr(s: string);
+    end;
 
     TAToolMainForm = class(TForm)
         PageControlMain: TPageControl;
@@ -28,12 +36,14 @@ type
         N4: TMenuItem;
         N5: TMenuItem;
         MenuRunStop: TMenuItem;
+    N6: TMenuItem;
+    N7: TMenuItem;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
         procedure PageControlMainChange(Sender: TObject);
         procedure PageControlMainDrawTab(Control: TCustomTabControl;
-          TabIndex: Integer; const Rect: TRect; Active: Boolean);
+          TabIndex: Integer; const Rect: TRect; Active: boolean);
         procedure FormResize(Sender: TObject);
         procedure MenuRunStopClick(Sender: TObject);
         procedure N2Click(Sender: TObject);
@@ -41,17 +51,20 @@ type
         procedure N4Click(Sender: TObject);
         procedure N5Click(Sender: TObject);
         procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
-          WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+          WheelDelta: Integer; MousePos: TPoint; var Handled: boolean);
+    procedure N6Click(Sender: TObject);
     private
         { Private declarations }
-        FEnableCopyData: Boolean;
+        FEnableCopyData: boolean;
+        FPopups: TList<TFormPopup2>;
         procedure AppException(Sender: TObject; e: Exception);
-        function ExceptionDialog(e: Exception): Boolean;
+        function ExceptionDialog(e: Exception): boolean;
         procedure HandleCurrentPartyChanged(var Message: TMessage);
           message WM_USER + 1;
         procedure HandleStartWork(var Message: TMessage); message WM_USER + 2;
         procedure HandleStopWork(var Message: TMessage); message WM_USER + 3;
         procedure HandleCopydata(var Message: TMessage); message WM_COPYDATA;
+        procedure ShowPopup(X: TPopupMessage; al:TAlign);
     public
         { Public declarations }
         function GetChartByName(AName: string): TChart;
@@ -63,6 +76,9 @@ type
 var
     AToolMainForm: TAToolMainForm;
 
+const
+    PageIndexChart = 1;
+
 implementation
 
 {$R *.dfm}
@@ -71,19 +87,19 @@ uses dateutils, myutils, api, UnitApiClient,
     Thrift.Protocol, UnitFormCurrentParty,
     Thrift.Transport, Thrift.Collections,
     logfile, apitypes, vclutils, UnitFormCharts,
-    UnitFormChart, System.Generics.Collections;
+    UnitFormChart;
 
-const
-    PageIndexChart = 1;
+
 
 procedure TAToolMainForm.FormCreate(Sender: TObject);
 begin
     Application.OnException := AppException;
+    FPopups := TList<TFormPopup2>.create;
 
 end;
 
 procedure TAToolMainForm.FormMouseWheel(Sender: TObject; Shift: TShiftState;
-  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+  WheelDelta: Integer; MousePos: TPoint; var Handled: boolean);
 var
     c, c2: TWinControl;
 
@@ -93,7 +109,7 @@ begin
     begin
         c2 := GetVCLControlParentN(c, 4);
         if not Assigned(c2) or not(c2 is TFormChart) then
-            raise Exception.Create('FormMouseWheel: TFormChart not found');
+            raise Exception.create('FormMouseWheel: TFormChart not found');
         (c2 as TFormChart).ChangeAxisOrder(c, WheelDelta);
 
     end;
@@ -106,10 +122,10 @@ var
     Transport: ITransport;
 begin
     OnShow := nil;
-    Transport := TSocketImpl.Create('127.0.0.1',
+    Transport := TSocketImpl.create('127.0.0.1',
       StrToInt(GetEnvironmentVariable('ATOOL_API_PORT')), 10000);
-    Protocol := TBinaryProtocolImpl.Create(Transport);
-    ProductsClient := TProductsService.TClient.Create(Protocol);
+    Protocol := TBinaryProtocolImpl.create(Transport);
+    ProductsClient := TProductsService.TClient.create(Protocol);
     Transport.Open;
 
     ProductsClient.openGuiClient(Handle);
@@ -168,6 +184,8 @@ end;
 procedure TAToolMainForm.HandleStartWork(var Message: TMessage);
 begin
     MenuRunStop.Caption := 'Остановить опрос';
+    while FPopups.Count > 0 do
+        FPopups.First.ToolButton3.Click;
 
 end;
 
@@ -186,13 +204,16 @@ end;
 
 procedure TAToolMainForm.N2Click(Sender: TObject);
 var
-    str: string;
+    xs: array of string;
     ProductsCount: Integer;
+
 begin
-    if not InputQuery('Создание новой партии приборов', 'Количество приборов:',
-      str) or not TryStrToInt(str, ProductsCount) then
+    SetLength(xs,2);
+    if not InputQuery('Создание новой партии приборов',
+      ['Количество приборов:', 'Имя файла'], xs) or
+      not TryStrToInt(xs[0], ProductsCount) then
         exit;
-    ProductsClient.CreateNewParty(ProductsCount);
+    ProductsClient.CreateNewParty(ProductsCount, xs[1]);
     FormCurrentParty.upload;
 
 end;
@@ -209,8 +230,8 @@ begin
         with parties[i] do
         begin
             FormSelectCurrentParty.ListBox1.Items.Add
-              (Format('№%d %s', [PartyID, FormatDateTime('dd.MM.yy',
-              IncHour(unixMillisToDateTime(CreatedAt), -3))]));
+              (Format('[%d] %s %s', [PartyID, FormatDateTime('dd.MM.yy',
+              IncHour(unixMillisToDateTime(CreatedAt), -3)), parties[i].Name]));
             if FormCurrentParty.FParty.PartyID = PartyID then
                 FormSelectCurrentParty.ListBox1.ItemIndex := i;
         end;
@@ -240,6 +261,18 @@ begin
     ProductsClient.EditConfig;
 end;
 
+procedure TAToolMainForm.N6Click(Sender: TObject);
+var
+    x: string;
+begin
+    x := FormCurrentParty.FParty.Name;
+    if not InputQuery('Имя файла',
+      'Введите новое имя файла', x) then
+        exit;
+    ProductsClient.setPartyName(x);
+    FormCurrentParty.FParty.Name := x;
+end;
+
 procedure TAToolMainForm.HandleCopydata(var Message: TMessage);
 var
     cd: PCOPYDATASTRUCT;
@@ -260,9 +293,10 @@ begin
         cdcNewChart:
             FormCurrentParty.AddMeasurements
               (TMeasurement.Deserialize(cd.lpData));
-
+        cdcPopup:
+            ShowPopup(TJsonCD.unmarshal<TPopupMessage>(Message), alTop);
     else
-        raise Exception.Create('wrong message: ' + IntToStr(Message.WParam));
+        raise Exception.create('wrong message: ' + IntToStr(Message.WParam));
     end;
 
 end;
@@ -287,13 +321,13 @@ begin
 end;
 
 procedure TAToolMainForm.PageControlMainDrawTab(Control: TCustomTabControl;
-  TabIndex: Integer; const Rect: TRect; Active: Boolean);
+  TabIndex: Integer; const Rect: TRect; Active: boolean);
 var
     i: Integer;
     PageControl: TPageControl;
     AText: string;
 
-    x, y: Integer;
+    X, y: Integer;
     txt_height: double;
 begin
     PageControl := Control as TPageControl;
@@ -314,18 +348,18 @@ begin
 
     if TabIndex < PageIndexChart then
     begin
-        x := Rect.Left + 7;
+        X := Rect.Left + 7;
         y := Rect.Top + round((Rect.Height - txt_height) / 2.0);
-        PageControl.Canvas.TextRect(Rect, x, y, AText);
+        PageControl.Canvas.TextRect(Rect, X, y, AText);
         exit;
     end;
 
-    x := Rect.Left + 7;
+    X := Rect.Left + 7;
     y := Rect.Top + 5;
     PageControl.Canvas.FillRect(Rect);
-    PageControl.Canvas.TextOut(x, y, 'График:');
+    PageControl.Canvas.TextOut(X, y, 'График:');
     y := y + round(txt_height) + 3;
-    PageControl.Canvas.TextOut(x, y, AText);
+    PageControl.Canvas.TextOut(X, y, AText);
 end;
 
 procedure TAToolMainForm.AppException(Sender: TObject; e: Exception);
@@ -334,8 +368,9 @@ begin
 
     if e is Thrift.TApplicationException then
     begin
-        MessageBox(Handle, PChar(e.Message),
-          PChar(ExtractFileName(Application.ExeName)), MB_ICONERROR);
+        ShowPopup(TPopupMessage.NewErr(e.Message), alBottom);
+        // MessageBox(Handle, PChar(e.Message),
+        // PChar(ExtractFileName(Application.ExeName)), MB_ICONERROR);
         exit;
     end;
 
@@ -349,7 +384,7 @@ begin
     end;
 end;
 
-function TAToolMainForm.ExceptionDialog(e: Exception): Boolean;
+function TAToolMainForm.ExceptionDialog(e: Exception): boolean;
 begin
     Result := MessageBox(Handle, PChar(e.ClassName + #10#10 + e.Message +
       #10#10'Ok - продолжить'#10#10'Отмена - закрыть приложение'),
@@ -366,11 +401,11 @@ begin
     for i := PageIndexChart to PageControlMain.PageCount - 1 do
         if PageControlMain.Pages[i].Caption = AName then
             exit((PageControlMain.Pages[i].Controls[0] AS TFormChart).Chart1);
-    tbs := TTabSheet.Create(nil);
+    tbs := TTabSheet.create(nil);
     tbs.Caption := AName;
     tbs.PageControl := PageControlMain;
 
-    AFormChart := TFormChart.Create(tbs);
+    AFormChart := TFormChart.create(tbs);
     with AFormChart do
     begin
         BorderStyle := bsNone;
@@ -398,12 +433,29 @@ begin
             (Pages[i].Controls[0] AS TFormChart).SetupStringGrid;
 end;
 
+procedure TAToolMainForm.ShowPopup(X: TPopupMessage; al:TAlign);
+var
+    f: TFormPopup2;
+begin
+    f := TFormPopup2.create(nil);
+    f.BorderStyle := bsNone;
+    f.parent := self;
+    f.Align := al;
+    f.SetText(X.Text, X.Ok);
+    FPopups.Add(f);
+    f.FOnClose := procedure
+        begin
+            FPopups.Remove(f);
+        end;
+    f.Show;
+end;
+
 procedure TAToolMainForm.DeleteEmptyCharts;
 var
     xs: TList<TTabSheet>;
     i: Integer;
 begin
-    xs := TList<TTabSheet>.Create;
+    xs := TList<TTabSheet>.create;
     with PageControlMain do
         for i := PageIndexChart to PageCount - 1 do
             if (Pages[i].Controls[0] AS TFormChart).Chart1.SeriesCount = 0 then
@@ -411,6 +463,18 @@ begin
     for i := 0 to xs.Count - 1 do
         xs[i].Free;
     xs.Free;
+end;
+
+constructor TPopupMessage.New(s: string);
+begin
+    Text := s;
+    Ok := true;
+end;
+
+constructor TPopupMessage.NewErr(s: string);
+begin
+    Text := s;
+    Ok := false;
 end;
 
 end.

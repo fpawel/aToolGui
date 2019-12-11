@@ -27,7 +27,7 @@ uses
   stringgridutils in 'utils\stringgridutils.pas',
   stringutils in 'utils\stringutils.pas',
   vclutils in 'utils\vclutils.pas',
-  UnitFormPopup in 'UnitFormPopup.pas' {FormPopup},
+  UnitFormPopup2 in 'UnitFormPopup2.pas' {FormPopup2},
   myutils in 'utils\myutils.pas',
   api in 'gen-delphi\api.pas',
   apitypes in 'gen-delphi\apitypes.pas',
@@ -43,7 +43,8 @@ uses
   Grijjy.SysUtils in 'grijjy\Grijjy.SysUtils.pas',
   Grijjy.DateUtils in 'grijjy\Grijjy.DateUtils.pas',
   Grijjy.BinaryCoding in 'grijjy\Grijjy.BinaryCoding.pas',
-  UnitMeasurement in 'UnitMeasurement.pas';
+  UnitMeasurement in 'UnitMeasurement.pas',
+  UnitFormPopup in 'UnitFormPopup.pas' {FormPopup};
 
 {$R *.res}
 
@@ -52,10 +53,11 @@ begin
     Application.MainFormOnTaskbar := True;
     Application.CreateForm(TAToolMainForm, AToolMainForm);
   Application.CreateForm(TFormCurrentParty, FormCurrentParty);
-  Application.CreateForm(TFormPopup, FormPopup);
+  Application.CreateForm(TFormPopup2, FormPopup2);
   Application.CreateForm(TFormVar, FormVar);
   Application.CreateForm(TFormSelectCurrentParty, FormSelectCurrentParty);
   Application.CreateForm(TFormInterrogate, FormInterrogate);
+  Application.CreateForm(TFormPopup, FormPopup);
   Application.Run;
 
 end.

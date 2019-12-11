@@ -134,8 +134,8 @@
         <DCCReference Include="utils\stringgridutils.pas"/>
         <DCCReference Include="utils\stringutils.pas"/>
         <DCCReference Include="utils\vclutils.pas"/>
-        <DCCReference Include="UnitFormPopup.pas">
-            <Form>FormPopup</Form>
+        <DCCReference Include="UnitFormPopup2.pas">
+            <Form>FormPopup2</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="utils\myutils.pas"/>
@@ -166,6 +166,10 @@
         <DCCReference Include="grijjy\Grijjy.DateUtils.pas"/>
         <DCCReference Include="grijjy\Grijjy.BinaryCoding.pas"/>
         <DCCReference Include="UnitMeasurement.pas"/>
+        <DCCReference Include="UnitFormPopup.pas">
+            <Form>FormPopup</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

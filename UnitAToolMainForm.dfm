@@ -34,14 +34,9 @@ object AToolMainForm: TAToolMainForm
     TabWidth = 50
     OnChange = PageControlMainChange
     OnDrawTab = PageControlMainDrawTab
-    ExplicitTop = 36
-    ExplicitWidth = 810
-    ExplicitHeight = 357
     object TabSheetParty: TTabSheet
       Caption = #1055#1088#1080#1073#1086#1088#1099
       ImageIndex = 4
-      ExplicitWidth = 702
-      ExplicitHeight = 349
       object GridPanel1: TGridPanel
         Left = 0
         Top = 0
@@ -66,15 +61,13 @@ object AToolMainForm: TAToolMainForm
           end>
         RowCollection = <
           item
-            Value = 69.999841238125570000
+            Value = 69.999841238125580000
           end
           item
             Value = 30.000158761874420000
           end>
         ShowCaption = False
         TabOrder = 0
-        ExplicitWidth = 702
-        ExplicitHeight = 349
         object GroupBox2: TGroupBox
           AlignWithMargins = True
           Left = 6
@@ -87,9 +80,6 @@ object AToolMainForm: TAToolMainForm
           Align = alClient
           Caption = #1054#1087#1088#1086#1089
           TabOrder = 0
-          ExplicitTop = 179
-          ExplicitWidth = 692
-          ExplicitHeight = 164
         end
         object GroupBox1: TGroupBox
           AlignWithMargins = True
@@ -103,8 +93,6 @@ object AToolMainForm: TAToolMainForm
           Align = alClient
           Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1087#1088#1080#1073#1086#1088#1086#1074
           TabOrder = 1
-          ExplicitWidth = 692
-          ExplicitHeight = 163
         end
       end
     end
@@ -125,6 +113,13 @@ object AToolMainForm: TAToolMainForm
       object N4: TMenuItem
         Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1087#1088#1080#1073#1086#1088#1099
         OnClick = N4Click
+      end
+      object N6: TMenuItem
+        Caption = #1048#1084#1103' '#1092#1072#1081#1083#1072
+        OnClick = N6Click
+      end
+      object N7: TMenuItem
+        Caption = '-'
       end
       object N5: TMenuItem
         Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080

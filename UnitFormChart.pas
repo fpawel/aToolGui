@@ -8,7 +8,7 @@ uses
     Vcl.Controls, Vcl.Forms, Vcl.Dialogs, VclTee.TeeGDIPlus, VclTee.TeEngine,
     Vcl.ExtCtrls, VclTee.TeeProcs, VclTee.Chart, VclTee.Series, Vcl.Grids,
     UnitApiClient, Vcl.ComCtrls, Vcl.ToolWin, System.ImageList, Vcl.ImgList,
-    myutils;
+    myutils, Vcl.Menus;
 
 type
     TFormChart = class(TForm)
@@ -23,14 +23,20 @@ type
         GridPanel1: TGridPanel;
         PanelX: TPanel;
         PanelY: TPanel;
-        ToolButton2: TToolButton;
+        ToolButton4: TToolButton;
+        PopupMenu1: TPopupMenu;
+        N1: TMenuItem;
+        N2: TMenuItem;
+        N3: TMenuItem;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
           Rect: TRect; State: TGridDrawState);
         procedure StringGrid1MouseDown(Sender: TObject; Button: TMouseButton;
           Shift: TShiftState; X, Y: Integer);
         procedure Chart1AfterDraw(Sender: TObject);
         procedure Chart1UndoZoom(Sender: TObject);
-        procedure ToolButton2Click(Sender: TObject);
+        procedure N1Click(Sender: TObject);
+        procedure ToolButton4Click(Sender: TObject);
+    procedure N2Click(Sender: TObject);
     private
         { Private declarations }
         function SeriesOfColRow(ACol, ARow: Integer): TFastLineSeries;
@@ -156,6 +162,41 @@ procedure TFormChart.Chart1UndoZoom(Sender: TObject);
 begin
     Chart1.BottomAxis.Automatic := true;
     Chart1.LeftAxis.Automatic := true;
+end;
+
+procedure TFormChart.N1Click(Sender: TObject);
+var
+    r: IDeleteChartPointsRequest;
+    ser: TFastLineSeries;
+    i, n: Integer;
+label
+    GotoLabel;
+begin
+    r := TDeleteChartPointsRequestImpl.Create;
+    r.Chart := Caption;
+    r.TimeFrom := DateTimeToUnixMillis(Chart1.BottomAxis.Minimum);
+    r.TimeTo := DateTimeToUnixMillis(Chart1.BottomAxis.Maximum);
+    r.ValueFrom := Chart1.LeftAxis.Minimum;
+    r.ValueTo := Chart1.LeftAxis.Maximum;
+    productsclient.deleteChartPoints(r);
+
+GotoLabel:
+    for i := 0 to Chart1.SeriesCount - 1 do
+    begin
+        ser := Chart1.Series[i] as TFastLineSeries;
+        for n := 0 to ser.Count - 1 do
+        begin
+            if (ser.XValue[n] >= Chart1.BottomAxis.Minimum) AND
+              (ser.XValue[n] <= Chart1.BottomAxis.Maximum) AND
+              (ser.YValue[n] >= Chart1.LeftAxis.Minimum) AND
+              (ser.YValue[n] <= Chart1.LeftAxis.Maximum) then
+            begin
+                ser.Delete(n);
+                goto GotoLabel;
+            end;
+        end;
+    end;
+    Chart1.UndoZoom;
 end;
 
 procedure TFormChart.ShowCurrentScaleValues;
@@ -345,39 +386,35 @@ begin
     end;
 end;
 
-procedure TFormChart.ToolButton2Click(Sender: TObject);
+procedure TFormChart.ToolButton4Click(Sender: TObject);
 var
-    r: IDeleteChartPointsRequest;
-    ser: TFastLineSeries;
-    i, n: Integer;
-label
-    GotoLabel;
+    pnt: TPoint;
 begin
-    r := TDeleteChartPointsRequestImpl.Create;
-    r.Chart := Caption;
-    r.TimeFrom := DateTimeToUnixMillis(Chart1.BottomAxis.Minimum);
-    r.TimeTo := DateTimeToUnixMillis(Chart1.BottomAxis.Maximum);
-    r.ValueFrom := Chart1.LeftAxis.Minimum;
-    r.ValueTo := Chart1.LeftAxis.Maximum;
-    productsclient.deleteChartPoints(r);
+    if GetCursorPos(pnt) then
+        PopupMenu1.Popup(pnt.X, pnt.Y);
+end;
 
-GotoLabel:
-    for i := 0 to Chart1.SeriesCount - 1 do
+procedure TFormChart.N2Click(Sender: TObject);
+var
+  I: Integer;
+  pv:TProductVar;
+  prod_param: IProductParam;
+begin
+    for I := 0 to Chart1.SeriesCount-1 do
     begin
-        ser := Chart1.Series[i] as TFastLineSeries;
-        for n := 0 to ser.Count - 1 do
-        begin
-            if (ser.XValue[n] >= Chart1.BottomAxis.Minimum) AND
-              (ser.XValue[n] <= Chart1.BottomAxis.Maximum) AND
-              (ser.YValue[n] >= Chart1.LeftAxis.Minimum) AND
-              (ser.YValue[n] <= Chart1.LeftAxis.Maximum) then
-            begin
-                ser.Delete(n);
-                goto GotoLabel;
-            end;
-        end;
+        pv := FormCurrentParty.GetSeriesInfo(Chart1.Series[i] as TFastLineSeries);
+        prod_param := TProductParamImpl.Create;
+        prod_param.ProductID := pv.ProductID;
+        prod_param.ParamAddr := pv.ParamAddr;
+        prod_param.Chart := '';
+        ProductsClient.setProductParam(prod_param);
     end;
-    Chart1.UndoZoom;
+    FormCurrentParty.upload;
+
+
+
+
+
 end;
 
 end.
