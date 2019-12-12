@@ -46,14 +46,18 @@ object FormCurrentParty: TFormCurrentParty
       RowCount = 1
       FixedRows = 0
       GradientEndColor = clBlack
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing]
       PopupMenu = PopupMenu1
       TabOrder = 0
       OnDblClick = StringGrid1DblClick
       OnDrawCell = StringGrid1DrawCell
       OnKeyPress = StringGrid1KeyPress
       OnMouseDown = StringGrid1MouseDown
+      OnMouseUp = StringGrid1MouseUp
       OnSelectCell = StringGrid1SelectCell
       OnSetEditText = StringGrid1SetEditText
+      ExplicitLeft = 6
+      ExplicitTop = 6
     end
   end
   object ImageList2: TImageList

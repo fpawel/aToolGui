@@ -60,6 +60,8 @@ type
         procedure MenuDeleteChartClick(Sender: TObject);
         procedure StringGrid1MouseDown(Sender: TObject; Button: TMouseButton;
           Shift: TShiftState; X, Y: integer);
+        procedure StringGrid1MouseUp(Sender: TObject; Button: TMouseButton;
+          Shift: TShiftState; X, Y: integer);
     private
         { Private declarations }
         FSeries: TDictionary<TProductVar, TFastLineSeries>;
@@ -98,7 +100,8 @@ var
 implementation
 
 uses stringgridutils, stringutils, dateutils,
-    vclutils, UnitFormPopup, UnitApiClient, myutils, UnitAToolMainForm;
+    vclutils, UnitFormPopup, UnitApiClient, myutils, UnitAToolMainForm,
+    UnitAppIni;
 
 {$R *.dfm}
 
@@ -135,7 +138,7 @@ begin
       mb_IconQuestion or mb_YesNo) <> mrYes then
         exit;
 
-    ProductsClient.deleteProducts(GetSelectedProductsIDs);
+    CurrFileClient.deleteProducts(GetSelectedProductsIDs);
     upload;
 end;
 
@@ -174,7 +177,7 @@ begin
     Ports.Free;
 
     MenuProductsDevice.Clear;
-    devices := ProductsClient.listDevices;
+    devices := MainSvcClient.listDevices;
     for i := 0 to devices.Count - 1 do
     begin
         m := TMenuItem.Create(nil);
@@ -196,7 +199,8 @@ begin
             MenuSetChart.Items[MenuSetChart.Count - 1].Free
         end;
 
-        for i := PageIndexChart to AToolMainForm.PageControlMain.PageCount - 1 do
+        for i := PageIndexChart to AToolMainForm.PageControlMain.
+          PageCount - 1 do
         begin
             m := TMenuItem.Create(nil);
             m.Caption := AToolMainForm.PageControlMain.Pages[i].Caption;
@@ -241,7 +245,7 @@ var
     pt: TPoint;
     sel: TGridRect;
     new_value: integer;
-    edit_addr, edit_serial:boolean;
+    edit_addr, edit_serial: boolean;
     procedure undo_;
     begin
         with sel do
@@ -280,7 +284,7 @@ begin
             edit_serial := ARow = Cols[0].IndexOf('Номер');
 
             p := FParty.Products[ACol - 1];
-            if not ( edit_addr or edit_serial) then
+            if not(edit_addr or edit_serial) then
                 exit;
             if not TryStrToInt(Value, new_value) then
             begin
@@ -438,8 +442,7 @@ begin
         then
         begin
 
-            if not EditorMode and
-              TryStrToInt(Key, n) then
+            if not EditorMode and TryStrToInt(Key, n) then
             begin
                 Options := Options + [goEditing];
                 Cells[Col, Row] := Key;
@@ -464,6 +467,27 @@ begin
     ProductsClient.setProductActive(p.ProductID, p.Active);
     With StringGrid1 do
         Cells[ACol, 0] := Cells[ACol, 0];
+
+end;
+
+procedure TFormCurrentParty.StringGrid1MouseUp(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: integer);
+var
+    ACol: integer;
+begin
+    with StringGrid1 do
+    begin
+        for ACol := 0 to ColCount - 1 do
+        begin
+            if ColWidths[ACol] < 30 then
+                ColWidths[ACol] := 30;
+            if ColWidths[ACol] > 300 then
+                ColWidths[ACol] := 300;
+            AppIni.WriteInteger('StringGrid1.ColWidth', IntToStr(ACol),
+              ColWidths[ACol]);
+        end;
+
+    end;
 
 end;
 
@@ -496,6 +520,15 @@ begin
             Cells[ACol, 1] := p.Device;
             Cells[ACol, 2] := IntToStr(p.Addr);
             Cells[ACol, 3] := IntToStr(p.Serial);
+
+            ColWidths[ACol] := AppIni.ReadInteger('StringGrid1.ColWidth',
+              IntToStr(ACol), ColWidths[ACol]);
+
+            if ColWidths[ACol] < 30 then
+                ColWidths[ACol] := 30;
+            if ColWidths[ACol] > 300 then
+                ColWidths[ACol] := 300;
+
         end;
 
         for n := 0 to FParamAddresses.Count - 1 do
@@ -553,14 +586,14 @@ end;
 
 procedure TFormCurrentParty.upload;
 begin
-    FParty := ProductsClient.getCurrentParty;
-    ProductsClient.listParamAddresses;
-    FParamAddresses := ProductsClient.listParamAddresses;
+    FParty := MainSvcClient.getCurrentParty;
+    MainSvcClient.listParamAddresses;
+    FParamAddresses := MainSvcClient.listParamAddresses;
     setMainFormCaption;
     setupStringGrid;
     setupSeries;
     AToolMainForm.SetupSeriesStringGrids;
-    ProductsClient.requestCurrentPartyChart;
+    CurrFileClient.requestCurrentPartyChart;
 end;
 
 procedure TFormCurrentParty.AddMeasurements(xs: TArray<TMeasurement>);
@@ -665,7 +698,7 @@ begin
             else
                 p.Connection := 2;
             with StringGrid1 do
-                if not ( EditorMode AND (Col = i + 1) AND (Row = ARow) ) then
+                if not(EditorMode AND (Col = i + 1) AND (Row = ARow)) then
                     Cells[i + 1, ARow] := Cells[i + 1, ARow];
         end;
         Inc(i);

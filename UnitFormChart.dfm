@@ -85,8 +85,8 @@ object FormChart: TFormChart
     Align = alTop
     Alignment = taLeftJustify
     BevelOuter = bvNone
-    Color = clGradientInactiveCaption
     ParentBackground = False
+    ParentColor = True
     TabOrder = 2
     object ToolBar1: TToolBar
       Left = 912
@@ -137,9 +137,9 @@ object FormChart: TFormChart
       Height = 33
       Align = alClient
       BevelOuter = bvNone
-      ParentColor = True
+      Color = clBtnHighlight
+      ParentBackground = False
       TabOrder = 1
-      ExplicitWidth = 904
       object GridPanel1: TGridPanel
         Left = 0
         Top = 0
@@ -170,7 +170,6 @@ object FormChart: TFormChart
             Value = 100.000000000000000000
           end>
         TabOrder = 0
-        ExplicitWidth = 904
         object PanelX: TPanel
           Left = 0
           Top = 0
@@ -180,7 +179,6 @@ object FormChart: TFormChart
           BevelOuter = bvNone
           Caption = 'PanelX'
           TabOrder = 0
-          ExplicitWidth = 452
         end
         object PanelY: TPanel
           Left = 456
@@ -191,8 +189,6 @@ object FormChart: TFormChart
           BevelOuter = bvNone
           Caption = 'PanelX'
           TabOrder = 1
-          ExplicitLeft = 452
-          ExplicitWidth = 452
         end
       end
     end

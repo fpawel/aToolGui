@@ -44,7 +44,8 @@ uses
   Grijjy.DateUtils in 'grijjy\Grijjy.DateUtils.pas',
   Grijjy.BinaryCoding in 'grijjy\Grijjy.BinaryCoding.pas',
   UnitMeasurement in 'UnitMeasurement.pas',
-  UnitFormPopup in 'UnitFormPopup.pas' {FormPopup};
+  UnitFormPopup in 'UnitFormPopup.pas' {FormPopup},
+  UnitAppIni in 'UnitAppIni.pas';
 
 {$R *.res}
 

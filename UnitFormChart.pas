@@ -178,7 +178,7 @@ begin
     r.TimeTo := DateTimeToUnixMillis(Chart1.BottomAxis.Maximum);
     r.ValueFrom := Chart1.LeftAxis.Minimum;
     r.ValueTo := Chart1.LeftAxis.Maximum;
-    productsclient.deleteChartPoints(r);
+    ProductsClient.deleteChartPoints(r);
 
 GotoLabel:
     for i := 0 to Chart1.SeriesCount - 1 do
@@ -377,10 +377,10 @@ begin
             Cells[ACol, ARow] := Cells[ACol, ARow];
 
             with FormCurrentParty.GetSeriesInfo(ser) do
-                prod_param := productsclient.GetProductParam(ProductID,
+                prod_param := ProductsClient.GetProductParam(ProductID,
                   ParamAddr);
             prod_param.SeriesActive := ser.Active;
-            productsclient.setProductParam(prod_param);
+            ProductsClient.setProductParam(prod_param);
         end;
 
     end;
@@ -410,11 +410,6 @@ begin
         ProductsClient.setProductParam(prod_param);
     end;
     FormCurrentParty.upload;
-
-
-
-
-
 end;
 
 end.

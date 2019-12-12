@@ -13,8 +13,9 @@ type
     TCommTransaction = record
         Addr: byte;
         Request: string;
-        Result: string;
+        Response: string;
         Comport: string;
+        Duration: string;
         Ok: boolean;
     end;
 
@@ -39,7 +40,7 @@ var
 
 implementation
 
-uses myutils;
+uses myutils, dateutils;
 
 {$R *.dfm}
 
@@ -49,7 +50,7 @@ var
 begin
     with StringGrid1 do
     begin
-        ColCount := 4;
+        ColCount := 5;
         RowCount := 1;
         FixedCols := 0;
         FixedRows := 0;
@@ -113,10 +114,11 @@ begin
         end;
 
         r := Rows[RowCount - 1];
-        r[0] := TimeToStr(now);
+        r[0] := FormatDateTime('hh:nn:ss.zzz',now);
         r[1] := C.Comport;
         r[2] := C.Request;
-        r[3] := C.Result;
+        r[3] := C.Response;
+        r[4] := C.Duration;
         FOk[RowCount - 1] := c.Ok;
 
         Row := RowCount - 1;
@@ -130,9 +132,10 @@ var
 begin
     With StringGrid1 do
     begin
-        ColWidths[0] := 80;
+        ColWidths[0] := 100;
         ColWidths[1] := 60;
-        w := StringGrid1.Width - 50 - ColWidths[0] - ColWidths[1];
+        ColWidths[4] := 80;
+        w := StringGrid1.Width - 50 - ColWidths[0] - ColWidths[1] - ColWidths[4];
         ColWidths[2] := w div 3;
         ColWidths[3] := w - ColWidths[2];
     end;

@@ -2,7 +2,7 @@ object AToolMainForm: TAToolMainForm
   Left = 0
   Top = 0
   Caption = 'AToolMainForm'
-  ClientHeight = 393
+  ClientHeight = 395
   ClientWidth = 1048
   Color = clWhite
   Font.Charset = DEFAULT_CHARSET
@@ -23,7 +23,7 @@ object AToolMainForm: TAToolMainForm
     Left = 0
     Top = 0
     Width = 1048
-    Height = 393
+    Height = 395
     ActivePage = TabSheetParty
     Align = alClient
     MultiLine = True
@@ -35,71 +35,54 @@ object AToolMainForm: TAToolMainForm
     OnChange = PageControlMainChange
     OnDrawTab = PageControlMainDrawTab
     object TabSheetParty: TTabSheet
-      Caption = #1055#1088#1080#1073#1086#1088#1099
+      Caption = #1054#1087#1088#1086#1089' '#1087#1088#1080#1073#1086#1088#1086#1074
       ImageIndex = 4
-      object GridPanel1: TGridPanel
+      object Splitter1: TSplitter
         Left = 0
-        Top = 0
+        Top = 160
         Width = 940
-        Height = 385
+        Height = 5
+        Cursor = crVSplit
+        Align = alBottom
+        Color = clWhite
+        ParentColor = False
+        OnMoved = Splitter1Moved
+        ExplicitTop = 155
+      end
+      object GroupBox1: TGroupBox
+        AlignWithMargins = True
+        Left = 5
+        Top = 5
+        Width = 932
+        Height = 150
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Bottom = 5
         Align = alClient
-        Caption = 'GridPanel1'
-        ColumnCollection = <
-          item
-            Value = 100.000000000000000000
-          end>
-        ControlCollection = <
-          item
-            Column = 0
-            Control = GroupBox2
-            Row = 1
-          end
-          item
-            Column = 0
-            Control = GroupBox1
-            Row = 0
-          end>
-        RowCollection = <
-          item
-            Value = 69.999841238125580000
-          end
-          item
-            Value = 30.000158761874420000
-          end>
-        ShowCaption = False
+        Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1087#1088#1080#1073#1086#1088#1086#1074
+        Constraints.MinHeight = 100
         TabOrder = 0
-        object GroupBox2: TGroupBox
-          AlignWithMargins = True
-          Left = 6
-          Top = 274
-          Width = 930
-          Height = 105
-          Margins.Left = 5
-          Margins.Top = 5
-          Margins.Bottom = 5
-          Align = alClient
-          Caption = #1054#1087#1088#1086#1089
-          TabOrder = 0
-        end
-        object GroupBox1: TGroupBox
-          AlignWithMargins = True
-          Left = 6
-          Top = 6
-          Width = 930
-          Height = 258
-          Margins.Left = 5
-          Margins.Top = 5
-          Margins.Bottom = 5
-          Align = alClient
-          Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1087#1088#1080#1073#1086#1088#1086#1074
-          TabOrder = 1
-        end
+      end
+      object GroupBox2: TGroupBox
+        AlignWithMargins = True
+        Left = 5
+        Top = 170
+        Width = 932
+        Height = 212
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Bottom = 5
+        Align = alBottom
+        Caption = #1054#1087#1088#1086#1089
+        Constraints.MinHeight = 50
+        TabOrder = 1
+        ExplicitTop = 173
       end
     end
   end
   object MainMenu1: TMainMenu
-    Left = 550
-    Top = 94
+    Left = 886
+    Top = 14
     object N1: TMenuItem
       Caption = #1060#1072#1081#1083
       object N2: TMenuItem

@@ -26,9 +26,6 @@ type
     TAToolMainForm = class(TForm)
         PageControlMain: TPageControl;
         TabSheetParty: TTabSheet;
-        GridPanel1: TGridPanel;
-        GroupBox2: TGroupBox;
-        GroupBox1: TGroupBox;
         MainMenu1: TMainMenu;
         N1: TMenuItem;
         N2: TMenuItem;
@@ -36,8 +33,11 @@ type
         N4: TMenuItem;
         N5: TMenuItem;
         MenuRunStop: TMenuItem;
-    N6: TMenuItem;
-    N7: TMenuItem;
+        N6: TMenuItem;
+        N7: TMenuItem;
+        GroupBox1: TGroupBox;
+        GroupBox2: TGroupBox;
+        Splitter1: TSplitter;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -52,7 +52,8 @@ type
         procedure N5Click(Sender: TObject);
         procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
           WheelDelta: Integer; MousePos: TPoint; var Handled: boolean);
-    procedure N6Click(Sender: TObject);
+        procedure N6Click(Sender: TObject);
+        procedure Splitter1Moved(Sender: TObject);
     private
         { Private declarations }
         FEnableCopyData: boolean;
@@ -64,7 +65,8 @@ type
         procedure HandleStartWork(var Message: TMessage); message WM_USER + 2;
         procedure HandleStopWork(var Message: TMessage); message WM_USER + 3;
         procedure HandleCopydata(var Message: TMessage); message WM_COPYDATA;
-        procedure ShowPopup(X: TPopupMessage; al:TAlign);
+        procedure ShowPopup(X: TPopupMessage; al: TAlign);
+        procedure SetupGroupbox2Height;
     public
         { Public declarations }
         function GetChartByName(AName: string): TChart;
@@ -83,13 +85,11 @@ implementation
 
 {$R *.dfm}
 
-uses dateutils, myutils, api, UnitApiClient,
-    Thrift.Protocol, UnitFormCurrentParty,
-    Thrift.Transport, Thrift.Collections,
+uses System.Types, dateutils, myutils, api, UnitApiClient,
+    UnitFormCurrentParty, unitappini, inifiles,
+    Thrift.Collections, math,
     logfile, apitypes, vclutils, UnitFormCharts,
     UnitFormChart;
-
-
 
 procedure TAToolMainForm.FormCreate(Sender: TObject);
 begin
@@ -117,18 +117,13 @@ begin
 end;
 
 procedure TAToolMainForm.FormShow(Sender: TObject);
-var
-    Protocol: IProtocol;
-    Transport: ITransport;
 begin
     OnShow := nil;
-    Transport := TSocketImpl.create('127.0.0.1',
-      StrToInt(GetEnvironmentVariable('ATOOL_API_PORT')), 10000);
-    Protocol := TBinaryProtocolImpl.create(Transport);
-    ProductsClient := TProductsService.TClient.create(Protocol);
-    Transport.Open;
+    OpenApiClient;
 
-    ProductsClient.openGuiClient(Handle);
+    AppIni := TIniFile.create(ChangeFileExt(ParamStr(0), '.ini'));
+
+    SetupGroupbox2Height;
 
     with FormCurrentParty do
     begin
@@ -147,7 +142,7 @@ begin
         Show;
     end;
 
-    if ProductsClient.Connected then
+    if HardConnClient.Connected then
     begin
         MenuRunStop.Caption := 'Остановить опрос';
     end
@@ -156,7 +151,25 @@ begin
         MenuRunStop.Caption := 'Запустить опрос';
     end;
 
+    MainSvcClient.openGuiClient(Handle);
+
     FEnableCopyData := true;
+end;
+
+procedure TAToolMainForm.SetupGroupbox2Height;
+var h:double;
+begin
+    h := double(Height);
+    Splitter1.OnMoved := nil;
+    OnResize := nil;
+    GroupBox2.Height := Ceil(AppIni.ReadFloat('AToolMainForm', 'rel_horiz1',
+      double(GroupBox2.Height) / h) * h);
+    Splitter1.Top := 0;
+    GroupBox1.top := 0;
+    GroupBox2.Top := 100500;
+    Realign;
+    Splitter1.OnMoved := Splitter1Moved;
+    OnResize := FormResize;
 end;
 
 procedure TAToolMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -169,7 +182,7 @@ begin
         StringGrid1.EditorMode := false;
     end;
     try
-        ProductsClient.closeGuiClient;
+        MainSvcClient.closeGuiClient;
     except
 
     end;
@@ -179,6 +192,7 @@ end;
 procedure TAToolMainForm.FormResize(Sender: TObject);
 begin
     FormInterrogate.setupColsWidths;
+    SetupGroupbox2Height;
 end;
 
 procedure TAToolMainForm.HandleStartWork(var Message: TMessage);
@@ -196,10 +210,10 @@ end;
 
 procedure TAToolMainForm.MenuRunStopClick(Sender: TObject);
 begin
-    if ProductsClient.Connected then
-        ProductsClient.Disconnect
+    if HardConnClient.Connected then
+        HardConnClient.Disconnect
     else
-        ProductsClient.Connect;
+        HardConnClient.Connect;
 end;
 
 procedure TAToolMainForm.N2Click(Sender: TObject);
@@ -208,12 +222,12 @@ var
     ProductsCount: Integer;
 
 begin
-    SetLength(xs,2);
+    SetLength(xs, 2);
     if not InputQuery('Создание новой партии приборов',
       ['Количество приборов:', 'Имя файла'], xs) or
       not TryStrToInt(xs[0], ProductsCount) then
         exit;
-    ProductsClient.CreateNewParty(ProductsCount, xs[1]);
+    MainSvcClient.CreateNewParty(ProductsCount, xs[1]);
     FormCurrentParty.upload;
 
 end;
@@ -223,7 +237,7 @@ var
     parties: IThriftList<IPartyInfo>;
     i: Integer;
 begin
-    parties := ProductsClient.listParties;
+    parties := MainSvcClient.listParties;
 
     FormSelectCurrentParty.ListBox1.Clear;
     for i := 0 to parties.Count - 1 do
@@ -238,7 +252,7 @@ begin
     if (FormSelectCurrentParty.ShowModal <> mrOk) or
       (FormSelectCurrentParty.ListBox1.ItemIndex = -1) then
         exit;
-    ProductsClient.setCurrentParty
+    MainSvcClient.setCurrentParty
       (parties[FormSelectCurrentParty.ListBox1.ItemIndex].PartyID);
     FormCurrentParty.upload;
 end;
@@ -251,26 +265,25 @@ begin
     if not InputQuery('Создание новой партии приборов', 'Количество приборов.',
       strProductsCount) or not TryStrToInt(strProductsCount, ProductsCount) then
         exit;
-    ProductsClient.AddNewProducts(ProductsCount);
+    CurrFileClient.AddNewProducts(ProductsCount);
     FormCurrentParty.upload;
 
 end;
 
 procedure TAToolMainForm.N5Click(Sender: TObject);
 begin
-    ProductsClient.EditConfig;
+    MainSvcClient.EditConfig;
 end;
 
 procedure TAToolMainForm.N6Click(Sender: TObject);
 var
-    x: string;
+    X: string;
 begin
-    x := FormCurrentParty.FParty.Name;
-    if not InputQuery('Имя файла',
-      'Введите новое имя файла', x) then
+    X := FormCurrentParty.FParty.Name;
+    if not InputQuery('Имя файла', 'Введите новое имя файла', X) then
         exit;
-    ProductsClient.setPartyName(x);
-    FormCurrentParty.FParty.Name := x;
+    CurrFileClient.setPartyName(X);
+    FormCurrentParty.FParty.Name := X;
 end;
 
 procedure TAToolMainForm.HandleCopydata(var Message: TMessage);
@@ -329,6 +342,8 @@ var
 
     X, y: Integer;
     txt_height: double;
+    words: TArray<string>;
+    word: string;
 begin
     PageControl := Control as TPageControl;
     Active := PageControl.ActivePageIndex = TabIndex;
@@ -348,9 +363,25 @@ begin
 
     if TabIndex < PageIndexChart then
     begin
+        word := PageControl.Pages[TabIndex].Caption;
+        words := word.Split([' '], TStringSplitOptions.ExcludeEmpty);
+
         X := Rect.Left + 7;
-        y := Rect.Top + round((Rect.Height - txt_height) / 2.0);
-        PageControl.Canvas.TextRect(Rect, X, y, AText);
+
+        if Length(words) = 1 then
+        begin
+            y := Rect.Top + round((Rect.Height - txt_height) / 2.0);
+            PageControl.Canvas.TextRect(Rect, X, y, word);
+        end
+        else
+        begin
+            y := Rect.Top + 5;
+            PageControl.Canvas.FillRect(Rect);
+            PageControl.Canvas.TextOut(X, y, words[0]);
+            y := y + round(txt_height) + 3;
+            PageControl.Canvas.TextOut(X, y, words[1]);
+        end;
+
         exit;
     end;
 
@@ -433,7 +464,7 @@ begin
             (Pages[i].Controls[0] AS TFormChart).SetupStringGrid;
 end;
 
-procedure TAToolMainForm.ShowPopup(X: TPopupMessage; al:TAlign);
+procedure TAToolMainForm.ShowPopup(X: TPopupMessage; al: TAlign);
 var
     f: TFormPopup2;
 begin
@@ -448,6 +479,22 @@ begin
             FPopups.Remove(f);
         end;
     f.Show;
+end;
+
+procedure TAToolMainForm.Splitter1Moved(Sender: TObject);
+begin
+    AppIni.WriteFloat('AToolMainForm', 'rel_horiz1', double(GroupBox2.Height) /
+      double(Height));
+
+    Splitter1.OnMoved := nil;
+    OnResize := nil;
+    Splitter1.Top := 0;
+    GroupBox1.Top := 0;
+    GroupBox2.Top := 100500;
+    Realign;
+    Splitter1.OnMoved := Splitter1Moved;
+    OnResize := FormResize;
+
 end;
 
 procedure TAToolMainForm.DeleteEmptyCharts;
