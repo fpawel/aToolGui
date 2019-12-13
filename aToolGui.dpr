@@ -45,7 +45,8 @@ uses
   Grijjy.BinaryCoding in 'grijjy\Grijjy.BinaryCoding.pas',
   UnitMeasurement in 'UnitMeasurement.pas',
   UnitFormPopup in 'UnitFormPopup.pas' {FormPopup},
-  UnitAppIni in 'UnitAppIni.pas';
+  UnitAppIni in 'UnitAppIni.pas',
+  UnitFormRawModbus in 'UnitFormRawModbus.pas' {FormRawModbus};
 
 {$R *.res}
 
@@ -59,6 +60,7 @@ begin
   Application.CreateForm(TFormSelectCurrentParty, FormSelectCurrentParty);
   Application.CreateForm(TFormInterrogate, FormInterrogate);
   Application.CreateForm(TFormPopup, FormPopup);
+  Application.CreateForm(TFormRawModbus, FormRawModbus);
   Application.Run;
 
 end.

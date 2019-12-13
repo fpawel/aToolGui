@@ -56,8 +56,6 @@ object FormCurrentParty: TFormCurrentParty
       OnMouseUp = StringGrid1MouseUp
       OnSelectCell = StringGrid1SelectCell
       OnSetEditText = StringGrid1SetEditText
-      ExplicitLeft = 6
-      ExplicitTop = 6
     end
   end
   object ImageList2: TImageList

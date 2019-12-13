@@ -7,15 +7,18 @@ uses api;
 procedure OpenApiClient;
 
 var
-    MainSvcClient: TMainService.Iface;
+    FilesClient: TFilesService.Iface;
     HardConnClient: THardwareConnectionService.Iface;
     CurrFileClient: TCurrentFileService.Iface;
     ProductsClient: TProductService.Iface;
+    AppCfgClient: TAppConfigService.Iface;
+    NotifyGuiClient: TNotifyGuiService.Iface;
+    HelperClient: THelperService.Iface;
 
 implementation
 
 uses System.SysUtils, Thrift.Protocol.Multiplex, Thrift.Transport,
-    Thrift.Protocol;
+    Thrift.Protocol, logfile;
 
 procedure OpenApiClient;
 var
@@ -32,18 +35,24 @@ begin
     Protocol := TBinaryProtocolImpl.create(Transport, true, true);
     Transport.Open;
 
-    MainSvcClient := TMainService.TClient.create(prot('MainService'));
+    FilesClient := TFilesService.TClient.create(prot('FilesService'));
 
     HardConnClient := THardwareConnectionService.TClient.create
       (prot('HardwareConnectionService'));
 
-    ProductsClient := TProductService.TClient.create
-      (prot('ProductService'));
+    ProductsClient := TProductService.TClient.create(prot('ProductService'));
 
     CurrFileClient := TCurrentFileService.TClient.create
       (prot('CurrentFileService'));
 
+    AppCfgClient := TAppConfigService.TClient.create(prot('AppConfigService'));
 
+    NotifyGuiClient := TNotifyGuiService.TClient.create
+          (prot('NotifyGuiService'));
+
+    HelperClient := THelperService.TClient.create
+          (prot('HelperService'));
 end;
+
 
 end.

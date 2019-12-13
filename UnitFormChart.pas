@@ -36,7 +36,8 @@ type
         procedure Chart1UndoZoom(Sender: TObject);
         procedure N1Click(Sender: TObject);
         procedure ToolButton4Click(Sender: TObject);
-    procedure N2Click(Sender: TObject);
+        procedure N2Click(Sender: TObject);
+        procedure N3Click(Sender: TObject);
     private
         { Private declarations }
         function SeriesOfColRow(ACol, ARow: Integer): TFastLineSeries;
@@ -55,7 +56,7 @@ implementation
 {$R *.dfm}
 
 uses System.types, dateutils, apitypes, math, stringgridutils,
-    UnitFormCurrentParty;
+    UnitFormCurrentParty, UnitAToolMainForm;
 
 const
     col_count = 7;
@@ -396,13 +397,14 @@ end;
 
 procedure TFormChart.N2Click(Sender: TObject);
 var
-  I: Integer;
-  pv:TProductVar;
-  prod_param: IProductParam;
+    i: Integer;
+    pv: TProductVar;
+    prod_param: IProductParam;
 begin
-    for I := 0 to Chart1.SeriesCount-1 do
+    for i := 0 to Chart1.SeriesCount - 1 do
     begin
-        pv := FormCurrentParty.GetSeriesInfo(Chart1.Series[i] as TFastLineSeries);
+        pv := FormCurrentParty.GetSeriesInfo
+          (Chart1.Series[i] as TFastLineSeries);
         prod_param := TProductParamImpl.Create;
         prod_param.ProductID := pv.ProductID;
         prod_param.ParamAddr := pv.ParamAddr;
@@ -410,6 +412,23 @@ begin
         ProductsClient.setProductParam(prod_param);
     end;
     FormCurrentParty.upload;
+end;
+
+procedure TFormChart.N3Click(Sender: TObject);
+var
+    newName: string;
+    n:integer;
+begin
+    if not InputQuery('Переименовать график ' + Caption, 'Новое имя графика:',
+      newName) then
+        exit;
+    CurrFileClient.renameChart(Caption, newName);
+    n := AToolMainForm.PageControlMain.ActivePageIndex;
+    FormCurrentParty.upload;
+    if (n >-1) AND (n < AToolMainForm.PageControlMain.PageCount) then
+        AToolMainForm.PageControlMain.ActivePageIndex := n;
+
+
 end;
 
 end.

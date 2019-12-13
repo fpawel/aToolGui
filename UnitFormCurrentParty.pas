@@ -144,12 +144,13 @@ end;
 
 procedure TFormCurrentParty.N7Click(Sender: TObject);
 var
-    name: string;
+    newChartName: string;
     m: TMenuItem;
 begin
-    InputQuery('Новый график', 'Имя нового графика:', name);
+    if not InputQuery('Новый график', 'Имя нового графика:', newChartName) then
+        exit;
     m := TMenuItem.Create(nil);
-    m.Caption := name;
+    m.Caption := newChartName;
     m.OnClick := MenuSetChartClick;
     MenuSetChart.Add(m);
     m.Click;
@@ -177,7 +178,7 @@ begin
     Ports.Free;
 
     MenuProductsDevice.Clear;
-    devices := MainSvcClient.listDevices;
+    devices := AppCfgClient.listDevices;
     for i := 0 to devices.Count - 1 do
     begin
         m := TMenuItem.Create(nil);
@@ -586,14 +587,13 @@ end;
 
 procedure TFormCurrentParty.upload;
 begin
-    FParty := MainSvcClient.getCurrentParty;
-    MainSvcClient.listParamAddresses;
-    FParamAddresses := MainSvcClient.listParamAddresses;
+    FParty := FilesClient.getCurrentParty;
+    FParamAddresses := CurrFileClient.listParamAddresses;
     setMainFormCaption;
     setupStringGrid;
     setupSeries;
     AToolMainForm.SetupSeriesStringGrids;
-    CurrFileClient.requestCurrentPartyChart;
+    CurrFileClient.requestChart;
 end;
 
 procedure TFormCurrentParty.AddMeasurements(xs: TArray<TMeasurement>);

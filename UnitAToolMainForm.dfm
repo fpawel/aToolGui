@@ -2,7 +2,7 @@ object AToolMainForm: TAToolMainForm
   Left = 0
   Top = 0
   Caption = 'AToolMainForm'
-  ClientHeight = 395
+  ClientHeight = 552
   ClientWidth = 1048
   Color = clWhite
   Font.Charset = DEFAULT_CHARSET
@@ -23,7 +23,7 @@ object AToolMainForm: TAToolMainForm
     Left = 0
     Top = 0
     Width = 1048
-    Height = 395
+    Height = 552
     ActivePage = TabSheetParty
     Align = alClient
     MultiLine = True
@@ -34,12 +34,14 @@ object AToolMainForm: TAToolMainForm
     TabWidth = 50
     OnChange = PageControlMainChange
     OnDrawTab = PageControlMainDrawTab
+    ExplicitHeight = 486
     object TabSheetParty: TTabSheet
       Caption = #1054#1087#1088#1086#1089' '#1087#1088#1080#1073#1086#1088#1086#1074
       ImageIndex = 4
+      ExplicitHeight = 478
       object Splitter1: TSplitter
         Left = 0
-        Top = 160
+        Top = 374
         Width = 940
         Height = 5
         Cursor = crVSplit
@@ -54,7 +56,7 @@ object AToolMainForm: TAToolMainForm
         Left = 5
         Top = 5
         Width = 932
-        Height = 150
+        Height = 364
         Margins.Left = 5
         Margins.Top = 5
         Margins.Bottom = 5
@@ -62,21 +64,35 @@ object AToolMainForm: TAToolMainForm
         Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1087#1088#1080#1073#1086#1088#1086#1074
         Constraints.MinHeight = 100
         TabOrder = 0
+        ExplicitHeight = 150
       end
-      object GroupBox2: TGroupBox
-        AlignWithMargins = True
-        Left = 5
-        Top = 170
-        Width = 932
-        Height = 212
-        Margins.Left = 5
-        Margins.Top = 5
-        Margins.Bottom = 5
+      object PanelPlaceholderBottom1: TPanel
+        Left = 0
+        Top = 379
+        Width = 940
+        Height = 165
         Align = alBottom
-        Caption = #1054#1087#1088#1086#1089
-        Constraints.MinHeight = 50
+        BevelOuter = bvNone
+        Caption = 'PanelPlaceholderBottom1'
+        ShowCaption = False
         TabOrder = 1
-        ExplicitTop = 173
+        ExplicitTop = 337
+        object GroupBoxInterrogateConsole: TGroupBox
+          AlignWithMargins = True
+          Left = 5
+          Top = 5
+          Width = 932
+          Height = 155
+          Margins.Left = 5
+          Margins.Top = 5
+          Margins.Bottom = 5
+          Align = alClient
+          Caption = #1054#1087#1088#1086#1089
+          Constraints.MinHeight = 50
+          TabOrder = 0
+          ExplicitTop = 8
+          ExplicitHeight = 131
+        end
       end
     end
   end

@@ -36,8 +36,9 @@ type
         N6: TMenuItem;
         N7: TMenuItem;
         GroupBox1: TGroupBox;
-        GroupBox2: TGroupBox;
         Splitter1: TSplitter;
+    PanelPlaceholderBottom1: TPanel;
+    GroupBoxInterrogateConsole: TGroupBox;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -89,7 +90,7 @@ uses System.Types, dateutils, myutils, api, UnitApiClient,
     UnitFormCurrentParty, unitappini, inifiles,
     Thrift.Collections, math,
     logfile, apitypes, vclutils, UnitFormCharts,
-    UnitFormChart;
+    UnitFormChart, UnitFormRawModbus;
 
 procedure TAToolMainForm.FormCreate(Sender: TObject);
 begin
@@ -137,8 +138,16 @@ begin
     with FormInterrogate do
     begin
         BorderStyle := bsNone;
-        parent := GroupBox2;
+        parent := GroupBoxInterrogateConsole;
         Align := alClient;
+        Show;
+    end;
+
+    with FormRawmodbus do
+    begin
+        BorderStyle := bsNone;
+        parent := GroupBox1;
+        Align := alBottom;
         Show;
     end;
 
@@ -150,8 +159,7 @@ begin
     begin
         MenuRunStop.Caption := 'Запустить опрос';
     end;
-
-    MainSvcClient.openGuiClient(Handle);
+    NotifyGuiClient.open(Handle);
 
     FEnableCopyData := true;
 end;
@@ -162,11 +170,11 @@ begin
     h := double(Height);
     Splitter1.OnMoved := nil;
     OnResize := nil;
-    GroupBox2.Height := Ceil(AppIni.ReadFloat('AToolMainForm', 'rel_horiz1',
-      double(GroupBox2.Height) / h) * h);
+    PanelPlaceholderBottom1.Height := Ceil(AppIni.ReadFloat('AToolMainForm', 'rel_horiz1',
+      double(PanelPlaceholderBottom1.Height) / h) * h);
     Splitter1.Top := 0;
     GroupBox1.top := 0;
-    GroupBox2.Top := 100500;
+    PanelPlaceholderBottom1.Top := 100500;
     Realign;
     Splitter1.OnMoved := Splitter1Moved;
     OnResize := FormResize;
@@ -181,12 +189,14 @@ begin
         StringGrid1.OnSetEditText := nil;
         StringGrid1.EditorMode := false;
     end;
+
     try
-        MainSvcClient.closeGuiClient;
+        NotifyGuiClient.close;
     except
+        on e:Exception do
+            LogfileWriteException(e);
 
     end;
-
 end;
 
 procedure TAToolMainForm.FormResize(Sender: TObject);
@@ -227,7 +237,7 @@ begin
       ['Количество приборов:', 'Имя файла'], xs) or
       not TryStrToInt(xs[0], ProductsCount) then
         exit;
-    MainSvcClient.CreateNewParty(ProductsCount, xs[1]);
+    FilesClient.CreateNewParty(ProductsCount, xs[1]);
     FormCurrentParty.upload;
 
 end;
@@ -237,7 +247,7 @@ var
     parties: IThriftList<IPartyInfo>;
     i: Integer;
 begin
-    parties := MainSvcClient.listParties;
+    parties := FilesClient.listParties;
 
     FormSelectCurrentParty.ListBox1.Clear;
     for i := 0 to parties.Count - 1 do
@@ -252,7 +262,7 @@ begin
     if (FormSelectCurrentParty.ShowModal <> mrOk) or
       (FormSelectCurrentParty.ListBox1.ItemIndex = -1) then
         exit;
-    MainSvcClient.setCurrentParty
+    FilesClient.setCurrentParty
       (parties[FormSelectCurrentParty.ListBox1.ItemIndex].PartyID);
     FormCurrentParty.upload;
 end;
@@ -272,7 +282,7 @@ end;
 
 procedure TAToolMainForm.N5Click(Sender: TObject);
 begin
-    MainSvcClient.EditConfig;
+    AppCfgClient.EditConfig;
 end;
 
 procedure TAToolMainForm.N6Click(Sender: TObject);
@@ -282,7 +292,7 @@ begin
     X := FormCurrentParty.FParty.Name;
     if not InputQuery('Имя файла', 'Введите новое имя файла', X) then
         exit;
-    CurrFileClient.setPartyName(X);
+    CurrFileClient.setName(X);
     FormCurrentParty.FParty.Name := X;
 end;
 
@@ -483,14 +493,14 @@ end;
 
 procedure TAToolMainForm.Splitter1Moved(Sender: TObject);
 begin
-    AppIni.WriteFloat('AToolMainForm', 'rel_horiz1', double(GroupBox2.Height) /
+    AppIni.WriteFloat('AToolMainForm', 'rel_horiz1', double(PanelPlaceholderBottom1.Height) /
       double(Height));
 
     Splitter1.OnMoved := nil;
     OnResize := nil;
     Splitter1.Top := 0;
     GroupBox1.Top := 0;
-    GroupBox2.Top := 100500;
+    PanelPlaceholderBottom1.Top := 100500;
     Realign;
     Splitter1.OnMoved := Splitter1Moved;
     OnResize := FormResize;
