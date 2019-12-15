@@ -46,7 +46,9 @@ uses
   UnitMeasurement in 'UnitMeasurement.pas',
   UnitFormPopup in 'UnitFormPopup.pas' {FormPopup},
   UnitAppIni in 'UnitAppIni.pas',
-  UnitFormRawModbus in 'UnitFormRawModbus.pas' {FormRawModbus};
+  UnitFormRawModbus in 'UnitFormRawModbus.pas' {FormRawModbus},
+  UnitFormTemperatureHardware in 'UnitFormTemperatureHardware.pas' {FormTemperatureHardware},
+  UnitFormGas in 'UnitFormGas.pas' {FormGas};
 
 {$R *.res}
 
@@ -61,6 +63,8 @@ begin
   Application.CreateForm(TFormInterrogate, FormInterrogate);
   Application.CreateForm(TFormPopup, FormPopup);
   Application.CreateForm(TFormRawModbus, FormRawModbus);
+  Application.CreateForm(TFormTemperatureHardware, FormTemperatureHardware);
+  Application.CreateForm(TFormGas, FormGas);
   Application.Run;
 
 end.

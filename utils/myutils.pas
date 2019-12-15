@@ -46,6 +46,7 @@ uses dateutils, registry, winapi.windows, sysutils;
 var
     unixTime: TDateTime;
 
+
 function getCopyDataString(Message: TMessage): string;
 var
     cd: PCOPYDATASTRUCT;

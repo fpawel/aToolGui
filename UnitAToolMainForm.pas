@@ -39,6 +39,7 @@ type
         Splitter1: TSplitter;
     PanelPlaceholderBottom1: TPanel;
     GroupBoxInterrogateConsole: TGroupBox;
+    TabSheet1: TTabSheet;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -80,7 +81,7 @@ var
     AToolMainForm: TAToolMainForm;
 
 const
-    PageIndexChart = 1;
+    PageIndexChart = 2;
 
 implementation
 
@@ -90,7 +91,7 @@ uses System.Types, dateutils, myutils, api, UnitApiClient,
     UnitFormCurrentParty, unitappini, inifiles,
     Thrift.Collections, math,
     logfile, apitypes, vclutils, UnitFormCharts,
-    UnitFormChart, UnitFormRawModbus;
+    UnitFormChart, UnitFormRawModbus, UnitFormTemperatureHardware, UnitFormGas;
 
 procedure TAToolMainForm.FormCreate(Sender: TObject);
 begin
@@ -146,8 +147,24 @@ begin
     with FormRawmodbus do
     begin
         BorderStyle := bsNone;
-        parent := GroupBox1;
-        Align := alBottom;
+        parent := PanelPlaceholderBottom1;
+        Align := alTop;
+        Show;
+    end;
+
+    with FormGas do
+    begin
+        BorderStyle := bsNone;
+        parent := TabSheet1;
+        Align := alTop;
+        Show;
+    end;
+
+    with FormTemperatureHardware do
+    begin
+        BorderStyle := bsNone;
+        parent := TabSheet1;
+        Align := alTop;
         Show;
     end;
 
@@ -335,7 +352,10 @@ var
 begin
     PageControl := Sender as TPageControl;
     PageControl.Repaint;
-    // if PageControl.ActivePage = TabSheetParty then
+    if PageControl.ActivePage = TabSheet1 then
+    begin
+    	FormGas.setup;
+    end;
     // //FormCurrentParty.upload
     // else
     // if PageControl.ActivePageIndex >= PageIndexChart then
