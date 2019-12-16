@@ -14,6 +14,7 @@ var
     AppCfgClient: TAppConfigService.Iface;
     NotifyGuiClient: TNotifyGuiService.Iface;
     HelperClient: THelperService.Iface;
+    TempDeviceClient: TTemperatureDeviceService.Iface;
 
 implementation
 
@@ -52,6 +53,9 @@ begin
 
     HelperClient := THelperService.TClient.create
           (prot('HelperService'));
+
+    TempDeviceClient:= TTemperatureDeviceService.TClient.create
+          (prot('TemperatureDeviceService'));
 end;
 
 

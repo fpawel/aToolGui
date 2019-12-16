@@ -71,7 +71,7 @@ type
 
         procedure SetProductsComport(Sender: TObject);
         procedure SetProductsDevice(Sender: TObject);
-        procedure setupStringGrid;
+
         procedure setMainFormCaption;
         function GetSelectedProductsIDs: Thrift.Collections.IThriftList<int64>;
         procedure setupSeries;
@@ -82,6 +82,7 @@ type
         { Public declarations }
         FParty: IParty;
         FParamAddresses: IThriftList<System.Integer>;
+        procedure setupStringGrid;
         procedure upload;
         function GetSeriesInfo(ser: TFastLineSeries): TProductVar;
         function GetSeries(AProductID: int64; AParamAddr: word)

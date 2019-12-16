@@ -5,7 +5,7 @@ object FormTemperatureHardware: TFormTemperatureHardware
   BorderStyle = bsNone
   Caption = 'FormTemperatureHardware'
   ClientHeight = 80
-  ClientWidth = 921
+  ClientWidth = 1006
   Color = clHighlightText
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,7 +20,7 @@ object FormTemperatureHardware: TFormTemperatureHardware
     AlignWithMargins = True
     Left = 3
     Top = 61
-    Width = 915
+    Width = 1000
     Height = 16
     Margins.Top = 6
     Align = alBottom
@@ -31,17 +31,17 @@ object FormTemperatureHardware: TFormTemperatureHardware
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    ExplicitTop = 62
     ExplicitWidth = 136
   end
   object GroupBox1: TGroupBox
     Left = 0
     Top = 0
-    Width = 921
+    Width = 1006
     Height = 55
     Align = alClient
     Caption = #1058#1077#1084#1087#1077#1088#1072#1090#1091#1088#1085#1072#1103' '#1082#1072#1084#1077#1088#1072
     TabOrder = 0
+    ExplicitWidth = 921
     object Label1: TLabel
       AlignWithMargins = True
       Left = 5
@@ -62,6 +62,17 @@ object FormTemperatureHardware: TFormTemperatureHardware
       Margins.Top = 6
       Align = alLeft
       Caption = #1057#1054#1052' '#1087#1086#1088#1090
+      ExplicitHeight = 16
+    end
+    object Label4: TLabel
+      AlignWithMargins = True
+      Left = 669
+      Top = 24
+      Width = 79
+      Height = 26
+      Margins.Top = 6
+      Align = alLeft
+      Caption = #1054#1093#1083#1072#1078#1076#1077#1085#1080#1077':'
       ExplicitHeight = 16
     end
     object ComboBox1: TComboBox
@@ -91,61 +102,84 @@ object FormTemperatureHardware: TFormTemperatureHardware
       TabOrder = 1
       OnDropDown = ComboBox2DropDown
     end
-    object Edit1: TEdit
-      AlignWithMargins = True
-      Left = 285
-      Top = 21
-      Width = 42
-      Height = 24
-      Margins.Bottom = 8
-      Align = alLeft
-      NumbersOnly = True
-      TabOrder = 2
-      Text = '1'
-    end
     object Button1: TButton
       AlignWithMargins = True
-      Left = 333
+      Left = 285
       Top = 21
       Width = 90
       Height = 24
       Margins.Bottom = 8
       Align = alLeft
       Caption = #1059#1089#1090#1072#1074#1082#1072
-      TabOrder = 3
+      TabOrder = 2
+      OnClick = Button1Click
+      ExplicitLeft = 333
     end
     object Button2: TButton
       AlignWithMargins = True
-      Left = 621
+      Left = 573
       Top = 21
       Width = 90
       Height = 24
       Margins.Bottom = 8
       Align = alLeft
       Caption = #1057#1090#1086#1087
-      TabOrder = 4
+      TabOrder = 3
+      OnClick = Button2Click
+      ExplicitLeft = 621
     end
     object Button3: TButton
       AlignWithMargins = True
-      Left = 525
+      Left = 477
       Top = 21
       Width = 90
       Height = 24
       Margins.Bottom = 8
       Align = alLeft
       Caption = #1057#1090#1072#1088#1090
-      TabOrder = 5
+      TabOrder = 4
+      OnClick = Button3Click
+      ExplicitLeft = 525
     end
     object Button4: TButton
       AlignWithMargins = True
-      Left = 429
+      Left = 381
       Top = 21
       Width = 90
       Height = 24
       Margins.Bottom = 8
       Align = alLeft
       Caption = #1058#1077#1084#1087#1077#1088#1072#1090#1091#1088#1072
+      TabOrder = 5
+      ExplicitLeft = 429
+    end
+    object Button5: TButton
+      AlignWithMargins = True
+      Left = 850
+      Top = 21
+      Width = 90
+      Height = 24
+      Margins.Bottom = 8
+      Align = alLeft
+      Caption = #1054#1090#1082#1083#1102#1095#1080#1090#1100
       TabOrder = 6
+      OnClick = Button5Click
+      ExplicitLeft = 869
+      ExplicitTop = 23
+    end
+    object Button6: TButton
+      AlignWithMargins = True
+      Left = 754
+      Top = 21
+      Width = 90
+      Height = 24
+      Margins.Bottom = 8
+      Align = alLeft
+      Caption = #1042#1082#1083#1102#1095#1080#1090#1100
+      TabOrder = 7
+      OnClick = Button6Click
+      ExplicitLeft = 965
+      ExplicitTop = 23
     end
   end
 end

@@ -4,7 +4,7 @@ object FormGas: TFormGas
   Top = 0
   BorderStyle = bsNone
   Caption = 'FormGas'
-  ClientHeight = 78
+  ClientHeight = 59
   ClientWidth = 850
   Color = clHighlightText
   Font.Charset = DEFAULT_CHARSET
@@ -15,31 +15,21 @@ object FormGas: TFormGas
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 16
-  object Label5: TLabel
-    AlignWithMargins = True
-    Left = 3
-    Top = 59
-    Width = 844
-    Height = 16
-    Align = alBottom
-    Caption = '...'
-    ExplicitTop = 63
-    ExplicitWidth = 12
-  end
   object GroupBox1: TGroupBox
     Left = 0
     Top = 0
     Width = 850
-    Height = 56
+    Height = 59
     Align = alClient
     Caption = #1043#1072#1079#1086#1074#1099#1081' '#1073#1083#1086#1082
     TabOrder = 0
+    ExplicitHeight = 56
     object Label1: TLabel
       AlignWithMargins = True
       Left = 5
       Top = 24
       Width = 22
-      Height = 27
+      Height = 30
       Margins.Top = 6
       Align = alLeft
       Caption = #1058#1080#1087
@@ -50,21 +40,10 @@ object FormGas: TFormGas
       Left = 127
       Top = 24
       Width = 58
-      Height = 27
+      Height = 30
       Margins.Top = 6
       Align = alLeft
       Caption = #1057#1054#1052' '#1087#1086#1088#1090
-      ExplicitHeight = 16
-    end
-    object Label3: TLabel
-      AlignWithMargins = True
-      Left = 285
-      Top = 24
-      Width = 47
-      Height = 27
-      Margins.Top = 6
-      Align = alLeft
-      Caption = #1050#1083#1072#1087#1072#1085':'
       ExplicitHeight = 16
     end
     object ComboBox1: TComboBox
@@ -93,31 +72,20 @@ object FormGas: TFormGas
       TabOrder = 1
       OnDropDown = ComboBox2DropDown
     end
-    object Edit1: TEdit
-      AlignWithMargins = True
-      Left = 338
-      Top = 21
-      Width = 42
-      Height = 21
-      Margins.Bottom = 12
-      Align = alLeft
-      NumbersOnly = True
-      TabOrder = 2
-      Text = '1'
-      ExplicitHeight = 24
-    end
     object Button1: TButton
       AlignWithMargins = True
-      Left = 386
+      Left = 285
       Top = 20
       Width = 88
-      Height = 23
+      Height = 26
       Margins.Top = 2
       Margins.Bottom = 11
       Align = alLeft
-      Caption = #1042#1099#1087#1086#1083#1085#1080#1090#1100
-      TabOrder = 3
+      Caption = #1050#1083#1072#1087#1072#1085
+      TabOrder = 2
       OnClick = Button1Click
+      ExplicitLeft = 386
+      ExplicitHeight = 23
     end
   end
 end

@@ -14,12 +14,9 @@ type
 		ComboBox1: TComboBox;
 		Label2: TLabel;
 		ComboBox2: TComboBox;
-		Label3: TLabel;
-		Edit1: TEdit;
 		Button1: TButton;
-    Label5: TLabel;
-    procedure ComboBox2DropDown(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
+		procedure ComboBox2DropDown(Sender: TObject);
+		procedure Button1Click(Sender: TObject);
 	private
 		{ Private declarations }
 	public
@@ -34,28 +31,23 @@ implementation
 
 {$R *.dfm}
 
-uses myutils, UnitApiClient, apitypes;
+uses myutils, UnitApiClient, apitypes, UnitAToolMainForm;
 
 procedure TFormGas.Button1Click(Sender: TObject);
-var c:IAppConfig;
+var
+	c: IAppConfig;
+    s:string;
+    n:integer;
 begin
-	Label5.Caption := '...';
-	try
-        c := AppCfgClient.getConfig;
-        c.Gas.DeviceType := ComboBox1.ItemIndex;
-        c.Gas.Comport := ComboBox2.Text;
-        AppCfgClient.setConfig(c);
-		HardConnClient.switchGas(StrToInt(Edit1.Text));
-    except
-    	on e:Exception do
-        begin
-        	Label5.Font.Color := clRed;
-            Label5.Caption := e.Message;
-            Exit;
-        end;
-    end;
-    Label5.Font.Color := clNavy;
-    Label5.Caption := 'успешно'
+	c := AppCfgClient.getConfig;
+	c.Gas.DeviceType := ComboBox1.ItemIndex;
+	c.Gas.Comport := ComboBox2.Text;
+	AppCfgClient.setConfig(c);
+
+    if not InputQuery('Пневмоблок', 'Клапан:', s) or not TryStrToInt(s, n) then
+        exit;
+    AToolMainForm.HideAllPopups;
+	HardConnClient.switchGas(n);
 
 end;
 
@@ -65,12 +57,13 @@ begin
 end;
 
 procedure TFormGas.setup;
-var c:IGasDeviceConfig;
+var
+	c: IGasDeviceConfig;
 begin
-    c:= AppCfgClient.getConfig.Gas;
+	c := AppCfgClient.getConfig.Gas;
 	EnumComports(ComboBox2.Items);
-    ComboBox2.ItemIndex := ComboBox2.Items.IndexOf(c.Comport);
-    ComboBox1.ItemIndex := c.DeviceType;
+	ComboBox2.ItemIndex := ComboBox2.Items.IndexOf(c.Comport);
+	ComboBox1.ItemIndex := c.DeviceType;
 end;
 
 end.
