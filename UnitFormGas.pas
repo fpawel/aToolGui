@@ -37,10 +37,15 @@ implementation
 uses myutils, UnitApiClient, apitypes;
 
 procedure TFormGas.Button1Click(Sender: TObject);
+var c:IAppConfig;
 begin
 	Label5.Caption := '...';
 	try
-		HardConnClient.switchGas(ComboBox1.ItemIndex , ComboBox2.Text, StrToInt(Edit1.Text));
+        c := AppCfgClient.getConfig;
+        c.Gas.DeviceType := ComboBox1.ItemIndex;
+        c.Gas.Comport := ComboBox2.Text;
+        AppCfgClient.setConfig(c);
+		HardConnClient.switchGas(StrToInt(Edit1.Text));
     except
     	on e:Exception do
         begin
@@ -62,7 +67,7 @@ end;
 procedure TFormGas.setup;
 var c:IGasDeviceConfig;
 begin
-    c:= AppCfgClient.get.Gas;
+    c:= AppCfgClient.getConfig.Gas;
 	EnumComports(ComboBox2.Items);
     ComboBox2.ItemIndex := ComboBox2.Items.IndexOf(c.Comport);
     ComboBox1.ItemIndex := c.DeviceType;

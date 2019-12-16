@@ -48,7 +48,8 @@ uses
   UnitAppIni in 'UnitAppIni.pas',
   UnitFormRawModbus in 'UnitFormRawModbus.pas' {FormRawModbus},
   UnitFormTemperatureHardware in 'UnitFormTemperatureHardware.pas' {FormTemperatureHardware},
-  UnitFormGas in 'UnitFormGas.pas' {FormGas};
+  UnitFormGas in 'UnitFormGas.pas' {FormGas},
+  UnitFormCoefficients in 'UnitFormCoefficients.pas' {FormCoefficients};
 
 {$R *.res}
 
@@ -65,6 +66,7 @@ begin
   Application.CreateForm(TFormRawModbus, FormRawModbus);
   Application.CreateForm(TFormTemperatureHardware, FormTemperatureHardware);
   Application.CreateForm(TFormGas, FormGas);
+  Application.CreateForm(TFormCoefficients, FormCoefficients);
   Application.Run;
 
 end.

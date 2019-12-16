@@ -92,10 +92,10 @@ object AToolMainForm: TAToolMainForm
     object TabSheet1: TTabSheet
       Caption = #1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1077
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+    end
+    object TabSheet2: TTabSheet
+      Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099
+      ImageIndex = 2
     end
   end
   object MainMenu1: TMainMenu

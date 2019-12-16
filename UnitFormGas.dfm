@@ -18,30 +18,28 @@ object FormGas: TFormGas
   object Label5: TLabel
     AlignWithMargins = True
     Left = 3
-    Top = 63
+    Top = 59
     Width = 844
-    Height = 12
+    Height = 16
     Align = alBottom
     Caption = '...'
-    ExplicitTop = 6
-    ExplicitWidth = 45
+    ExplicitTop = 63
+    ExplicitWidth = 12
   end
   object GroupBox1: TGroupBox
     Left = 0
     Top = 0
     Width = 850
-    Height = 60
+    Height = 56
     Align = alClient
     Caption = #1043#1072#1079#1086#1074#1099#1081' '#1073#1083#1086#1082
     TabOrder = 0
-    ExplicitLeft = 3
-    ExplicitTop = -3
     object Label1: TLabel
       AlignWithMargins = True
       Left = 5
       Top = 24
       Width = 22
-      Height = 31
+      Height = 27
       Margins.Top = 6
       Align = alLeft
       Caption = #1058#1080#1087
@@ -52,7 +50,7 @@ object FormGas: TFormGas
       Left = 127
       Top = 24
       Width = 58
-      Height = 31
+      Height = 27
       Margins.Top = 6
       Align = alLeft
       Caption = #1057#1054#1052' '#1087#1086#1088#1090
@@ -63,11 +61,10 @@ object FormGas: TFormGas
       Left = 285
       Top = 24
       Width = 47
-      Height = 31
+      Height = 27
       Margins.Top = 6
       Align = alLeft
       Caption = #1050#1083#1072#1087#1072#1085':'
-      ExplicitLeft = 379
       ExplicitHeight = 16
     end
     object ComboBox1: TComboBox
@@ -101,13 +98,12 @@ object FormGas: TFormGas
       Left = 338
       Top = 21
       Width = 42
-      Height = 25
+      Height = 21
       Margins.Bottom = 12
       Align = alLeft
       NumbersOnly = True
       TabOrder = 2
       Text = '1'
-      ExplicitLeft = 432
       ExplicitHeight = 24
     end
     object Button1: TButton
@@ -115,16 +111,13 @@ object FormGas: TFormGas
       Left = 386
       Top = 20
       Width = 88
-      Height = 27
+      Height = 23
       Margins.Top = 2
       Margins.Bottom = 11
       Align = alLeft
       Caption = #1042#1099#1087#1086#1083#1085#1080#1090#1100
       TabOrder = 3
       OnClick = Button1Click
-      ExplicitLeft = 480
-      ExplicitTop = 21
-      ExplicitHeight = 23
     end
   end
 end
