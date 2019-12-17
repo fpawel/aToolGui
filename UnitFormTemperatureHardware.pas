@@ -53,7 +53,6 @@ begin
 	c := AppCfgClient.getConfig;
 	c.Temperature.DeviceType := ComboBox1.ItemIndex;
 	c.Temperature.Comport := ComboBox2.Text;
-    AToolMainForm.HideAllPopups;
 	AppCfgClient.setConfig(c);
 end;
 

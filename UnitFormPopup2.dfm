@@ -34,10 +34,6 @@ object FormPopup2: TFormPopup2
     Caption = 'Panel1'
     ShowCaption = False
     TabOrder = 0
-    ExplicitLeft = 5
-    ExplicitTop = 5
-    ExplicitWidth = 745
-    ExplicitHeight = 90
     object Label2: TLabel
       AlignWithMargins = True
       Left = 103
@@ -67,9 +63,6 @@ object FormPopup2: TFormPopup2
       Caption = 'Panel1'
       ShowCaption = False
       TabOrder = 0
-      ExplicitLeft = 4
-      ExplicitTop = 4
-      ExplicitHeight = 78
       object ImageError: TImage
         Left = 0
         Top = 0
@@ -306,10 +299,6 @@ object FormPopup2: TFormPopup2
       Caption = 'Panel1'
       ShowCaption = False
       TabOrder = 1
-      ExplicitLeft = 101
-      ExplicitTop = 1
-      ExplicitWidth = 604
-      ExplicitHeight = 84
       object Label1: TLabel
         AlignWithMargins = True
         Left = 3
@@ -339,9 +328,6 @@ object FormPopup2: TFormPopup2
       EdgeOuter = esNone
       Images = ImageList3
       TabOrder = 2
-      ExplicitLeft = 705
-      ExplicitTop = 1
-      ExplicitHeight = 84
       object ToolButton3: TToolButton
         Left = 0
         Top = 0

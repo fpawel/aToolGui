@@ -51,7 +51,7 @@ object FormGas: TFormGas
       Left = 33
       Top = 21
       Width = 88
-      Height = 25
+      Height = 33
       Align = alLeft
       Style = csOwnerDrawFixed
       ItemHeight = 19
@@ -65,7 +65,7 @@ object FormGas: TFormGas
       Left = 191
       Top = 21
       Width = 88
-      Height = 25
+      Height = 33
       Align = alLeft
       Style = csOwnerDrawFixed
       ItemHeight = 19

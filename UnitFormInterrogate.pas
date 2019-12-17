@@ -50,7 +50,7 @@ var
 begin
     with StringGrid1 do
     begin
-        ColCount := 5;
+        ColCount := 4;
         RowCount := 1;
         FixedCols := 0;
         FixedRows := 0;
@@ -117,8 +117,7 @@ begin
         r[0] := FormatDateTime('hh:nn:ss.zzz',now);
         r[1] := C.Comport;
         r[2] := C.Request;
-        r[3] := C.Response;
-        r[4] := C.Duration;
+        r[3] := C.Response + ' '+C.Duration;
         FOk[RowCount - 1] := c.Ok;
 
         Row := RowCount - 1;
@@ -134,8 +133,7 @@ begin
     begin
         ColWidths[0] := 100;
         ColWidths[1] := 60;
-        ColWidths[4] := 80;
-        w := StringGrid1.Width - 50 - ColWidths[0] - ColWidths[1] - ColWidths[4];
+        w := StringGrid1.Width - 50 - ColWidths[0] - ColWidths[1];
         ColWidths[2] := w div 3;
         ColWidths[3] := w - ColWidths[2];
     end;

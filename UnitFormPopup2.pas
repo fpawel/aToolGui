@@ -10,8 +10,6 @@ uses
     Vcl.ImgList;
 
 type
-    TFormPopup2OnClose = reference to procedure;
-
     TFormPopup2 = class(TForm)
         Panel1: TPanel;
         Panel2: TPanel;
@@ -30,7 +28,6 @@ type
 
     public
         { Public declarations }
-        FOnClose: TFormPopup2OnClose;
         procedure SetText(s: string; ok: boolean);
 
     end;
@@ -44,9 +41,7 @@ implementation
 
 procedure TFormPopup2.FormCreate(Sender: TObject);
 begin
-    FOnClose := procedure
-        begin
-        end;
+    //
 end;
 
 procedure TFormPopup2.SetText(s: string; ok: boolean);
@@ -63,8 +58,9 @@ end;
 
 procedure TFormPopup2.ToolButton3Click(Sender: TObject);
 begin
-    FOnClose();
-    Free;
+    Hide;
+    if self <> FormPopup2 then
+        Free;
 end;
 
 end.

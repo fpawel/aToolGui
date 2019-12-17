@@ -15,6 +15,7 @@ var
     NotifyGuiClient: TNotifyGuiService.Iface;
     HelperClient: THelperService.Iface;
     TempDeviceClient: TTemperatureDeviceService.Iface;
+    CoefsClient: TCoefficientsService.Iface;
 
 implementation
 
@@ -56,6 +57,9 @@ begin
 
     TempDeviceClient:= TTemperatureDeviceService.TClient.create
           (prot('TemperatureDeviceService'));
+
+    CoefsClient := TCoefficientsService.TClient.create
+          (prot('CoefficientsService'));
 end;
 
 

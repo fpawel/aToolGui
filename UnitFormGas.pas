@@ -46,7 +46,6 @@ begin
 
     if not InputQuery('Пневмоблок', 'Клапан:', s) or not TryStrToInt(s, n) then
         exit;
-    AToolMainForm.HideAllPopups;
 	HardConnClient.switchGas(n);
 
 end;
