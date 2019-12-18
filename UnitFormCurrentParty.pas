@@ -69,6 +69,8 @@ type
         Last_Edited_Col, Last_Edited_Row: integer;
         FBmp: array [0 .. 3] of TBitmap;
 
+        FProductConnection:TDictionary<int64,boolean>;
+
         procedure SetProductsComport(Sender: TObject);
         procedure SetProductsDevice(Sender: TObject);
 
@@ -102,7 +104,7 @@ implementation
 
 uses stringgridutils, stringutils, dateutils,
     vclutils, UnitFormPopup, UnitApiClient, myutils, UnitAToolMainForm,
-    UnitAppIni;
+    UnitAppIni, UnitFormInterrogate;
 
 {$R *.dfm}
 
@@ -115,6 +117,7 @@ var
 begin
     FSeries := TDictionary<TProductVar, TFastLineSeries>.Create;
     FSeriesInfo := TDictionary<TFastLineSeries, TProductVar>.Create;
+    FProductConnection := TDictionary<int64,boolean>.create;
 
     for i := 0 to 3 do
     begin
@@ -419,13 +422,13 @@ begin
     c := StringGrid1.Canvas;
     c.Font.Color := clNavy;
     p := FParty.Products[ACol - 1];
-    if p.Connection = 0 then
+    if not FProductConnection.ContainsKey(p.ProductID) then
     begin
         StringGrid_DrawCellText(StringGrid1, ACol, ARow, ARect,
           taRightJustify, AText);
         exit;
     end;
-    if p.Connection = 1 then
+    if FProductConnection[p.ProductID] then
         n := 0
     else
         n := 2;
@@ -694,10 +697,7 @@ begin
     begin
         if (p.Addr = AAddr) and (p.Comport = AComport) then
         begin
-            if ok then
-                p.Connection := 1
-            else
-                p.Connection := 2;
+            FProductConnection.AddOrSetValue(p.ProductID, ok);
             with StringGrid1 do
                 if not(EditorMode AND (Col = i + 1) AND (Row = ARow)) then
                     Cells[i + 1, ARow] := Cells[i + 1, ARow];

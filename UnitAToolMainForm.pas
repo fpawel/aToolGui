@@ -61,6 +61,7 @@ type
         procedure N6Click(Sender: TObject);
         procedure Splitter1Moved(Sender: TObject);
         procedure N10Click(Sender: TObject);
+    procedure N9Click(Sender: TObject);
     private
         { Private declarations }
         FEnableCopyData: boolean;
@@ -135,7 +136,6 @@ begin
         BorderStyle := bsNone;
         parent := GroupBox1;
         Align := alClient;
-        upload;
         Show;
     end;
 
@@ -190,6 +190,7 @@ begin
     NotifyGuiClient.open(Handle);
 
     FEnableCopyData := true;
+    FormCurrentParty.upload;
 end;
 
 procedure TAToolMainForm.SetupGroupbox2Height;
@@ -326,6 +327,11 @@ begin
         exit;
     CurrFileClient.setName(X);
     FormCurrentParty.FParty.Name := X;
+end;
+
+procedure TAToolMainForm.N9Click(Sender: TObject);
+begin
+    FormCoefficients.WriteCoefs;
 end;
 
 procedure TAToolMainForm.HandleCopydata(var Message: TMessage);

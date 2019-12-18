@@ -4,7 +4,7 @@ interface
 
 uses
     Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-    System.Classes, Vcl.Graphics,System.Generics.Collections,
+    System.Classes, Vcl.Graphics, System.Generics.Collections,
     Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, stringgridutils,
     stringutils, System.ImageList, Vcl.ImgList, UnitFormCurrentParty;
 
@@ -24,15 +24,16 @@ type
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
           Rect: TRect; State: TGridDrawState);
         procedure FormCreate(Sender: TObject);
+    procedure StringGrid1DblClick(Sender: TObject);
     private
         { Private declarations }
-        FOk:TList<BOOLean>;
-
+        FOk: TList<boolean>;
 
     public
         { Public declarations }
         procedure setupColsWidths;
         procedure AddCommTransaction(C: TCommTransaction);
+        procedure AddLine(AComport, ARequest, AResponse: string; Ok: boolean);
     end;
 
 var
@@ -40,7 +41,7 @@ var
 
 implementation
 
-uses myutils, dateutils;
+uses myutils, dateutils, UnitFormPopup;
 
 {$R *.dfm}
 
@@ -55,8 +56,13 @@ begin
         FixedCols := 0;
         FixedRows := 0;
     end;
-    FOk:=TList<BOOLean>.create;
+    FOk := TList<boolean>.create;
     FOk.Add(true);
+end;
+
+procedure TFormInterrogate.StringGrid1DblClick(Sender: TObject);
+begin
+    FormPopup.ShowStringGridCellText(StringGrid1);
 end;
 
 procedure TFormInterrogate.StringGrid1DrawCell(Sender: TObject;
@@ -84,21 +90,19 @@ begin
     if (gdSelected in State) then
         cnv.Brush.Color := clGradientInactiveCaption;
 
-    if not FOk[Arow] then
+    if not FOk[ARow] then
         cnv.Font.Color := clRed;
-
 
     StringGrid_DrawCellText(StringGrid1, ACol, ARow, Rect,
       taLeftJustify, AText);
     StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
 end;
 
-procedure TFormInterrogate.AddCommTransaction(C: TCommTransaction);
+procedure TFormInterrogate.AddLine(AComport, ARequest, AResponse: string;
+  Ok: boolean);
 var
     r: TStrings;
-    sel: TGridRect;
 begin
-    FormCurrentParty.SetProductConnection(c.Ok, c.Comport, c.Addr);
     with StringGrid1 do
     begin
         if RowCount > 100 then
@@ -110,18 +114,24 @@ begin
         if Cells[0, 0] <> '' then
         begin
             RowCount := RowCount + 1;
-            FOk.Add(c.Ok);
+            FOk.Add(Ok);
         end;
 
         r := Rows[RowCount - 1];
-        r[0] := FormatDateTime('hh:nn:ss.zzz',now);
-        r[1] := C.Comport;
-        r[2] := C.Request;
-        r[3] := C.Response + ' '+C.Duration;
-        FOk[RowCount - 1] := c.Ok;
+        r[0] := FormatDateTime('hh:nn:ss.zzz', now);
+        r[1] := AComport;
+        r[2] := ARequest;
+        r[3] := AResponse;
+        FOk[RowCount - 1] := Ok;
 
         Row := RowCount - 1;
     end;
+end;
+
+procedure TFormInterrogate.AddCommTransaction(C: TCommTransaction);
+begin
+    FormCurrentParty.SetProductConnection(C.Ok, C.Comport, C.Addr);
+    AddLine(C.Comport, C.Request, C.Response + ' ' + C.Duration, c.Ok);
 
 end;
 

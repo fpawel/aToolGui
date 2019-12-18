@@ -30,32 +30,55 @@ object FormCoefficients: TFormCoefficients
     RowCount = 1
     FixedRows = 0
     GradientEndColor = clBlack
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing]
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goEditing]
     PopupMenu = PopupMenu1
     TabOrder = 0
     OnDrawCell = StringGrid1DrawCell
     OnMouseDown = StringGrid1MouseDown
     OnMouseUp = StringGrid1MouseUp
     OnSelectCell = StringGrid1SelectCell
+    OnSetEditText = StringGrid1SetEditText
   end
   object PopupMenu1: TPopupMenu
     Left = 336
     Top = 72
-    object N1: TMenuItem
-      Caption = #1042#1099#1073#1088#1072#1090#1100' '#1087#1088#1080#1073#1086#1088#1099
-      OnClick = N1Click
+    object N9: TMenuItem
+      Caption = #1042#1099#1073#1088#1072#1090#1100
+      object N1: TMenuItem
+        Caption = #1074#1099#1076#1077#1083#1077#1085#1085#1099#1077' '#1087#1088#1080#1073#1086#1088#1099
+        OnClick = N1Click
+      end
+      object N5: TMenuItem
+        Caption = #1074#1089#1077' '#1087#1088#1080#1073#1086#1088#1099
+        OnClick = N5Click
+      end
+      object N3: TMenuItem
+        Caption = #1074#1099#1076#1077#1083#1077#1085#1085#1099#1077' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099
+        OnClick = N3Click
+      end
+      object N7: TMenuItem
+        Caption = #1074#1089#1077' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099
+        OnClick = N7Click
+      end
     end
-    object N2: TMenuItem
-      Caption = #1054#1090#1084#1077#1085#1080#1090#1100' '#1074#1099#1073#1088#1072#1085#1085#1086#1089#1090#1100' '#1087#1088#1080#1073#1086#1088#1086#1074
-      OnClick = N1Click
-    end
-    object N3: TMenuItem
-      Caption = #1042#1099#1073#1088#1072#1090#1100' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099
-      OnClick = N3Click
-    end
-    object N4: TMenuItem
-      Caption = #1054#1090#1084#1077#1085#1080#1090#1100' '#1074#1099#1073#1088#1072#1085#1085#1086#1089#1090#1100' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1086#1074
-      OnClick = N3Click
+    object N10: TMenuItem
+      Caption = #1054#1090#1084#1077#1085#1080#1090#1100' '#1074#1099#1073#1088#1072#1085#1085#1086#1089#1090#1100
+      object N2: TMenuItem
+        Caption = #1074#1099#1076#1077#1083#1077#1085#1085#1099#1077' '#1087#1088#1080#1073#1086#1088#1099
+        OnClick = N1Click
+      end
+      object N6: TMenuItem
+        Caption = #1074#1089#1077' '#1087#1088#1080#1073#1086#1088#1099
+        OnClick = N5Click
+      end
+      object N4: TMenuItem
+        Caption = #1074#1099#1076#1077#1083#1077#1085#1085#1099#1077' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099
+        OnClick = N3Click
+      end
+      object N8: TMenuItem
+        Caption = #1074#1089#1077' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099
+        OnClick = N7Click
+      end
     end
   end
 end

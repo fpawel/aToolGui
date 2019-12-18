@@ -26,6 +26,12 @@ type
         N2: TMenuItem;
         N3: TMenuItem;
         N4: TMenuItem;
+    N5: TMenuItem;
+    N6: TMenuItem;
+    N7: TMenuItem;
+    N8: TMenuItem;
+    N9: TMenuItem;
+    N10: TMenuItem;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: integer;
           Rect: TRect; State: TGridDrawState);
         procedure FormCreate(Sender: TObject);
@@ -37,14 +43,20 @@ type
           Shift: TShiftState; X, Y: integer);
         procedure N1Click(Sender: TObject);
         procedure N3Click(Sender: TObject);
+        procedure StringGrid1SetEditText(Sender: TObject; ACol, ARow: integer;
+          const Value: string);
+    procedure N5Click(Sender: TObject);
+    procedure N7Click(Sender: TObject);
     private
         { Private declarations }
         FProducts: IThriftList<IProduct>;
         FCoefs: IThriftList<ICoefficient>;
+        Last_Edited_Col, Last_Edited_Row: integer;
     public
         { Public declarations }
         procedure setup;
         procedure HandleReadCoefsVals(xs: TArray<TCoefVal>);
+        procedure WriteCoefs;
     end;
 
 var
@@ -101,18 +113,83 @@ begin
         end;
 end;
 
+procedure TFormCoefficients.N5Click(Sender: TObject);
+var
+    ACol: integer;
+    p: IProduct;
+begin
+    with StringGrid1 do
+        for ACol := 1 to ColCount-1 do
+        begin
+            p := FProducts[ACol - 1];
+            p.Active := N5 = Sender;
+            ProductsClient.setProductActive(p.ProductID, p.Active);
+            With StringGrid1 do
+                Cells[ACol, 0] := Cells[ACol, 0];
+        end;
+end;
+
+procedure TFormCoefficients.N7Click(Sender: TObject);
+var
+    ARow: integer;
+    c: ICoefficient;
+begin
+    with StringGrid1 do
+        for ARow := 1 to RowCount-1 do
+        begin
+            c := FCoefs[ARow - 1];
+            c.Active := N7 = Sender;
+            CoefsClient.setActive(c.N, c.Active);
+            With StringGrid1 do
+                Cells[0, ARow] := Cells[0, ARow];
+        end;
+end;
+
+procedure TFormCoefficients.WriteCoefs;
+var
+    ACol, ARow: integer;
+    p: IProduct;
+    c: ICoefficient;
+    v: double;
+    cv: IProductCoefficientValue;
+    cvals: IThriftList<IProductCoefficientValue>;
+begin
+    cvals := TThriftListImpl<IProductCoefficientValue>.create;
+    with StringGrid1 do
+    begin
+        for ACol := 1 to colcount - 1 do
+        begin
+            p := FProducts[ACol - 1];
+            if not p.Active then
+                continue;
+            for ARow := 1 to rowcount - 1 do
+            begin
+                c := FCoefs[ARow - 1];
+                if not c.Active then
+                    continue;
+                if not TryStrToFloat2(Cells[ACol, ARow], v) then
+                    continue;
+                cv := TProductCoefficientValueImpl.create;
+                cv.ProductID := p.ProductID;
+                cv.Coefficient := c.N;
+                cv.Value := v;
+                cvals.Add(cv);
+            end;
+        end;
+    end;
+    if cvals.Count = 0 then
+        exit;
+    CoefsClient.writeAll(cvals);
+
+end;
+
 procedure TFormCoefficients.HandleReadCoefsVals(xs: TArray<TCoefVal>);
 var
     ACol, ARow: integer;
     cv: TCoefVal;
     p: IProduct;
-    ct: TCommTransaction;
 begin
-    AToolMainForm.PageControlMain.OnChange := nil;
-    AToolMainForm.PageControlMain.ActivePage := AToolMainForm.TabSheet2;
-    AToolMainForm.PageControlMain.OnChange :=
-      AToolMainForm.PageControlMainChange;
-    AToolMainForm.PageControlMainChange(AToolMainForm.PageControlMain);
+    setup;
 
     with StringGrid1 do
     begin
@@ -134,12 +211,10 @@ begin
                     if (cv.What = 'read') AND cv.Ok then
                         Cells[ACol, ARow] := cv.Result;
 
-                    ct.Comport := p.Comport;
-                    ct.Request := Format('%s коэф.%d %s сер.№%d адр.%d',
-                      [cv.What, cv.Coefficient, p.Device, p.Serial, p.Addr]);
-                    ct.Response := cv.Result;
-                    ct.Ok := cv.Ok;
-                    FormInterrogate.AddCommTransaction(ct);
+                    FormInterrogate.AddLine(p.Comport,
+                      Format('%s коэф.%d %s сер.№%d адр.%d',
+                      [cv.What, cv.Coefficient, p.Device, p.Serial, p.Addr]),
+                      cv.Result, cv.Ok);
 
                 end;
             end;
@@ -301,8 +376,50 @@ end;
 procedure TFormCoefficients.StringGrid1SelectCell(Sender: TObject;
   ACol, ARow: integer; var CanSelect: boolean);
 begin
+
+    // When selecting a cell
+    if StringGrid1.EditorMode then
+    begin // It was a cell being edited
+        StringGrid1.EditorMode := false; // Deactivate the editor
+        // Do an extra check if the LastEdited_ACol and LastEdited_ARow are not -1 already.
+        // This is to be able to use also the arrow-keys up and down in the Grid.
+        if (Last_Edited_Col <> -1) and (Last_Edited_Row <> -1) then
+            StringGrid1SetEditText(StringGrid1, Last_Edited_Col, Last_Edited_Row,
+              StringGrid1.Cells[Last_Edited_Col, Last_Edited_Row]);
+        // Just make the call
+    end;
+    // Do whatever else wanted
     StringGrid_RedrawRow(StringGrid1, 0);
     StringGrid_RedrawCol(StringGrid1, 0);
+end;
+
+procedure TFormCoefficients.StringGrid1SetEditText(Sender: TObject;
+  ACol, ARow: integer; const Value: string);
+  var v:double;
+begin
+    With StringGrid1 do
+    begin
+        // Fired on every change
+        if Not EditorMode // goEditing must be 'True' in Options
+        then
+        begin // Only after user ends editing the cell
+            Last_Edited_Col := -1; // Indicate no cell is edited
+            Last_Edited_Row := -1; // Indicate no cell is edited
+            // Do whatever wanted after user has finish editing a cell
+
+            if not TryStrToFloat2(Value, v) then
+            begin
+                OnSetEditText := nil;
+                Cells[ACol, ARow] := '';
+                OnSetEditText := StringGrid1SetEditText;
+            end;
+        end
+        else
+        begin // The cell is being editted
+            Last_Edited_Col := ACol; // Remember column of cell being edited
+            Last_Edited_Row := ARow; // Remember row of cell being edited
+        end;
+    end;
 end;
 
 end.

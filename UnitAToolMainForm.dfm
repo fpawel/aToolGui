@@ -131,6 +131,7 @@ object AToolMainForm: TAToolMainForm
       Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099
       object N9: TMenuItem
         Caption = #1047#1072#1087#1080#1089#1072#1090#1100
+        OnClick = N9Click
       end
       object N10: TMenuItem
         Caption = #1057#1095#1080#1090#1072#1090#1100
