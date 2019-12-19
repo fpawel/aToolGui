@@ -59,7 +59,7 @@ uses System.types, dateutils, apitypes, math, stringgridutils,
     UnitFormCurrentParty, UnitAToolMainForm;
 
 const
-    col_count = 7;
+    col_count = 6;
 
 procedure TFormChart.Chart1AfterDraw(Sender: TObject);
 var
@@ -296,12 +296,12 @@ procedure TFormChart.StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
 var
     cnv: TCanvas;
     ser: TFastLineSeries;
-    pv: TProductVar;
+    //pv: TProductVar;
     AText: string;
     d: Integer;
     brushColor: TColor;
     r: TRect;
-    p: IProduct;
+    //p: IProduct;
     s: string;
     function newRect(l, t, r, b: Integer): TRect;
     begin
@@ -326,8 +326,8 @@ begin
         exit;
     end;
 
-    pv := FormCurrentParty.GetSeriesInfo(ser);
-    p := FormCurrentParty.GetProductByID(pv.ProductID);
+    //pv := FormCurrentParty.GetSeriesInfo(ser);
+    //p := FormCurrentParty.GetProductByID(pv.ProductID);
 
     StringGrid_DrawCheckBoxCell(StringGrid1, ACol, ARow, Rect, State,
       ser.Active);
@@ -344,7 +344,7 @@ begin
     r.Left := r.Right;
     r.Right := Rect.Right;
     StringGrid_DrawCellText(StringGrid1, ACol, ARow, r, taLeftJustify,
-      Format('%s:%d:%d', [p.Comport, p.Addr, pv.ParamAddr]));
+      ser.Title);
 
     // r.Left := r.Right + 1;
     // r.Right := Rect.Right;

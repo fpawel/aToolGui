@@ -62,7 +62,7 @@ object FormChart: TFormChart
     Align = alBottom
     BorderStyle = bsNone
     ColCount = 4
-    DefaultColWidth = 200
+    DefaultColWidth = 250
     DefaultRowHeight = 22
     DefaultDrawing = False
     FixedColor = clBackground
@@ -74,6 +74,8 @@ object FormChart: TFormChart
     TabOrder = 1
     OnDrawCell = StringGrid1DrawCell
     OnMouseDown = StringGrid1MouseDown
+    ExplicitLeft = 8
+    ExplicitTop = 251
     RowHeights = (
       22)
   end

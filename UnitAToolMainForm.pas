@@ -249,7 +249,7 @@ end;
 procedure TAToolMainForm.MenuRunStopClick(Sender: TObject);
 begin
     if HardConnClient.Connected then
-        HardConnClient.Disconnect
+        HardConnClient.interrupt
     else
         HardConnClient.Connect;
 end;

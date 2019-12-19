@@ -69,7 +69,7 @@ type
         Last_Edited_Col, Last_Edited_Row: integer;
         FBmp: array [0 .. 3] of TBitmap;
 
-        FProductConnection:TDictionary<int64,boolean>;
+        FProductConnection: TDictionary<int64, boolean>;
 
         procedure SetProductsComport(Sender: TObject);
         procedure SetProductsDevice(Sender: TObject);
@@ -83,7 +83,7 @@ type
     public
         { Public declarations }
         FParty: IParty;
-        FParamAddresses: IThriftList<System.Integer>;
+        FParams: IThriftList<apitypes.IDeviceParam>;
         procedure setupStringGrid;
         procedure upload;
         function GetSeriesInfo(ser: TFastLineSeries): TProductVar;
@@ -111,13 +111,21 @@ uses stringgridutils, stringutils, dateutils,
 const
     FirstParamRow = 4;
 
+function formatDeviceParam(p: IDeviceParam): string;
+begin
+    if length(p.Name) > 0 then
+        result := Format('%d,%s', [p.ParamAddr, p.Name])
+    else
+        result := Format('%d', [p.ParamAddr]);
+end;
+
 procedure TFormCurrentParty.FormCreate(Sender: TObject);
 var
     i: integer;
 begin
     FSeries := TDictionary<TProductVar, TFastLineSeries>.Create;
     FSeriesInfo := TDictionary<TFastLineSeries, TProductVar>.Create;
-    FProductConnection := TDictionary<int64,boolean>.create;
+    FProductConnection := TDictionary<int64, boolean>.Create;
 
     for i := 0 to 3 do
     begin
@@ -498,14 +506,15 @@ end;
 
 procedure TFormCurrentParty.setupStringGrid;
 var
-    place, n, X, ARow, ACol: integer;
+    place, n, ARow, ACol: integer;
     p: IProduct;
+    AParam: IDeviceParam;
 begin
     StringGrid_Clear(StringGrid1);
     with StringGrid1 do
     begin
         ColCount := FParty.Products.Count + 1;
-        RowCount := FirstParamRow + FParamAddresses.Count;
+        RowCount := FirstParamRow + FParams.Count;
         if FParty.Products.Count = 0 then
             exit;
 
@@ -536,11 +545,11 @@ begin
 
         end;
 
-        for n := 0 to FParamAddresses.Count - 1 do
+        for n := 0 to FParams.Count - 1 do
         begin
             ARow := n + FirstParamRow;
-            X := FParamAddresses[n];
-            Cells[0, ARow] := Format('%s %d', ['$' + IntToHex(X, 4), X]);
+            AParam := FParams[n];
+            Cells[0, ARow] := formatDeviceParam(AParam);
         end;
     end;
 
@@ -550,7 +559,7 @@ procedure TFormCurrentParty.setupSeries;
 var
     ser: TFastLineSeries;
     p: IProduct;
-    VarID: SmallInt;
+    AParam: IDeviceParam;
     pvs: IProductParam;
     xx: TPair<TFastLineSeries, TProductVar>;
 
@@ -570,17 +579,21 @@ begin
     FSeriesInfo.Clear;
 
     for p in FParty.Products do
-        for VarID in FParamAddresses do
+        for AParam in FParams do
         begin
             ser := TFastLineSeries.Create(nil);
             ser.XValues.DateTime := true;
-            ser.Title := Format('%d:%d', [p.ProductID, VarID]);
+            ser.Title := Format('%s,%s:%d,%s', [
+              p.Device, p.Comport, p.Addr, formatDeviceParam(AParam)]);
+
             ser.LinePen.Width := 2;
             ser.Active := false;
-            FSeries.Add(TProductVar.Create(p.ProductID, VarID), ser);
-            FSeriesInfo.Add(ser, TProductVar.Create(p.ProductID, VarID));
+            FSeries.Add(TProductVar.Create(p.ProductID, AParam.ParamAddr), ser);
+            FSeriesInfo.Add(ser, TProductVar.Create(p.ProductID,
+              AParam.ParamAddr));
 
-            pvs := ProductsClient.getProductParam(p.ProductID, VarID);
+            pvs := ProductsClient.getProductParam(p.ProductID,
+              AParam.ParamAddr);
             if pvs.Chart <> '' then
             begin
                 ser.ParentChart := AToolMainForm.GetChartByName(pvs.Chart);
@@ -592,7 +605,7 @@ end;
 procedure TFormCurrentParty.upload;
 begin
     FParty := FilesClient.getCurrentParty;
-    FParamAddresses := CurrFileClient.listParamAddresses;
+    FParams := CurrFileClient.listDeviceParams;
     setMainFormCaption;
     setupStringGrid;
     setupSeries;
@@ -720,9 +733,9 @@ begin
         p := FParty.Products[i];
         if (p.Comport <> X.Comport) or (p.Addr <> X.Addr) then
             continue;
-        for j := 0 to FParamAddresses.Count - 1 do
+        for j := 0 to FParams.Count - 1 do
         begin
-            AParamAddr := FParamAddresses[j];
+            AParamAddr := FParams[j].ParamAddr;
             if AParamAddr <> X.ParamAddr then
                 continue;
             StringGrid1.Cells[i + 1, FirstParamRow + j] := X.Value;
@@ -757,7 +770,7 @@ begin
             for ARow := Top to Bottom do
             begin
                 p := FParty.Products[ACol - 1];
-                AVar := FParamAddresses[ARow - FirstParamRow];
+                AVar := FParams[ARow - FirstParamRow].ParamAddr;
 
                 pv := TProductVar.Create(p.ProductID, AVar);
                 ser := FSeries[pv];
