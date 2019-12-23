@@ -4,7 +4,7 @@ object FormTemperatureHardware: TFormTemperatureHardware
   Top = 0
   BorderStyle = bsNone
   Caption = 'FormTemperatureHardware'
-  ClientHeight = 80
+  ClientHeight = 57
   ClientWidth = 1006
   Color = clHighlightText
   Font.Charset = DEFAULT_CHARSET
@@ -16,38 +16,21 @@ object FormTemperatureHardware: TFormTemperatureHardware
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 16
-  object Label3: TLabel
-    AlignWithMargins = True
-    Left = 3
-    Top = 61
-    Width = 1000
-    Height = 16
-    Margins.Top = 6
-    Align = alBottom
-    Caption = #1079#1085#1072#1095#1077#1085#1080#1077' '#1090#1077#1084#1087#1077#1088#1072#1090#1091#1088#1099
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clNavy
-    Font.Height = -13
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    ExplicitWidth = 136
-  end
   object GroupBox1: TGroupBox
     Left = 0
     Top = 0
     Width = 1006
-    Height = 55
+    Height = 57
     Align = alClient
     Caption = #1058#1077#1084#1087#1077#1088#1072#1090#1091#1088#1085#1072#1103' '#1082#1072#1084#1077#1088#1072
     TabOrder = 0
-    ExplicitWidth = 921
+    ExplicitHeight = 55
     object Label1: TLabel
       AlignWithMargins = True
       Left = 5
       Top = 24
       Width = 22
-      Height = 26
+      Height = 28
       Margins.Top = 6
       Align = alLeft
       Caption = #1058#1080#1087
@@ -58,7 +41,7 @@ object FormTemperatureHardware: TFormTemperatureHardware
       Left = 127
       Top = 24
       Width = 58
-      Height = 26
+      Height = 28
       Margins.Top = 6
       Align = alLeft
       Caption = #1057#1054#1052' '#1087#1086#1088#1090
@@ -69,7 +52,7 @@ object FormTemperatureHardware: TFormTemperatureHardware
       Left = 669
       Top = 24
       Width = 79
-      Height = 26
+      Height = 28
       Margins.Top = 6
       Align = alLeft
       Caption = #1054#1093#1083#1072#1078#1076#1077#1085#1080#1077':'
@@ -80,7 +63,7 @@ object FormTemperatureHardware: TFormTemperatureHardware
       Left = 33
       Top = 21
       Width = 88
-      Height = 29
+      Height = 25
       Align = alLeft
       Style = csOwnerDrawFixed
       ItemHeight = 19
@@ -95,7 +78,7 @@ object FormTemperatureHardware: TFormTemperatureHardware
       Left = 191
       Top = 21
       Width = 88
-      Height = 29
+      Height = 25
       Align = alLeft
       Style = csOwnerDrawFixed
       ItemHeight = 19
@@ -107,79 +90,77 @@ object FormTemperatureHardware: TFormTemperatureHardware
       Left = 285
       Top = 21
       Width = 90
-      Height = 24
+      Height = 26
       Margins.Bottom = 8
       Align = alLeft
       Caption = #1059#1089#1090#1072#1074#1082#1072
       TabOrder = 2
       OnClick = Button1Click
-      ExplicitLeft = 333
+      ExplicitHeight = 24
     end
     object Button2: TButton
       AlignWithMargins = True
       Left = 573
       Top = 21
       Width = 90
-      Height = 24
+      Height = 26
       Margins.Bottom = 8
       Align = alLeft
       Caption = #1057#1090#1086#1087
       TabOrder = 3
       OnClick = Button2Click
-      ExplicitLeft = 621
+      ExplicitHeight = 24
     end
     object Button3: TButton
       AlignWithMargins = True
       Left = 477
       Top = 21
       Width = 90
-      Height = 24
+      Height = 26
       Margins.Bottom = 8
       Align = alLeft
       Caption = #1057#1090#1072#1088#1090
       TabOrder = 4
       OnClick = Button3Click
-      ExplicitLeft = 525
+      ExplicitHeight = 24
     end
     object Button4: TButton
       AlignWithMargins = True
       Left = 381
       Top = 21
       Width = 90
-      Height = 24
+      Height = 26
       Margins.Bottom = 8
       Align = alLeft
       Caption = #1058#1077#1084#1087#1077#1088#1072#1090#1091#1088#1072
       TabOrder = 5
-      ExplicitLeft = 429
+      ExplicitHeight = 24
     end
     object Button5: TButton
       AlignWithMargins = True
       Left = 850
       Top = 21
       Width = 90
-      Height = 24
+      Height = 26
       Margins.Bottom = 8
       Align = alLeft
       Caption = #1054#1090#1082#1083#1102#1095#1080#1090#1100
       TabOrder = 6
       OnClick = Button5Click
-      ExplicitLeft = 869
-      ExplicitTop = 23
+      ExplicitHeight = 24
     end
     object Button6: TButton
       AlignWithMargins = True
       Left = 754
       Top = 21
       Width = 90
-      Height = 24
+      Height = 26
       Margins.Bottom = 8
       Align = alLeft
       Caption = #1042#1082#1083#1102#1095#1080#1090#1100
       TabOrder = 7
       OnClick = Button6Click
-      ExplicitLeft = 965
-      ExplicitTop = 23
+      ExplicitHeight = 24
     end
   end
 end

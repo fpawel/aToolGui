@@ -33,7 +33,5 @@ object FormInterrogate: TFormInterrogate
     TabOrder = 0
     OnDblClick = StringGrid1DblClick
     OnDrawCell = StringGrid1DrawCell
-    ExplicitLeft = -2
-    ExplicitTop = 8
   end
 end

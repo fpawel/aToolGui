@@ -14,7 +14,7 @@ uses
 type
 
     TCopyDataCmd = (cdcNewCommTransaction, cdcNewProductParamValue, cdcNewChart,
-      cdcPopup, cdcCoefs);
+      cdcPopup, cdcCoefs, cdcProductConn);
 
     TPopupMessage = record
         Text: string;
@@ -359,7 +359,9 @@ begin
         cdcCoefs:
             FormCoefficients.HandleReadCoefsVals
               (TJsonCD.unmarshal<TCoefVals>(Message));
-
+        cdcProductConn:
+            FormCurrentParty.SetProductConnection(
+            TJsonCD.unmarshal<TProductConnection>(Message));
     else
         raise Exception.create('wrong message: ' + IntToStr(Message.WParam));
     end;

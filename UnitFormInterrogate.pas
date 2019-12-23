@@ -11,10 +11,9 @@ uses
 type
 
     TCommTransaction = record
-        Addr: byte;
         Request: string;
         Response: string;
-        Comport: string;
+        Port: string;
         Duration: string;
         Ok: boolean;
     end;
@@ -130,9 +129,7 @@ end;
 
 procedure TFormInterrogate.AddCommTransaction(C: TCommTransaction);
 begin
-    FormCurrentParty.SetProductConnection(C.Ok, C.Comport, C.Addr);
-    AddLine(C.Comport, C.Request, C.Response + ' ' + C.Duration, c.Ok);
-
+    AddLine(C.Port, C.Request, C.Response + ' ' + C.Duration, c.Ok);
 end;
 
 procedure TFormInterrogate.setupColsWidths;

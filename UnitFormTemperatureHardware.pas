@@ -18,7 +18,6 @@ type
         Button2: TButton;
         Button3: TButton;
         Button4: TButton;
-        Label3: TLabel;
     Label4: TLabel;
     Button5: TButton;
     Button6: TButton;
@@ -98,7 +97,7 @@ end;
 
 procedure TFormTemperatureHardware.FormCreate(Sender: TObject);
 begin
-    Label3.Caption := '';
+    //
 end;
 
 procedure TFormTemperatureHardware.setup;

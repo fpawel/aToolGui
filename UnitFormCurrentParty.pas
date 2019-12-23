@@ -19,6 +19,11 @@ type
     // ParamAddr modbus.Var
     // Value string
     // }
+    TProductConnection = record
+        ProductID: int64;
+        Ok:boolean;
+    end;
+
     TProductParamValue = record
         Addr: byte;
         Comport: string;
@@ -89,8 +94,7 @@ type
         function GetSeriesInfo(ser: TFastLineSeries): TProductVar;
         function GetSeries(AProductID: int64; AParamAddr: word)
           : TFastLineSeries;
-        procedure SetProductConnection(ok: boolean; AComport: string;
-          AAddr: byte);
+        procedure SetProductConnection(x:TProductConnection);
         procedure AddNewProductParamValue(X: TProductParamValue);
         procedure AddMeasurements(xs: TArray<TMeasurement>);
 
@@ -697,8 +701,7 @@ begin
     MenuSetChartClick(Sender);
 end;
 
-procedure TFormCurrentParty.SetProductConnection(ok: boolean; AComport: string;
-  AAddr: byte);
+procedure TFormCurrentParty.SetProductConnection(x:TProductConnection);
 var
     p: IProduct;
     ARow, i: integer;
@@ -708,9 +711,9 @@ begin
     ARow := StringGrid1.Cols[0].IndexOf('Адрес');
     for p in FParty.Products do
     begin
-        if (p.Addr = AAddr) and (p.Comport = AComport) then
+        if p.ProductID = x.ProductID then
         begin
-            FProductConnection.AddOrSetValue(p.ProductID, ok);
+            FProductConnection.AddOrSetValue(p.ProductID, x.Ok);
             with StringGrid1 do
                 if not(EditorMode AND (Col = i + 1) AND (Row = ARow)) then
                     Cells[i + 1, ARow] := Cells[i + 1, ARow];

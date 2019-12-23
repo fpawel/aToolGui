@@ -44,7 +44,7 @@ object AToolMainForm: TAToolMainForm
         Height = 5
         Cursor = crVSplit
         Align = alBottom
-        Color = clWhite
+        Color = 16118769
         ParentColor = False
         OnMoved = Splitter1Moved
         ExplicitTop = 155
@@ -62,7 +62,6 @@ object AToolMainForm: TAToolMainForm
         Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1087#1088#1080#1073#1086#1088#1086#1074
         Constraints.MinHeight = 100
         TabOrder = 0
-        ExplicitTop = 2
       end
       object PanelPlaceholderBottom1: TPanel
         Left = 0
