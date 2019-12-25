@@ -24,7 +24,7 @@ object AToolMainForm: TAToolMainForm
     Top = 0
     Width = 1048
     Height = 552
-    ActivePage = TabSheetParty
+    ActivePage = TabSheetHardware
     Align = alClient
     MultiLine = True
     OwnerDraw = True
@@ -34,8 +34,8 @@ object AToolMainForm: TAToolMainForm
     TabWidth = 50
     OnChange = PageControlMainChange
     OnDrawTab = PageControlMainDrawTab
-    object TabSheetParty: TTabSheet
-      Caption = #1054#1087#1088#1086#1089' '#1087#1088#1080#1073#1086#1088#1086#1074
+    object TabSheetHardware: TTabSheet
+      Caption = #1055#1088#1080#1073#1086#1088#1099
       ImageIndex = 4
       object Splitter1: TSplitter
         Left = 0
@@ -49,20 +49,6 @@ object AToolMainForm: TAToolMainForm
         OnMoved = Splitter1Moved
         ExplicitTop = 155
       end
-      object GroupBox1: TGroupBox
-        AlignWithMargins = True
-        Left = 5
-        Top = 5
-        Width = 932
-        Height = 364
-        Margins.Left = 5
-        Margins.Top = 5
-        Margins.Bottom = 5
-        Align = alClient
-        Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1087#1088#1080#1073#1086#1088#1086#1074
-        Constraints.MinHeight = 100
-        TabOrder = 0
-      end
       object PanelPlaceholderBottom1: TPanel
         Left = 0
         Top = 379
@@ -72,7 +58,7 @@ object AToolMainForm: TAToolMainForm
         BevelOuter = bvNone
         Caption = 'PanelPlaceholderBottom1'
         ShowCaption = False
-        TabOrder = 1
+        TabOrder = 0
         object GroupBoxInterrogateConsole: TGroupBox
           AlignWithMargins = True
           Left = 5
@@ -83,19 +69,34 @@ object AToolMainForm: TAToolMainForm
           Margins.Top = 5
           Margins.Bottom = 5
           Align = alClient
-          Caption = #1054#1087#1088#1086#1089
+          Caption = #1055#1086#1089#1099#1083#1082#1080' '#1057#1054#1052' '#1087#1086#1088#1090#1086#1074
           Constraints.MinHeight = 50
           TabOrder = 0
         end
       end
-    end
-    object TabSheet1: TTabSheet
-      Caption = #1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1077
-      ImageIndex = 1
-    end
-    object TabSheet2: TTabSheet
-      Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099
-      ImageIndex = 2
+      object PageControl1: TPageControl
+        Left = 0
+        Top = 0
+        Width = 940
+        Height = 374
+        ActivePage = TabSheet2
+        Align = alClient
+        TabOrder = 1
+        OnChange = PageControl1Change
+        object TabSheet2: TTabSheet
+          Caption = #1055#1072#1088#1090#1080#1103
+          ExplicitLeft = 5
+          ExplicitTop = 25
+        end
+        object TabSheet3: TTabSheet
+          Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099
+          ImageIndex = 1
+        end
+        object TabSheet4: TTabSheet
+          Caption = #1059#1087#1088#1072#1074#1083#1077#1085#1080#1077
+          ImageIndex = 2
+        end
+      end
     end
   end
   object MainMenu1: TMainMenu
@@ -125,17 +126,6 @@ object AToolMainForm: TAToolMainForm
       object N5: TMenuItem
         Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
         OnClick = N5Click
-      end
-    end
-    object N8: TMenuItem
-      Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099
-      object N9: TMenuItem
-        Caption = #1047#1072#1087#1080#1089#1072#1090#1100
-        OnClick = N9Click
-      end
-      object N10: TMenuItem
-        Caption = #1057#1095#1080#1090#1072#1090#1100
-        OnClick = N10Click
       end
     end
     object MenuRunStop: TMenuItem

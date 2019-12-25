@@ -309,6 +309,7 @@ object FormPopup2: TFormPopup2
         AutoSize = False
         Caption = #1044#1083#1080#1085#1085#1086#1077' '#1090#1077#1082#1089#1090#1086#1074#1086#1077' '#1089#1086#1086#1073#1097#1077#1085#1080#1077
         WordWrap = True
+        OnDblClick = Label1DblClick
         ExplicitLeft = 307
         ExplicitTop = 0
         ExplicitWidth = 233

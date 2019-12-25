@@ -23,6 +23,7 @@ type
         Label2: TLabel;
         procedure FormCreate(Sender: TObject);
         procedure ToolButton3Click(Sender: TObject);
+    procedure Label1DblClick(Sender: TObject);
     private
         { Private declarations }
 
@@ -39,9 +40,26 @@ implementation
 
 {$R *.dfm}
 
+uses UnitFormPopup;
+
 procedure TFormPopup2.FormCreate(Sender: TObject);
 begin
     //
+end;
+
+procedure TFormPopup2.Label1DblClick(Sender: TObject);
+var
+  pt : tPoint;
+begin
+    FormPopup.SetText(Label1.Caption);
+    FormPopup.ImageError.Visible :=
+        ImageError.Visible;
+    FormPopup.ImageInfo.Visible := ImageInfo.Visible;
+    pt := Mouse.CursorPos;
+
+    FormPopup.Left := pt.x + 3;
+    FormPopup.Top := pt.y + 3;
+    FormPopup.Show;
 end;
 
 procedure TFormPopup2.SetText(s: string; ok: boolean);

@@ -25,7 +25,7 @@ type
 
     TAToolMainForm = class(TForm)
         PageControlMain: TPageControl;
-        TabSheetParty: TTabSheet;
+    TabSheetHardware: TTabSheet;
         MainMenu1: TMainMenu;
         N1: TMenuItem;
         N2: TMenuItem;
@@ -35,15 +35,13 @@ type
         MenuRunStop: TMenuItem;
         N6: TMenuItem;
         N7: TMenuItem;
-        GroupBox1: TGroupBox;
         Splitter1: TSplitter;
         PanelPlaceholderBottom1: TPanel;
         GroupBoxInterrogateConsole: TGroupBox;
-        TabSheet1: TTabSheet;
-        TabSheet2: TTabSheet;
-        N8: TMenuItem;
-        N9: TMenuItem;
-        N10: TMenuItem;
+    PageControl1: TPageControl;
+    TabSheet2: TTabSheet;
+    TabSheet3: TTabSheet;
+    TabSheet4: TTabSheet;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -60,8 +58,7 @@ type
           WheelDelta: Integer; MousePos: TPoint; var Handled: boolean);
         procedure N6Click(Sender: TObject);
         procedure Splitter1Moved(Sender: TObject);
-        procedure N10Click(Sender: TObject);
-    procedure N9Click(Sender: TObject);
+    procedure PageControl1Change(Sender: TObject);
     private
         { Private declarations }
         FEnableCopyData: boolean;
@@ -86,7 +83,7 @@ var
     AToolMainForm: TAToolMainForm;
 
 const
-    PageIndexChart = 3;
+    PageIndexChart = 1;
 
 implementation
 
@@ -134,7 +131,7 @@ begin
     with FormCurrentParty do
     begin
         BorderStyle := bsNone;
-        parent := GroupBox1;
+        parent := TabSheet2;
         Align := alClient;
         Show;
     end;
@@ -150,7 +147,7 @@ begin
     with FormRawmodbus do
     begin
         BorderStyle := bsNone;
-        parent := PanelPlaceholderBottom1;
+        parent := TabSheet4;
         Align := alTop;
         Show;
     end;
@@ -158,7 +155,7 @@ begin
     with FormGas do
     begin
         BorderStyle := bsNone;
-        parent := TabSheet1;
+        parent := TabSheet4;
         Align := alTop;
         Show;
     end;
@@ -166,7 +163,7 @@ begin
     with FormTemperatureHardware do
     begin
         BorderStyle := bsNone;
-        parent := TabSheet1;
+        parent := TabSheet4;
         Align := alTop;
         Show;
     end;
@@ -174,7 +171,7 @@ begin
     with FormCoefficients do
     begin
         BorderStyle := bsNone;
-        parent := TabSheet2;
+        parent := TabSheet3;
         Align := alClient;
         Show;
     end;
@@ -204,7 +201,7 @@ begin
       Ceil(AppIni.ReadFloat('AToolMainForm', 'rel_horiz1',
       double(PanelPlaceholderBottom1.Height) / h) * h);
     Splitter1.Top := 0;
-    GroupBox1.Top := 0;
+    PageControl1.Top := 0;
     PanelPlaceholderBottom1.Top := 100500;
     Realign;
     Splitter1.OnMoved := Splitter1Moved;
@@ -252,11 +249,6 @@ begin
         HardConnClient.interrupt
     else
         HardConnClient.Connect;
-end;
-
-procedure TAToolMainForm.N10Click(Sender: TObject);
-begin
-    CoefsClient.readAll;
 end;
 
 procedure TAToolMainForm.N2Click(Sender: TObject);
@@ -329,11 +321,6 @@ begin
     FormCurrentParty.FParty.Name := X;
 end;
 
-procedure TAToolMainForm.N9Click(Sender: TObject);
-begin
-    FormCoefficients.WriteCoefs;
-end;
-
 procedure TAToolMainForm.HandleCopydata(var Message: TMessage);
 var
     cd: PCOPYDATASTRUCT;
@@ -373,30 +360,34 @@ begin
     FormCurrentParty.upload;
 end;
 
+procedure TAToolMainForm.PageControl1Change(Sender: TObject);
+begin
+    if PageControl1.ActivePage = TabSheet4 then
+    begin
+        FormGas.setup;
+        FormTemperatureHardware.setup;
+    end
+    else if PageControl1.ActivePage = TabSheet3 then
+    begin
+        FormCoefficients.setup;
+    end
+    else if PageControl1.ActivePage = TabSheet2 then
+    begin
+        FormCurrentParty.FParty := FilesClient.getCurrentParty;
+        FormCurrentParty.setupStringGrid;
+    end
+end;
+
 procedure TAToolMainForm.PageControlMainChange(Sender: TObject);
 var
     PageControl: TPageControl;
 begin
     PageControl := Sender as TPageControl;
     PageControl.Repaint;
-    if PageControl.ActivePage = TabSheet1 then
+    if PageControl.ActivePage = TabSheetHardware then
     begin
-        FormGas.setup;
-        FormTemperatureHardware.setup;
+        PageControl1.OnChange(PageControl1);
     end
-    else if PageControl.ActivePage = TabSheet2 then
-    begin
-        FormCoefficients.setup;
-    end
-    else if PageControl.ActivePage = TabSheetParty then
-    begin
-        FormCurrentParty.FParty := FilesClient.getCurrentParty;
-        FormCurrentParty.setupStringGrid;
-    end
-    // //FormCurrentParty.upload
-    // else
-    // if PageControl.ActivePageIndex >= PageIndexChart then
-    // (PageControl.ActivePage.Controls[0] AS TFormChart).SetupStringGrid;
 
 end;
 
@@ -566,7 +557,7 @@ begin
     Splitter1.OnMoved := nil;
     OnResize := nil;
     Splitter1.Top := 0;
-    GroupBox1.Top := 0;
+    PageControl1.Top := 0;
     PanelPlaceholderBottom1.Top := 100500;
     Realign;
     Splitter1.OnMoved := Splitter1Moved;

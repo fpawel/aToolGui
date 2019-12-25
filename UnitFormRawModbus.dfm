@@ -5,7 +5,7 @@ object FormRawModbus: TFormRawModbus
   BorderStyle = bsNone
   Caption = 'FormRawModbus'
   ClientHeight = 53
-  ClientWidth = 651
+  ClientWidth = 767
   Color = clBtnHighlight
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,12 +18,12 @@ object FormRawModbus: TFormRawModbus
   object GroupBoxRawModbus: TGroupBox
     Left = 0
     Top = 0
-    Width = 651
+    Width = 767
     Height = 53
     Align = alClient
-    Caption = #1047#1072#1087#1088#1086#1089
+    Caption = #1054#1090#1087#1088#1072#1074#1082#1072' '#1082#1086#1084#1072#1085#1076#1099' MODBUS'
     TabOrder = 0
-    ExplicitHeight = 81
+    ExplicitWidth = 651
     object Label2: TLabel
       AlignWithMargins = True
       Left = 140
@@ -33,8 +33,6 @@ object FormRawModbus: TFormRawModbus
       Margins.Top = 6
       Align = alLeft
       Caption = #1041#1072#1081#1090#1099' '#1076#1072#1085#1085#1099#1093' ('#1073#1077#1079' CRC16)'
-      ExplicitLeft = 131
-      ExplicitTop = 21
       ExplicitHeight = 16
     end
     object Label1: TLabel
@@ -65,18 +63,19 @@ object FormRawModbus: TFormRawModbus
       AlignWithMargins = True
       Left = 306
       Top = 21
-      Width = 246
+      Width = 362
       Height = 22
       Margins.Bottom = 8
       Align = alClient
       PopupMenu = PopupMenu1
       TabOrder = 1
       Text = '16'
+      ExplicitWidth = 246
       ExplicitHeight = 24
     end
     object Button1: TButton
       AlignWithMargins = True
-      Left = 558
+      Left = 674
       Top = 21
       Width = 88
       Height = 22
@@ -85,9 +84,7 @@ object FormRawModbus: TFormRawModbus
       Caption = #1042#1099#1087#1086#1083#1085#1080#1090#1100
       TabOrder = 2
       OnClick = Button1Click
-      ExplicitLeft = 560
-      ExplicitTop = 60
-      ExplicitHeight = 54
+      ExplicitLeft = 558
     end
   end
   object PopupMenu1: TPopupMenu

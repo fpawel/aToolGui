@@ -18,7 +18,7 @@ object FormCoefficients: TFormCoefficients
     AlignWithMargins = True
     Left = 3
     Top = 3
-    Width = 629
+    Width = 538
     Height = 293
     Align = alClient
     BorderStyle = bsNone
@@ -38,6 +38,36 @@ object FormCoefficients: TFormCoefficients
     OnMouseUp = StringGrid1MouseUp
     OnSelectCell = StringGrid1SelectCell
     OnSetEditText = StringGrid1SetEditText
+    ExplicitWidth = 629
+  end
+  object PanelPlaceholderBottom1: TPanel
+    Left = 544
+    Top = 0
+    Width = 91
+    Height = 299
+    Align = alRight
+    BevelOuter = bvNone
+    Caption = 'PanelPlaceholderBottom1'
+    ShowCaption = False
+    TabOrder = 1
+    object Button1: TButton
+      Left = 3
+      Top = 16
+      Width = 75
+      Height = 25
+      Caption = #1047#1072#1087#1080#1089#1072#1090#1100
+      TabOrder = 0
+      OnClick = Button1Click
+    end
+    object Button2: TButton
+      Left = 3
+      Top = 47
+      Width = 75
+      Height = 25
+      Caption = #1057#1095#1080#1090#1072#1090#1100
+      TabOrder = 1
+      OnClick = Button2Click
+    end
   end
   object PopupMenu1: TPopupMenu
     Left = 336

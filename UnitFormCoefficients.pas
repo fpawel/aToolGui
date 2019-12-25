@@ -5,7 +5,8 @@ interface
 uses
     Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
     System.Classes, Vcl.Graphics, Thrift.Collections, apitypes,
-    Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, Vcl.Menus;
+    Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, Vcl.Menus, Vcl.StdCtrls,
+  Vcl.ExtCtrls;
 
 type
     TCoefVal = record
@@ -32,6 +33,9 @@ type
     N8: TMenuItem;
     N9: TMenuItem;
     N10: TMenuItem;
+    PanelPlaceholderBottom1: TPanel;
+    Button1: TButton;
+    Button2: TButton;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: integer;
           Rect: TRect; State: TGridDrawState);
         procedure FormCreate(Sender: TObject);
@@ -47,6 +51,8 @@ type
           const Value: string);
     procedure N5Click(Sender: TObject);
     procedure N7Click(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
     private
         { Private declarations }
         FProducts: IThriftList<IProduct>;
@@ -68,6 +74,16 @@ implementation
 
 uses stringgridutils, stringutils, UnitFormCurrentParty, myutils, UnitApiClient,
     UnitAppIni, UnitAToolMainForm, UnitFormInterrogate;
+
+procedure TFormCoefficients.Button1Click(Sender: TObject);
+begin
+    WriteCoefs;
+end;
+
+procedure TFormCoefficients.Button2Click(Sender: TObject);
+begin
+    CoefsClient.readAll;
+end;
 
 procedure TFormCoefficients.FormCreate(Sender: TObject);
 begin

@@ -4,7 +4,8 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Menus;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Menus, Vcl.ComCtrls,
+  Vcl.ToolWin, System.ImageList, Vcl.ImgList;
 
 type
   TFormRawModbus = class(TForm)
@@ -35,7 +36,7 @@ implementation
 
 {$R *.dfm}
 
-uses UnitApiClient;
+uses UnitApiClient, UnitAToolMainForm, UnitAppIni;
 
 procedure TFormRawModbus.Button1Click(Sender: TObject);
 begin
