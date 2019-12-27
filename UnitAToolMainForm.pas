@@ -14,7 +14,7 @@ uses
 type
 
     TCopyDataCmd = (cdcNewCommTransaction, cdcNewProductParamValue, cdcNewChart,
-      cdcPopup, cdcCoefs, cdcProductConn);
+      cdcPopup, cdcCoefs, cdcProductConn, cdcPushwork, cdcPopwork);
 
     TPopupMessage = record
         Text: string;
@@ -42,6 +42,9 @@ type
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
     TabSheet4: TTabSheet;
+    N8: TMenuItem;
+    N9: TMenuItem;
+    MenuRunScriptWorks: TMenuItem;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -59,6 +62,9 @@ type
         procedure N6Click(Sender: TObject);
         procedure Splitter1Moved(Sender: TObject);
     procedure PageControl1Change(Sender: TObject);
+    procedure N8Click(Sender: TObject);
+    procedure N9Click(Sender: TObject);
+    procedure MenuRunScriptWorksClick(Sender: TObject);
     private
         { Private declarations }
         FEnableCopyData: boolean;
@@ -94,7 +100,7 @@ uses System.Types, dateutils, myutils, api, UnitApiClient,
     Thrift.Collections, math, UnitFormPopup2,
     logfile, apitypes, vclutils, UnitFormCharts,
     UnitFormChart, UnitFormRawModbus, UnitFormTemperatureHardware, UnitFormGas,
-    UnitFormCoefficients;
+    UnitFormCoefficients, UnitFormSelectScriptWorks;
 
 procedure TAToolMainForm.FormCreate(Sender: TObject);
 begin
@@ -176,7 +182,7 @@ begin
         Show;
     end;
 
-    if HardConnClient.Connected then
+    if RunWorkClient.Connected then
     begin
         MenuRunStop.Caption := 'Остановить опрос';
     end
@@ -236,19 +242,27 @@ end;
 procedure TAToolMainForm.HandleStartWork(var Message: TMessage);
 begin
     MenuRunStop.Caption := 'Остановить опрос';
+    MenuRunScriptWorks.Visible := false;
 end;
 
 procedure TAToolMainForm.HandleStopWork(var Message: TMessage);
 begin
     MenuRunStop.Caption := 'Запустить опрос';
+    MenuRunScriptWorks.Visible := true;
+end;
+
+procedure TAToolMainForm.MenuRunScriptWorksClick(Sender: TObject);
+begin
+    FormSelectScriptWorks.ExecuteDialog;
+
 end;
 
 procedure TAToolMainForm.MenuRunStopClick(Sender: TObject);
 begin
-    if HardConnClient.Connected then
-        HardConnClient.interrupt
+    if RunWorkClient.Connected then
+        RunWorkClient.interrupt
     else
-        HardConnClient.Connect;
+        RunWorkClient.Connect;
 end;
 
 procedure TAToolMainForm.N2Click(Sender: TObject);
@@ -321,6 +335,16 @@ begin
     FormCurrentParty.FParty.Name := X;
 end;
 
+procedure TAToolMainForm.N8Click(Sender: TObject);
+begin
+    CurrFileClient.createNewCopy;
+end;
+
+procedure TAToolMainForm.N9Click(Sender: TObject);
+begin
+     CurrFileClient.runEdit;
+end;
+
 procedure TAToolMainForm.HandleCopydata(var Message: TMessage);
 var
     cd: PCOPYDATASTRUCT;
@@ -349,6 +373,9 @@ begin
         cdcProductConn:
             FormCurrentParty.SetProductConnection(
             TJsonCD.unmarshal<TProductConnection>(Message));
+
+        cdcPushwork:;
+        cdcPopwork:;
     else
         raise Exception.create('wrong message: ' + IntToStr(Message.WParam));
     end;

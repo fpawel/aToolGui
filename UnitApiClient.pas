@@ -8,7 +8,7 @@ procedure OpenApiClient;
 
 var
     FilesClient: TFilesService.Iface;
-    HardConnClient: THardwareConnectionService.Iface;
+    RunWorkClient: TRunWorkService.Iface;
     CurrFileClient: TCurrentFileService.Iface;
     ProductsClient: TProductService.Iface;
     AppCfgClient: TAppConfigService.Iface;
@@ -16,6 +16,7 @@ var
     HelperClient: THelperService.Iface;
     TempDeviceClient: TTemperatureDeviceService.Iface;
     CoefsClient: TCoefficientsService.Iface;
+    ScriptClient: TScriptService.Iface;
 
 implementation
 
@@ -39,8 +40,8 @@ begin
 
     FilesClient := TFilesService.TClient.create(prot('FilesService'));
 
-    HardConnClient := THardwareConnectionService.TClient.create
-      (prot('HardwareConnectionService'));
+    RunWorkClient := TRunWorkService.TClient.create
+      (prot('RunWorkService'));
 
     ProductsClient := TProductService.TClient.create(prot('ProductService'));
 
@@ -60,6 +61,9 @@ begin
 
     CoefsClient := TCoefficientsService.TClient.create
           (prot('CoefficientsService'));
+
+    ScriptClient := TScriptService.TClient.create
+          (prot('ScriptService'));
 end;
 
 

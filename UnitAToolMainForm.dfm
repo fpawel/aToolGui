@@ -85,8 +85,6 @@ object AToolMainForm: TAToolMainForm
         OnChange = PageControl1Change
         object TabSheet2: TTabSheet
           Caption = #1055#1072#1088#1090#1080#1103
-          ExplicitLeft = 5
-          ExplicitTop = 25
         end
         object TabSheet3: TTabSheet
           Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099
@@ -108,6 +106,10 @@ object AToolMainForm: TAToolMainForm
         Caption = #1053#1086#1074#1099#1081
         OnClick = N2Click
       end
+      object N8: TMenuItem
+        Caption = #1057#1086#1079#1076#1072#1090#1100' '#1082#1086#1087#1080#1102
+        OnClick = N8Click
+      end
       object N3: TMenuItem
         Caption = #1054#1090#1082#1088#1099#1090#1100
         OnClick = N3Click
@@ -127,10 +129,18 @@ object AToolMainForm: TAToolMainForm
         Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
         OnClick = N5Click
       end
+      object N9: TMenuItem
+        Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100' '#1076#1072#1085#1085#1099#1077
+        OnClick = N9Click
+      end
     end
     object MenuRunStop: TMenuItem
       Caption = #1047#1072#1087#1091#1089#1090#1080#1090#1100' '#1086#1087#1088#1086#1089
       OnClick = MenuRunStopClick
+    end
+    object MenuRunScriptWorks: TMenuItem
+      Caption = #1047#1072#1087#1091#1089#1090#1080#1090#1100' '#1089#1094#1077#1085#1072#1088#1080#1081
+      OnClick = MenuRunScriptWorksClick
     end
   end
 end

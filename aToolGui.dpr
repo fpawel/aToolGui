@@ -49,7 +49,8 @@ uses
   UnitFormRawModbus in 'UnitFormRawModbus.pas' {FormRawModbus},
   UnitFormTemperatureHardware in 'UnitFormTemperatureHardware.pas' {FormTemperatureHardware},
   UnitFormGas in 'UnitFormGas.pas' {FormGas},
-  UnitFormCoefficients in 'UnitFormCoefficients.pas' {FormCoefficients};
+  UnitFormCoefficients in 'UnitFormCoefficients.pas' {FormCoefficients},
+  UnitFormSelectScriptWorks in 'UnitFormSelectScriptWorks.pas' {FormSelectScriptWorks};
 
 {$R *.res}
 
@@ -67,6 +68,7 @@ begin
   Application.CreateForm(TFormTemperatureHardware, FormTemperatureHardware);
   Application.CreateForm(TFormGas, FormGas);
   Application.CreateForm(TFormCoefficients, FormCoefficients);
+  Application.CreateForm(TFormSelectScriptWorks, FormSelectScriptWorks);
   Application.Run;
 
 end.

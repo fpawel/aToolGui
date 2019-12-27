@@ -29,22 +29,20 @@ object FormRawModbus: TFormRawModbus
       Left = 140
       Top = 24
       Width = 160
-      Height = 24
+      Height = 16
       Margins.Top = 6
       Align = alLeft
       Caption = #1041#1072#1081#1090#1099' '#1076#1072#1085#1085#1099#1093' ('#1073#1077#1079' CRC16)'
-      ExplicitHeight = 16
     end
     object Label1: TLabel
       AlignWithMargins = True
       Left = 5
       Top = 24
       Width = 81
-      Height = 24
+      Height = 16
       Margins.Top = 6
       Align = alLeft
       Caption = #1050#1086#1076' '#1082#1086#1084#1072#1085#1076#1099':'
-      ExplicitHeight = 16
     end
     object Edit1: TEdit
       AlignWithMargins = True

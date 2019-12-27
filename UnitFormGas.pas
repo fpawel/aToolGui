@@ -46,7 +46,7 @@ begin
 
     if not InputQuery('Пневмоблок', 'Клапан:', s) or not TryStrToInt(s, n) then
         exit;
-	HardConnClient.switchGas(n);
+	RunWorkClient.switchGas(n);
 
 end;
 

@@ -40,7 +40,7 @@ uses UnitApiClient, UnitAToolMainForm, UnitAppIni;
 
 procedure TFormRawModbus.Button1Click(Sender: TObject);
 begin
-    HardConnClient.command(StrToInt(Edit1.Text), Edit2.Text);
+    RunWorkClient.command(StrToInt(Edit1.Text), Edit2.Text);
 end;
 
 procedure TFormRawModbus.N321Click(Sender: TObject);
