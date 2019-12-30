@@ -14,57 +14,62 @@ uses
 type
 
     TCopyDataCmd = (cdcNewCommTransaction, cdcNewProductParamValue, cdcNewChart,
-      cdcPopup, cdcCoefs, cdcProductConn, cdcPushwork, cdcPopwork);
+      cdcStatus, cdcCoefs, cdcProductConn );
 
-    TPopupMessage = record
+    TStatusMessage = record
         Text: string;
-        Warning, Ok: boolean;
-        constructor New(awarning: boolean; s: string);
-        constructor NewErr(awarning: boolean; s: string);
+        Ok: boolean;
+        PopupLevel: integer;
+
     end;
 
     TAToolMainForm = class(TForm)
         PageControlMain: TPageControl;
-    TabSheetHardware: TTabSheet;
+        TabSheetHardware: TTabSheet;
         MainMenu1: TMainMenu;
         N1: TMenuItem;
         N2: TMenuItem;
         N3: TMenuItem;
         N4: TMenuItem;
         N5: TMenuItem;
-        MenuRunStop: TMenuItem;
+        MenuRunInterrogate: TMenuItem;
         N6: TMenuItem;
         N7: TMenuItem;
         Splitter1: TSplitter;
         PanelPlaceholderBottom1: TPanel;
-        GroupBoxInterrogateConsole: TGroupBox;
-    PageControl1: TPageControl;
-    TabSheet2: TTabSheet;
-    TabSheet3: TTabSheet;
-    TabSheet4: TTabSheet;
-    N8: TMenuItem;
-    N9: TMenuItem;
-    MenuRunScriptWorks: TMenuItem;
+        PageControl1: TPageControl;
+        TabSheet2: TTabSheet;
+        TabSheet3: TTabSheet;
+        TabSheet4: TTabSheet;
+        N8: TMenuItem;
+        N9: TMenuItem;
+        MenuRunScript: TMenuItem;
+        MenuRun: TMenuItem;
+        MenuStopWork: TMenuItem;
+        PageControl2: TPageControl;
+        TabSheetCOMPort: TTabSheet;
+        TabSheetJournal: TTabSheet;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
         procedure PageControlMainChange(Sender: TObject);
         procedure PageControlMainDrawTab(Control: TCustomTabControl;
-          TabIndex: Integer; const Rect: TRect; Active: boolean);
+          TabIndex: integer; const Rect: TRect; Active: boolean);
         procedure FormResize(Sender: TObject);
-        procedure MenuRunStopClick(Sender: TObject);
+        procedure MenuRunInterrogateClick(Sender: TObject);
         procedure N2Click(Sender: TObject);
         procedure N3Click(Sender: TObject);
         procedure N4Click(Sender: TObject);
         procedure N5Click(Sender: TObject);
         procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
-          WheelDelta: Integer; MousePos: TPoint; var Handled: boolean);
+          WheelDelta: integer; MousePos: TPoint; var Handled: boolean);
         procedure N6Click(Sender: TObject);
         procedure Splitter1Moved(Sender: TObject);
-    procedure PageControl1Change(Sender: TObject);
-    procedure N8Click(Sender: TObject);
-    procedure N9Click(Sender: TObject);
-    procedure MenuRunScriptWorksClick(Sender: TObject);
+        procedure PageControl1Change(Sender: TObject);
+        procedure N8Click(Sender: TObject);
+        procedure N9Click(Sender: TObject);
+        procedure MenuRunScriptClick(Sender: TObject);
+        procedure MenuStopWorkClick(Sender: TObject);
     private
         { Private declarations }
         FEnableCopyData: boolean;
@@ -75,7 +80,7 @@ type
         procedure HandleStartWork(var Message: TMessage); message WM_USER + 2;
         procedure HandleStopWork(var Message: TMessage); message WM_USER + 3;
         procedure HandleCopydata(var Message: TMessage); message WM_COPYDATA;
-        procedure ShowPopup(X: TPopupMessage);
+        procedure HandleStatusMessage(X: TStatusMessage);
         procedure SetupGroupbox2Height;
     public
         { Public declarations }
@@ -100,7 +105,7 @@ uses System.Types, dateutils, myutils, api, UnitApiClient,
     Thrift.Collections, math, UnitFormPopup2,
     logfile, apitypes, vclutils, UnitFormCharts,
     UnitFormChart, UnitFormRawModbus, UnitFormTemperatureHardware, UnitFormGas,
-    UnitFormCoefficients, UnitFormSelectScriptWorks;
+    UnitFormCoefficients, UnitFormSelectScriptWorks, UnitFormJournal;
 
 procedure TAToolMainForm.FormCreate(Sender: TObject);
 begin
@@ -108,7 +113,7 @@ begin
 end;
 
 procedure TAToolMainForm.FormMouseWheel(Sender: TObject; Shift: TShiftState;
-  WheelDelta: Integer; MousePos: TPoint; var Handled: boolean);
+  WheelDelta: integer; MousePos: TPoint; var Handled: boolean);
 var
     c, c2: TWinControl;
 
@@ -145,7 +150,7 @@ begin
     with FormInterrogate do
     begin
         BorderStyle := bsNone;
-        parent := GroupBoxInterrogateConsole;
+        parent := TabSheetCOMPort;
         Align := alClient;
         Show;
     end;
@@ -182,14 +187,16 @@ begin
         Show;
     end;
 
-    if RunWorkClient.Connected then
+    with FormJournal do
     begin
-        MenuRunStop.Caption := 'Остановить опрос';
-    end
-    else
-    begin
-        MenuRunStop.Caption := 'Запустить опрос';
+        BorderStyle := bsNone;
+        parent := TabSheetJournal;
+        Align := alClient;
+        Show;
     end;
+
+    MenuStopWork.Visible := RunWorkClient.Connected;
+    MenuRun.Visible := not MenuStopWork.Visible;
     NotifyGuiClient.open(Handle);
 
     FEnableCopyData := true;
@@ -236,39 +243,54 @@ end;
 procedure TAToolMainForm.FormResize(Sender: TObject);
 begin
     FormInterrogate.setupColsWidths;
+    FormJournal.setupColsWidths;
     SetupGroupbox2Height;
 end;
 
 procedure TAToolMainForm.HandleStartWork(var Message: TMessage);
 begin
-    MenuRunStop.Caption := 'Остановить опрос';
-    MenuRunScriptWorks.Visible := false;
+    MenuStopWork.Visible := true;
+    MenuRun.Visible := not MenuStopWork.Visible;
 end;
 
 procedure TAToolMainForm.HandleStopWork(var Message: TMessage);
 begin
-    MenuRunStop.Caption := 'Запустить опрос';
-    MenuRunScriptWorks.Visible := true;
+    MenuStopWork.Visible := false;
+    MenuRun.Visible := not MenuStopWork.Visible;
 end;
 
-procedure TAToolMainForm.MenuRunScriptWorksClick(Sender: TObject);
+procedure TAToolMainForm.MenuRunScriptClick(Sender: TObject);
+var
+    dlg: TOpenDialog;
 begin
-    FormSelectScriptWorks.ExecuteDialog;
+    // FormSelectScriptWorks.ExecuteDialog;
+
+    dlg := TOpenDialog.create(nil);
+    try
+        dlg.InitialDir := ExtractFilePath(ParamStr(0));
+        dlg.Filter := 'Файл скрипта (*.lua)|*.lua';
+        if dlg.Execute(Handle) then
+            ScriptClient.runFile(dlg.FileName);
+    finally
+        dlg.Free;
+    end;
 
 end;
 
-procedure TAToolMainForm.MenuRunStopClick(Sender: TObject);
+procedure TAToolMainForm.MenuRunInterrogateClick(Sender: TObject);
 begin
-    if RunWorkClient.Connected then
-        RunWorkClient.interrupt
-    else
-        RunWorkClient.Connect;
+    RunWorkClient.Connect;
+end;
+
+procedure TAToolMainForm.MenuStopWorkClick(Sender: TObject);
+begin
+    RunWorkClient.interrupt;
 end;
 
 procedure TAToolMainForm.N2Click(Sender: TObject);
 var
     xs: array of string;
-    ProductsCount: Integer;
+    ProductsCount: integer;
 
 begin
     SetLength(xs, 2);
@@ -284,7 +306,7 @@ end;
 procedure TAToolMainForm.N3Click(Sender: TObject);
 var
     parties: IThriftList<IPartyInfo>;
-    i: Integer;
+    i: integer;
 begin
     parties := FilesClient.listParties;
 
@@ -309,7 +331,7 @@ end;
 procedure TAToolMainForm.N4Click(Sender: TObject);
 var
     strProductsCount: string;
-    ProductsCount: Integer;
+    ProductsCount: integer;
 begin
     if not InputQuery('Создание новой партии приборов', 'Количество приборов.',
       strProductsCount) or not TryStrToInt(strProductsCount, ProductsCount) then
@@ -342,7 +364,7 @@ end;
 
 procedure TAToolMainForm.N9Click(Sender: TObject);
 begin
-     CurrFileClient.runEdit;
+    CurrFileClient.runEdit;
 end;
 
 procedure TAToolMainForm.HandleCopydata(var Message: TMessage);
@@ -365,17 +387,14 @@ begin
         cdcNewChart:
             FormCurrentParty.AddMeasurements
               (TMeasurement.Deserialize(cd.lpData));
-        cdcPopup:
-            ShowPopup(TJsonCD.unmarshal<TPopupMessage>(Message));
+        cdcStatus:
+            HandleStatusMessage(TJsonCD.unmarshal<TStatusMessage>(Message));
         cdcCoefs:
             FormCoefficients.HandleReadCoefsVals
               (TJsonCD.unmarshal<TCoefVals>(Message));
         cdcProductConn:
-            FormCurrentParty.SetProductConnection(
-            TJsonCD.unmarshal<TProductConnection>(Message));
-
-        cdcPushwork:;
-        cdcPopwork:;
+            FormCurrentParty.SetProductConnection
+              (TJsonCD.unmarshal<TProductConnection>(Message));                
     else
         raise Exception.create('wrong message: ' + IntToStr(Message.WParam));
     end;
@@ -419,13 +438,13 @@ begin
 end;
 
 procedure TAToolMainForm.PageControlMainDrawTab(Control: TCustomTabControl;
-  TabIndex: Integer; const Rect: TRect; Active: boolean);
+  TabIndex: integer; const Rect: TRect; Active: boolean);
 var
-    i: Integer;
+    i: integer;
     PageControl: TPageControl;
     AText: string;
 
-    X, y: Integer;
+    X, y: integer;
     txt_height: double;
     words: TArray<string>;
     word: string;
@@ -479,12 +498,17 @@ begin
 end;
 
 procedure TAToolMainForm.AppException(Sender: TObject; e: Exception);
+var
+    X: TStatusMessage;
 begin
     LogfileWriteException(e);
 
     if e is Thrift.TApplicationException then
     begin
-        ShowPopup(TPopupMessage.NewErr(false, e.Message));
+        X.Text := e.Message;
+        X.Ok := false;
+        X.PopupLevel := 2;
+        HandleStatusMessage(X);
         // MessageBox(Handle, PChar(e.Message),
         // PChar(ExtractFileName(Application.ExeName)), MB_ICONERROR);
         exit;
@@ -510,7 +534,7 @@ end;
 
 function TAToolMainForm.GetChartByName(AName: string): TChart;
 var
-    i: Integer;
+    i: integer;
     tbs: TTabSheet;
     AFormChart: TFormChart;
 begin
@@ -542,28 +566,21 @@ end;
 
 procedure TAToolMainForm.SetupSeriesStringGrids;
 var
-    i: Integer;
+    i: integer;
 begin
     with PageControlMain do
         for i := PageIndexChart to PageCount - 1 do
             (Pages[i].Controls[0] AS TFormChart).setupStringGrid;
 end;
 
-procedure TAToolMainForm.ShowPopup(X: TPopupMessage);
+procedure TAToolMainForm.HandleStatusMessage(X: TStatusMessage);
 var
     f: TFormPopup2;
 begin
-    if not X.Warning then
-        with FormPopup2 do
-        begin
-            BorderStyle := bsNone;
-            parent := self;
-            Align := alBottom;
-            SetText(X.Text, X.Ok);
-            Show;
-            exit;
-        end;
-    f := TFormPopup2.create(nil);
+    if X.PopupLevel = 2 then
+        f := TFormPopup2.create(nil)
+    else
+        f := FormPopup2;
     with f do
     begin
         BorderStyle := bsNone;
@@ -571,8 +588,11 @@ begin
         Align := alBottom;
         SetText(X.Text, X.Ok);
         Show;
-        exit;
     end;
+
+    if x.PopupLevel > 0 then
+        FormJournal.AddLine(x.Text, x.Ok);
+    
 
 end;
 
@@ -595,7 +615,7 @@ end;
 procedure TAToolMainForm.DeleteEmptyCharts;
 var
     xs: TList<TTabSheet>;
-    i: Integer;
+    i: integer;
 begin
     xs := TList<TTabSheet>.create;
     with PageControlMain do
@@ -605,20 +625,6 @@ begin
     for i := 0 to xs.Count - 1 do
         xs[i].Free;
     xs.Free;
-end;
-
-constructor TPopupMessage.New(awarning: boolean; s: string);
-begin
-    Text := s;
-    Ok := true;
-    Warning := awarning;
-end;
-
-constructor TPopupMessage.NewErr(awarning: boolean; s: string);
-begin
-    Text := s;
-    Ok := false;
-    Warning := awarning;
 end;
 
 end.

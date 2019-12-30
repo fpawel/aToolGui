@@ -38,7 +38,6 @@ object FormCoefficients: TFormCoefficients
     OnMouseUp = StringGrid1MouseUp
     OnSelectCell = StringGrid1SelectCell
     OnSetEditText = StringGrid1SetEditText
-    ExplicitWidth = 629
   end
   object PanelPlaceholderBottom1: TPanel
     Left = 544

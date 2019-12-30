@@ -154,8 +154,8 @@
             <Form>FormChart</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="UnitFormInterrogate.pas">
-            <Form>FormInterrogate</Form>
+        <DCCReference Include="UnitFormJournal.pas">
+            <Form>FormJournal</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="grijjy\Grijjy.Bson.IO.pas"/>
@@ -187,6 +187,10 @@
         </DCCReference>
         <DCCReference Include="UnitFormSelectScriptWorks.pas">
             <Form>FormSelectScriptWorks</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="UnitFormInterrogate.pas">
+            <Form>FormInterrogate</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Release">

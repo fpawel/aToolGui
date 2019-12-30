@@ -35,7 +35,7 @@ uses
   UnitFormVar in 'UnitFormVar.pas' {FormVar},
   UnitFormSelectCurrentParty in 'UnitFormSelectCurrentParty.pas' {FormSelectCurrentParty},
   UnitFormChart in 'UnitFormChart.pas' {FormChart},
-  UnitFormInterrogate in 'UnitFormInterrogate.pas' {FormInterrogate},
+  UnitFormJournal in 'UnitFormJournal.pas' {FormJournal},
   Grijjy.Bson.IO in 'grijjy\Grijjy.Bson.IO.pas',
   Grijjy.Bson in 'grijjy\Grijjy.Bson.pas',
   Grijjy.Bson.Serialization in 'grijjy\Grijjy.Bson.Serialization.pas',
@@ -50,7 +50,8 @@ uses
   UnitFormTemperatureHardware in 'UnitFormTemperatureHardware.pas' {FormTemperatureHardware},
   UnitFormGas in 'UnitFormGas.pas' {FormGas},
   UnitFormCoefficients in 'UnitFormCoefficients.pas' {FormCoefficients},
-  UnitFormSelectScriptWorks in 'UnitFormSelectScriptWorks.pas' {FormSelectScriptWorks};
+  UnitFormSelectScriptWorks in 'UnitFormSelectScriptWorks.pas' {FormSelectScriptWorks},
+  UnitFormInterrogate in 'UnitFormInterrogate.pas' {FormInterrogate};
 
 {$R *.res}
 
@@ -62,13 +63,14 @@ begin
   Application.CreateForm(TFormPopup2, FormPopup2);
   Application.CreateForm(TFormVar, FormVar);
   Application.CreateForm(TFormSelectCurrentParty, FormSelectCurrentParty);
-  Application.CreateForm(TFormInterrogate, FormInterrogate);
+  Application.CreateForm(TFormJournal, FormJournal);
   Application.CreateForm(TFormPopup, FormPopup);
   Application.CreateForm(TFormRawModbus, FormRawModbus);
   Application.CreateForm(TFormTemperatureHardware, FormTemperatureHardware);
   Application.CreateForm(TFormGas, FormGas);
   Application.CreateForm(TFormCoefficients, FormCoefficients);
   Application.CreateForm(TFormSelectScriptWorks, FormSelectScriptWorks);
+  Application.CreateForm(TFormInterrogate, FormInterrogate);
   Application.Run;
 
 end.

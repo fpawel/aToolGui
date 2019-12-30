@@ -32,7 +32,6 @@ object FormSelectScriptWorks: TFormSelectScriptWorks
       #1059#1089#1090#1072#1085#1086#1074#1082#1072' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1086#1074' '#1080#1089#1087#1086#1083#1085#1077#1085#1080#1103)
     ParentFont = False
     TabOrder = 0
-    ExplicitWidth = 538
   end
   object PanelPlaceholderBottom1: TPanel
     Left = 332
@@ -50,6 +49,7 @@ object FormSelectScriptWorks: TFormSelectScriptWorks
       Width = 75
       Height = 25
       Caption = #1042#1099#1087#1086#1083#1085#1080#1090#1100
+      ModalResult = 1
       TabOrder = 0
     end
   end

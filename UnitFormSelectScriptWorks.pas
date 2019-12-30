@@ -27,14 +27,16 @@ implementation
 
 {$R *.dfm}
 
-uses UnitApiClient, UnitAppIni;
+uses UnitApiClient, UnitAppIni, Thrift.Collections;
 
 procedure TFormSelectScriptWorks.ExecuteDialog;
 var
     s: string;
     I: Integer;
+    xs:IThriftList<Integer>;
 begin
     CheckListBox1.Clear;
+
     i := 0;
     for s in ScriptClient.listWorksNames do
     begin
@@ -45,9 +47,20 @@ begin
     end;
     Position := poScreenCenter;
     ShowModal;
+    if ModalResult <> mrOk then
+        exit;
+
+    xs := TThriftListImpl<Integer>.create;
     for I := 0 to CheckListBox1.Items.Count - 1 do
+    begin
         AppIni.WriteBool('check_works', CheckListBox1.Items[I],
           CheckListBox1.Checked[I]);
+        if CheckListBox1.Checked[I] then
+            xs.Add(i);
+    end;
+
+    ScriptClient.run(xs);
+
 end;
 
 end.

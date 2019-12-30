@@ -73,7 +73,7 @@ implementation
 {$R *.dfm}
 
 uses stringgridutils, stringutils, UnitFormCurrentParty, myutils, UnitApiClient,
-    UnitAppIni, UnitAToolMainForm, UnitFormInterrogate;
+    UnitAppIni, UnitAToolMainForm, UnitFormJournal;
 
 procedure TFormCoefficients.Button1Click(Sender: TObject);
 begin
@@ -227,10 +227,10 @@ begin
                     if (cv.What = 'read') AND cv.Ok then
                         Cells[ACol, ARow] := cv.Result;
 
-                    FormInterrogate.AddLine(p.Comport,
-                      Format('%s коэф.%d %s сер.№%d адр.%d',
-                      [cv.What, cv.Coefficient, p.Device, p.Serial, p.Addr]),
-                      cv.Result, cv.Ok);
+                    FormJournal.AddLine(
+                      Format('%s коэф.%d %s сер.%d адр.%d = %s',
+                      [cv.What, cv.Coefficient, p.Device, p.Serial, p.Addr, cv.Result]),
+                       cv.Ok);
 
                 end;
             end;

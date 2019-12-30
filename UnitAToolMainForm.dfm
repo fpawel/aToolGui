@@ -39,7 +39,7 @@ object AToolMainForm: TAToolMainForm
       ImageIndex = 4
       object Splitter1: TSplitter
         Left = 0
-        Top = 374
+        Top = 286
         Width = 940
         Height = 5
         Cursor = crVSplit
@@ -51,48 +51,57 @@ object AToolMainForm: TAToolMainForm
       end
       object PanelPlaceholderBottom1: TPanel
         Left = 0
-        Top = 379
+        Top = 291
         Width = 940
-        Height = 165
+        Height = 253
         Align = alBottom
         BevelOuter = bvNone
         Caption = 'PanelPlaceholderBottom1'
         ShowCaption = False
         TabOrder = 0
-        object GroupBoxInterrogateConsole: TGroupBox
-          AlignWithMargins = True
-          Left = 5
-          Top = 5
-          Width = 932
-          Height = 155
-          Margins.Left = 5
-          Margins.Top = 5
-          Margins.Bottom = 5
+        ExplicitTop = 379
+        object PageControl2: TPageControl
+          Left = 0
+          Top = 0
+          Width = 940
+          Height = 253
+          ActivePage = TabSheetCOMPort
           Align = alClient
-          Caption = #1055#1086#1089#1099#1083#1082#1080' '#1057#1054#1052' '#1087#1086#1088#1090#1086#1074
-          Constraints.MinHeight = 50
           TabOrder = 0
+          object TabSheetCOMPort: TTabSheet
+            Caption = #1057#1054#1052' '#1087#1086#1088#1090
+            ExplicitHeight = 162
+          end
+          object TabSheetJournal: TTabSheet
+            Caption = #1046#1091#1088#1085#1072#1083
+            ImageIndex = 1
+            ExplicitHeight = 162
+          end
         end
       end
       object PageControl1: TPageControl
         Left = 0
         Top = 0
         Width = 940
-        Height = 374
+        Height = 286
         ActivePage = TabSheet2
         Align = alClient
         TabOrder = 1
         OnChange = PageControl1Change
+        ExplicitHeight = 374
         object TabSheet2: TTabSheet
           Caption = #1055#1072#1088#1090#1080#1103
+          ExplicitHeight = 343
         end
         object TabSheet3: TTabSheet
           Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099
           ImageIndex = 1
+          ExplicitHeight = 343
         end
         object TabSheet4: TTabSheet
           Caption = #1059#1087#1088#1072#1074#1083#1077#1085#1080#1077
           ImageIndex = 2
+          ExplicitHeight = 343
         end
       end
     end
@@ -134,13 +143,21 @@ object AToolMainForm: TAToolMainForm
         OnClick = N9Click
       end
     end
-    object MenuRunStop: TMenuItem
-      Caption = #1047#1072#1087#1091#1089#1090#1080#1090#1100' '#1086#1087#1088#1086#1089
-      OnClick = MenuRunStopClick
+    object MenuRun: TMenuItem
+      Caption = #1047#1072#1087#1091#1089#1090#1080#1090#1100
+      object MenuRunInterrogate: TMenuItem
+        Caption = #1054#1087#1088#1086#1089
+        OnClick = MenuRunInterrogateClick
+      end
+      object MenuRunScript: TMenuItem
+        Caption = #1057#1094#1077#1085#1072#1088#1080#1081'...'
+        OnClick = MenuRunScriptClick
+      end
     end
-    object MenuRunScriptWorks: TMenuItem
-      Caption = #1047#1072#1087#1091#1089#1090#1080#1090#1100' '#1089#1094#1077#1085#1072#1088#1080#1081
-      OnClick = MenuRunScriptWorksClick
+    object MenuStopWork: TMenuItem
+      Caption = #1055#1088#1077#1088#1074#1072#1090#1100' '#1074#1099#1087#1086#1083#1085#1077#1085#1080#1077
+      Visible = False
+      OnClick = MenuStopWorkClick
     end
   end
 end
