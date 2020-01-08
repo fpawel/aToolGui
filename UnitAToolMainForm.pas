@@ -14,7 +14,7 @@ uses
 type
 
     TCopyDataCmd = (cdcNewCommTransaction, cdcNewProductParamValue, cdcNewChart,
-      cdcStatus, cdcCoefs, cdcProductConn );
+      cdcStatus, cdcCoefs, cdcProductConn, cdcDelay );
 
     TStatusMessage = record
         Text: string;
@@ -105,7 +105,7 @@ uses System.Types, dateutils, myutils, api, UnitApiClient,
     Thrift.Collections, math, UnitFormPopup2,
     logfile, apitypes, vclutils, UnitFormCharts,
     UnitFormChart, UnitFormRawModbus, UnitFormTemperatureHardware, UnitFormGas,
-    UnitFormCoefficients, UnitFormSelectScriptWorks, UnitFormJournal;
+    UnitFormCoefficients, UnitFormJournal, UnitFormDelay;
 
 procedure TAToolMainForm.FormCreate(Sender: TObject);
 begin
@@ -193,6 +193,13 @@ begin
         parent := TabSheetJournal;
         Align := alClient;
         Show;
+    end;
+
+    with FormDelay do
+    begin
+        BorderStyle := bsNone;
+        parent := TabSheetJournal;
+        Align := alBottom;
     end;
 
     MenuStopWork.Visible := RunWorkClient.Connected;
@@ -394,7 +401,10 @@ begin
               (TJsonCD.unmarshal<TCoefVals>(Message));
         cdcProductConn:
             FormCurrentParty.SetProductConnection
-              (TJsonCD.unmarshal<TProductConnection>(Message));                
+              (TJsonCD.unmarshal<TProductConnection>(Message));
+        cdcDelay:
+        	FormDelay.Delay
+              (TJsonCD.unmarshal<TDelayInfo>(Message));
     else
         raise Exception.create('wrong message: ' + IntToStr(Message.WParam));
     end;

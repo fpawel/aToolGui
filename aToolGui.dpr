@@ -50,8 +50,8 @@ uses
   UnitFormTemperatureHardware in 'UnitFormTemperatureHardware.pas' {FormTemperatureHardware},
   UnitFormGas in 'UnitFormGas.pas' {FormGas},
   UnitFormCoefficients in 'UnitFormCoefficients.pas' {FormCoefficients},
-  UnitFormSelectScriptWorks in 'UnitFormSelectScriptWorks.pas' {FormSelectScriptWorks},
-  UnitFormInterrogate in 'UnitFormInterrogate.pas' {FormInterrogate};
+  UnitFormInterrogate in 'UnitFormInterrogate.pas' {FormInterrogate},
+  UnitFormDelay in 'UnitFormDelay.pas' {FormDelay};
 
 {$R *.res}
 
@@ -69,8 +69,8 @@ begin
   Application.CreateForm(TFormTemperatureHardware, FormTemperatureHardware);
   Application.CreateForm(TFormGas, FormGas);
   Application.CreateForm(TFormCoefficients, FormCoefficients);
-  Application.CreateForm(TFormSelectScriptWorks, FormSelectScriptWorks);
   Application.CreateForm(TFormInterrogate, FormInterrogate);
+  Application.CreateForm(TFormDelay, FormDelay);
   Application.Run;
 
 end.
