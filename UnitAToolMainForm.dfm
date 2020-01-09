@@ -64,7 +64,7 @@ object AToolMainForm: TAToolMainForm
           Top = 0
           Width = 940
           Height = 253
-          ActivePage = TabSheetJournal
+          ActivePage = TabSheetCOMPort
           Align = alClient
           TabOrder = 0
           object TabSheetCOMPort: TTabSheet
