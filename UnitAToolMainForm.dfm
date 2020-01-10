@@ -120,9 +120,9 @@ object AToolMainForm: TAToolMainForm
         Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1087#1088#1080#1073#1086#1088#1099
         OnClick = N4Click
       end
-      object N6: TMenuItem
-        Caption = #1048#1084#1103' '#1092#1072#1081#1083#1072
-        OnClick = N6Click
+      object N10: TMenuItem
+        Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1092#1072#1081#1083#1072
+        OnClick = N10Click
       end
       object N7: TMenuItem
         Caption = '-'

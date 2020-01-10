@@ -33,7 +33,6 @@ type
         N4: TMenuItem;
         N5: TMenuItem;
         MenuRunInterrogate: TMenuItem;
-        N6: TMenuItem;
         N7: TMenuItem;
         Splitter1: TSplitter;
         PanelPlaceholderBottom1: TPanel;
@@ -49,6 +48,7 @@ type
         PageControl2: TPageControl;
         TabSheetCOMPort: TTabSheet;
         TabSheetJournal: TTabSheet;
+    N10: TMenuItem;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -63,13 +63,13 @@ type
         procedure N5Click(Sender: TObject);
         procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
           WheelDelta: integer; MousePos: TPoint; var Handled: boolean);
-        procedure N6Click(Sender: TObject);
         procedure Splitter1Moved(Sender: TObject);
         procedure PageControl1Change(Sender: TObject);
         procedure N8Click(Sender: TObject);
         procedure N9Click(Sender: TObject);
         procedure MenuRunScriptClick(Sender: TObject);
         procedure MenuStopWorkClick(Sender: TObject);
+    procedure N10Click(Sender: TObject);
     private
         { Private declarations }
         FEnableCopyData: boolean;
@@ -105,7 +105,7 @@ uses System.Types, dateutils, myutils, api, UnitApiClient,
     Thrift.Collections, math, UnitFormPopup2,
     logfile, apitypes, vclutils, UnitFormCharts,
     UnitFormChart, UnitFormRawModbus, UnitFormTemperatureHardware, UnitFormGas,
-    UnitFormCoefficients, UnitFormJournal, UnitFormDelay;
+    UnitFormCoefficients, UnitFormJournal, UnitFormDelay, UnitFormPartyValues;
 
 procedure TAToolMainForm.FormCreate(Sender: TObject);
 begin
@@ -294,6 +294,12 @@ begin
     RunWorkClient.interrupt;
 end;
 
+procedure TAToolMainForm.N10Click(Sender: TObject);
+begin
+    FormPartyValues.FFormPopup2.Hide;
+    FormPartyValues.ExecuteDialog;
+end;
+
 procedure TAToolMainForm.N2Click(Sender: TObject);
 var
     xs: array of string;
@@ -351,17 +357,6 @@ end;
 procedure TAToolMainForm.N5Click(Sender: TObject);
 begin
     AppCfgClient.EditConfig;
-end;
-
-procedure TAToolMainForm.N6Click(Sender: TObject);
-var
-    X: string;
-begin
-    X := FormCurrentParty.FParty.Name;
-    if not InputQuery('Èלÿ פאיכא', 'Âגוהטעו םמגמו טלÿ פאיכא', X) then
-        exit;
-    CurrFileClient.setName(X);
-    FormCurrentParty.FParty.Name := X;
 end;
 
 procedure TAToolMainForm.N8Click(Sender: TObject);

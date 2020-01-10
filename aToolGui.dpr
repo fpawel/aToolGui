@@ -51,7 +51,8 @@ uses
   UnitFormGas in 'UnitFormGas.pas' {FormGas},
   UnitFormCoefficients in 'UnitFormCoefficients.pas' {FormCoefficients},
   UnitFormInterrogate in 'UnitFormInterrogate.pas' {FormInterrogate},
-  UnitFormDelay in 'UnitFormDelay.pas' {FormDelay};
+  UnitFormDelay in 'UnitFormDelay.pas' {FormDelay},
+  UnitFormPartyValues in 'UnitFormPartyValues.pas' {FormPartyValues};
 
 {$R *.res}
 
@@ -71,6 +72,7 @@ begin
   Application.CreateForm(TFormCoefficients, FormCoefficients);
   Application.CreateForm(TFormInterrogate, FormInterrogate);
   Application.CreateForm(TFormDelay, FormDelay);
+  Application.CreateForm(TFormPartyValues, FormPartyValues);
   Application.Run;
 
 end.
