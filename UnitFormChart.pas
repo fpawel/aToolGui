@@ -358,7 +358,7 @@ procedure TFormChart.StringGrid1MouseDown(Sender: TObject; Button: TMouseButton;
 var
     ACol, ARow: Integer;
     ser: TFastLineSeries;
-    prod_param: IProductParam;
+    prod_param: IProductParamSeries;
     Rect: TRect;
 begin
     if not(ssLeft in Shift) then
@@ -378,10 +378,10 @@ begin
             Cells[ACol, ARow] := Cells[ACol, ARow];
 
             with FormCurrentParty.GetSeriesInfo(ser) do
-                prod_param := ProductsClient.GetProductParam(ProductID,
+                prod_param := ProductsClient.GetProductParamSeries(ProductID,
                   ParamAddr);
             prod_param.SeriesActive := ser.Active;
-            ProductsClient.setProductParam(prod_param);
+            ProductsClient.setProductParamSeries(prod_param);
         end;
 
     end;
@@ -399,17 +399,17 @@ procedure TFormChart.N2Click(Sender: TObject);
 var
     i: Integer;
     pv: TProductVar;
-    prod_param: IProductParam;
+    prod_param: IProductParamSeries;
 begin
     for i := 0 to Chart1.SeriesCount - 1 do
     begin
         pv := FormCurrentParty.GetSeriesInfo
           (Chart1.Series[i] as TFastLineSeries);
-        prod_param := TProductParamImpl.Create;
+        prod_param := TProductParamSeriesImpl.Create;
         prod_param.ProductID := pv.ProductID;
         prod_param.ParamAddr := pv.ParamAddr;
         prod_param.Chart := '';
-        ProductsClient.setProductParam(prod_param);
+        ProductsClient.setProductParamSeries(prod_param);
     end;
     FormCurrentParty.upload;
 end;

@@ -165,17 +165,20 @@ begin
             Last_Edited_Col := -1; // Indicate no cell is edited
             Last_Edited_Row := -1; // Indicate no cell is edited
             // Do whatever wanted after user has finish editing a cell
-            FPartyParamValues[ARow - 1].Value := Value;
+
 
             try
-                CurrFileClient.setParamValues(FPartyParamValues);
+                CurrFileClient.setParamValue(FPartyParamValues[ARow - 1].Key, Value);
+                FPartyParamValues[ARow - 1].Value := Value;
                 FFormPopup2.Hide;
             except
                 on e: Exception do
                 begin
                     FFormPopup2.SetText(e.Message, false);
                     FFormPopup2.Show;
-                    setup;
+                    StringGrid1.OnSetEditText := nil;
+                    Cells[ACol,Arow] := FPartyParamValues[ARow - 1].Value;
+                    StringGrid1.OnSetEditText := StringGrid1SetEditText;
                 end;
             end;
 

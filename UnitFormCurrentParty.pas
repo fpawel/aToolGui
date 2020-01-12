@@ -564,7 +564,7 @@ var
     ser: TFastLineSeries;
     p: IProduct;
     AParam: IDeviceParam;
-    pvs: IProductParam;
+    pvs: IProductParamSeries;
     xx: TPair<TFastLineSeries, TProductVar>;
 
 begin
@@ -596,7 +596,7 @@ begin
             FSeriesInfo.Add(ser, TProductVar.Create(p.ProductID,
               AParam.ParamAddr));
 
-            pvs := ProductsClient.getProductParam(p.ProductID,
+            pvs := ProductsClient.getProductParamSeries(p.ProductID,
               AParam.ParamAddr);
             if pvs.Chart <> '' then
             begin
@@ -760,7 +760,7 @@ var
     ACol, ARow, AVar: integer;
     p: IProduct;
     pv: TProductVar;
-    prod_param: IProductParam;
+    prod_param: IProductParamSeries;
     ser: TFastLineSeries;
     chartName: string;
 begin
@@ -788,10 +788,10 @@ begin
                     ser.ParentChart := nil;
                     ser.Active := false;
                 end;
-                prod_param := ProductsClient.getProductParam(p.ProductID, AVar);
+                prod_param := ProductsClient.getProductParamSeries(p.ProductID, AVar);
                 prod_param.Chart := chartName;
                 prod_param.SeriesActive := true;
-                ProductsClient.setProductParam(prod_param);
+                ProductsClient.setProductParamSeries(prod_param);
 
             end;
     AToolMainForm.DeleteEmptyCharts;

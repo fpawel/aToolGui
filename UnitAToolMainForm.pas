@@ -33,7 +33,6 @@ type
         N4: TMenuItem;
         N5: TMenuItem;
         MenuRunInterrogate: TMenuItem;
-        N7: TMenuItem;
         Splitter1: TSplitter;
         PanelPlaceholderBottom1: TPanel;
         PageControl1: TPageControl;
@@ -49,6 +48,7 @@ type
         TabSheetCOMPort: TTabSheet;
         TabSheetJournal: TTabSheet;
     N10: TMenuItem;
+    N6: TMenuItem;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -70,6 +70,7 @@ type
         procedure MenuRunScriptClick(Sender: TObject);
         procedure MenuStopWorkClick(Sender: TObject);
     procedure N10Click(Sender: TObject);
+    procedure N6Click(Sender: TObject);
     private
         { Private declarations }
         FEnableCopyData: boolean;
@@ -105,7 +106,8 @@ uses System.Types, dateutils, myutils, api, UnitApiClient,
     Thrift.Collections, math, UnitFormPopup2,
     logfile, apitypes, vclutils, UnitFormCharts,
     UnitFormChart, UnitFormRawModbus, UnitFormTemperatureHardware, UnitFormGas,
-    UnitFormCoefficients, UnitFormJournal, UnitFormDelay, UnitFormPartyValues;
+    UnitFormCoefficients, UnitFormJournal, UnitFormDelay, UnitFormPartyValues,
+  UnitFormProductsData;
 
 procedure TAToolMainForm.FormCreate(Sender: TObject);
 begin
@@ -357,6 +359,12 @@ end;
 procedure TAToolMainForm.N5Click(Sender: TObject);
 begin
     AppCfgClient.EditConfig;
+end;
+
+procedure TAToolMainForm.N6Click(Sender: TObject);
+begin
+	FormProductsData.setup;
+    FormProductsData.Show;
 end;
 
 procedure TAToolMainForm.N8Click(Sender: TObject);
