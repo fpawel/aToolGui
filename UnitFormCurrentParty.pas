@@ -108,7 +108,7 @@ implementation
 
 uses stringgridutils, stringutils, dateutils,
     vclutils, UnitFormPopup, UnitApiClient, myutils, UnitAToolMainForm,
-    UnitAppIni, UnitFormInterrogate;
+    UnitAppIni, UnitFormInterrogate, teechartutils;
 
 {$R *.dfm}
 
@@ -592,6 +592,9 @@ begin
 
             ser.LinePen.Width := 2;
             ser.Active := false;
+            //teeChart_setOptimizedSeries(ser);
+
+
             FSeries.Add(TProductVar.Create(p.ProductID, AParam.ParamAddr), ser);
             FSeriesInfo.Add(ser, TProductVar.Create(p.ProductID,
               AParam.ParamAddr));

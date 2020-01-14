@@ -362,10 +362,12 @@ begin
 end;
 
 procedure TAToolMainForm.N6Click(Sender: TObject);
+var f:TFormProductsData;
 begin
-    CurrFileClient.getSectionsProductsParamsValues;
-	//FormProductsData.setup;
-    //FormProductsData.Show;
+    f:=TFormProductsData.Create(nil);
+	f.setup;
+    f.ShowModal;
+    f.Free;
 end;
 
 procedure TAToolMainForm.N8Click(Sender: TObject);

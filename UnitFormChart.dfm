@@ -11,6 +11,7 @@ object FormChart: TFormChart
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 18
   object Chart1: TChart
@@ -46,6 +47,7 @@ object FormChart: TFormChart
     TopAxis.Visible = False
     View3D = False
     OnAfterDraw = Chart1AfterDraw
+    OnBeforeDrawChart = Chart1BeforeDrawChart
     Align = alClient
     BevelOuter = bvNone
     Color = clWindow
@@ -74,8 +76,6 @@ object FormChart: TFormChart
     TabOrder = 1
     OnDrawCell = StringGrid1DrawCell
     OnMouseDown = StringGrid1MouseDown
-    ExplicitLeft = 8
-    ExplicitTop = 251
     RowHeights = (
       22)
   end
@@ -112,6 +112,7 @@ object FormChart: TFormChart
         ParentShowHint = False
         ShowHint = True
         Style = tbsCheck
+        OnClick = ToolButton1Click
       end
       object ToolButton3: TToolButton
         Left = 32
@@ -122,6 +123,7 @@ object FormChart: TFormChart
         ParentShowHint = False
         ShowHint = True
         Style = tbsCheck
+        OnClick = ToolButton3Click
       end
       object ToolButton4: TToolButton
         Left = 64

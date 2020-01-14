@@ -55,7 +55,8 @@ uses
   UnitFormPartyValues in 'UnitFormPartyValues.pas' {FormPartyValues},
   UnitFormExpander in 'UnitFormExpander.pas' {FormExpander},
   UnitFormProductsData in 'UnitFormProductsData.pas' {FormProductsData},
-  UnitFormProductsDataTable in 'UnitFormProductsDataTable.pas' {FormProductsDataTable};
+  UnitFormProductsDataTable in 'UnitFormProductsDataTable.pas' {FormProductsDataTable},
+  teechartutils in 'utils\teechartutils.pas';
 
 {$R *.res}
 
@@ -76,7 +77,6 @@ begin
   Application.CreateForm(TFormInterrogate, FormInterrogate);
   Application.CreateForm(TFormDelay, FormDelay);
   Application.CreateForm(TFormPartyValues, FormPartyValues);
-  Application.CreateForm(TFormProductsData, FormProductsData);
   Application.CreateForm(TFormProductsDataTable, FormProductsDataTable);
   Application.Run;
 

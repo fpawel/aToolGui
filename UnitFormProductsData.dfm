@@ -11,6 +11,7 @@ object FormProductsData: TFormProductsData
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 16
@@ -23,9 +24,5 @@ object FormProductsData: TFormProductsData
     BorderStyle = bsNone
     TabOrder = 0
     OnMouseWheel = ScrollBox1MouseWheel
-    ExplicitLeft = 280
-    ExplicitTop = 152
-    ExplicitWidth = 185
-    ExplicitHeight = 41
   end
 end

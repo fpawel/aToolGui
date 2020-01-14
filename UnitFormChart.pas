@@ -38,6 +38,10 @@ type
         procedure ToolButton4Click(Sender: TObject);
         procedure N2Click(Sender: TObject);
         procedure N3Click(Sender: TObject);
+    procedure Chart1BeforeDrawChart(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure ToolButton1Click(Sender: TObject);
+    procedure ToolButton3Click(Sender: TObject);
     private
         { Private declarations }
         function SeriesOfColRow(ACol, ARow: Integer): TFastLineSeries;
@@ -55,7 +59,7 @@ implementation
 
 {$R *.dfm}
 
-uses System.types, dateutils, apitypes, math, stringgridutils,
+uses System.types, dateutils, teechartutils, apitypes, math, stringgridutils,
     UnitFormCurrentParty, UnitAToolMainForm;
 
 const
@@ -159,10 +163,29 @@ begin
 
 end;
 
+procedure TFormChart.Chart1BeforeDrawChart(Sender: TObject);
+var
+  I: Integer;
+begin
+    // When using only a single thread, disable locking:
+    Chart1.Canvas.ReferenceCanvas.Pen.OwnerCriticalSection := nil;
+    for I := 0 to Chart1.SeriesCount-1 do
+        teeChart_setOptimizedSeries(Chart1.series[i] as TFastLineSeries);
+
+
+end;
+
 procedure TFormChart.Chart1UndoZoom(Sender: TObject);
 begin
     Chart1.BottomAxis.Automatic := true;
     Chart1.LeftAxis.Automatic := true;
+end;
+
+procedure TFormChart.FormCreate(Sender: TObject);
+begin
+    teeChart_setOptimizedChart(Chart1);
+    teeChart_setOptimizedAxis(Chart1.BottomAxis);
+    teeChart_setOptimizedAxis(Chart1.LeftAxis);
 end;
 
 procedure TFormChart.N1Click(Sender: TObject);
@@ -296,12 +319,12 @@ procedure TFormChart.StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
 var
     cnv: TCanvas;
     ser: TFastLineSeries;
-    //pv: TProductVar;
+    // pv: TProductVar;
     AText: string;
     d: Integer;
     brushColor: TColor;
     r: TRect;
-    //p: IProduct;
+    // p: IProduct;
     s: string;
     function newRect(l, t, r, b: Integer): TRect;
     begin
@@ -326,8 +349,8 @@ begin
         exit;
     end;
 
-    //pv := FormCurrentParty.GetSeriesInfo(ser);
-    //p := FormCurrentParty.GetProductByID(pv.ProductID);
+    // pv := FormCurrentParty.GetSeriesInfo(ser);
+    // p := FormCurrentParty.GetProductByID(pv.ProductID);
 
     StringGrid_DrawCheckBoxCell(StringGrid1, ACol, ARow, Rect, State,
       ser.Active);
@@ -387,6 +410,20 @@ begin
     end;
 end;
 
+procedure TFormChart.ToolButton1Click(Sender: TObject);
+begin
+    if ToolButton1.Down then
+        ToolButton3.Down := False;
+    Chart1.Repaint;
+end;
+
+procedure TFormChart.ToolButton3Click(Sender: TObject);
+begin
+    if ToolButton3.Down then
+        ToolButton1.Down := False;
+    Chart1.Repaint;
+end;
+
 procedure TFormChart.ToolButton4Click(Sender: TObject);
 var
     pnt: TPoint;
@@ -417,7 +454,7 @@ end;
 procedure TFormChart.N3Click(Sender: TObject);
 var
     newName: string;
-    n:integer;
+    n: Integer;
 begin
     if not InputQuery('Переименовать график ' + Caption, 'Новое имя графика:',
       newName) then
@@ -425,9 +462,8 @@ begin
     CurrFileClient.renameChart(Caption, newName);
     n := AToolMainForm.PageControlMain.ActivePageIndex;
     FormCurrentParty.upload;
-    if (n >-1) AND (n < AToolMainForm.PageControlMain.PageCount) then
+    if (n > -1) AND (n < AToolMainForm.PageControlMain.PageCount) then
         AToolMainForm.PageControlMain.ActivePageIndex := n;
-
 
 end;
 

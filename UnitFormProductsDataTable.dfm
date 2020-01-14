@@ -32,8 +32,7 @@ object FormProductsDataTable: TFormProductsDataTable
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goEditing]
     TabOrder = 0
     OnDrawCell = StringGrid1DrawCell
-    ExplicitLeft = 8
-    ExplicitTop = 0
-    ExplicitWidth = 439
+    OnSelectCell = StringGrid1SelectCell
+    OnSetEditText = StringGrid1SetEditText
   end
 end
