@@ -21,7 +21,7 @@ type
     // }
     TProductConnection = record
         ProductID: int64;
-        Ok:boolean;
+        Ok: boolean;
     end;
 
     TProductParamValue = record
@@ -94,7 +94,7 @@ type
         function GetSeriesInfo(ser: TFastLineSeries): TProductVar;
         function GetSeries(AProductID: int64; AParamAddr: word)
           : TFastLineSeries;
-        procedure SetProductConnection(x:TProductConnection);
+        procedure SetProductConnection(X: TProductConnection);
         procedure AddNewProductParamValue(X: TProductParamValue);
         procedure AddMeasurements(xs: TArray<TMeasurement>);
 
@@ -587,13 +587,12 @@ begin
         begin
             ser := TFastLineSeries.Create(nil);
             ser.XValues.DateTime := true;
-            ser.Title := Format('%s,%s:%d,%s', [
-              p.Device, p.Comport, p.Addr, formatDeviceParam(AParam)]);
+            ser.Title := Format('%s,%s:%d,%s', [p.Device, p.Comport, p.Addr,
+              formatDeviceParam(AParam)]);
 
             ser.LinePen.Width := 2;
             ser.Active := false;
-            //teeChart_setOptimizedSeries(ser);
-
+            // teeChart_setOptimizedSeries(ser);
 
             FSeries.Add(TProductVar.Create(p.ProductID, AParam.ParamAddr), ser);
             FSeriesInfo.Add(ser, TProductVar.Create(p.ProductID,
@@ -704,7 +703,7 @@ begin
     MenuSetChartClick(Sender);
 end;
 
-procedure TFormCurrentParty.SetProductConnection(x:TProductConnection);
+procedure TFormCurrentParty.SetProductConnection(X: TProductConnection);
 var
     p: IProduct;
     ARow, i: integer;
@@ -714,9 +713,9 @@ begin
     ARow := StringGrid1.Cols[0].IndexOf('Адрес');
     for p in FParty.Products do
     begin
-        if p.ProductID = x.ProductID then
+        if p.ProductID = X.ProductID then
         begin
-            FProductConnection.AddOrSetValue(p.ProductID, x.Ok);
+            FProductConnection.AddOrSetValue(p.ProductID, X.Ok);
             with StringGrid1 do
                 if not(EditorMode AND (Col = i + 1) AND (Row = ARow)) then
                     Cells[i + 1, ARow] := Cells[i + 1, ARow];
@@ -750,6 +749,9 @@ begin
               AParamAddr), ser) then
             begin
                 ser.AddXY(now, v);
+                if ser.ParentChart <> nil then
+                    (ser.ParentChart.Parent as TFormChart)
+                      .TimerRepaint.Enabled := true;
 
             end;
         end;
@@ -791,7 +793,8 @@ begin
                     ser.ParentChart := nil;
                     ser.Active := false;
                 end;
-                prod_param := ProductsClient.getProductParamSeries(p.ProductID, AVar);
+                prod_param := ProductsClient.getProductParamSeries
+                  (p.ProductID, AVar);
                 prod_param.Chart := chartName;
                 prod_param.SeriesActive := true;
                 ProductsClient.setProductParamSeries(prod_param);

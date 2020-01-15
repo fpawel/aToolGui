@@ -13,8 +13,8 @@ uses
 
 type
 
-    TCopyDataCmd = (cdcNewCommTransaction, cdcNewProductParamValue, cdcNewChart,
-      cdcStatus, cdcCoefs, cdcProductConn, cdcDelay );
+    TCopyDataCmd = (cdcNewCommTransaction, cdcNewProductParamValue, cdcChart,
+      cdcStatus, cdcCoefs, cdcProductConn, cdcDelay);
 
     TStatusMessage = record
         Text: string;
@@ -47,8 +47,8 @@ type
         PageControl2: TPageControl;
         TabSheetCOMPort: TTabSheet;
         TabSheetJournal: TTabSheet;
-    N10: TMenuItem;
-    N6: TMenuItem;
+        N10: TMenuItem;
+        N6: TMenuItem;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -69,8 +69,8 @@ type
         procedure N9Click(Sender: TObject);
         procedure MenuRunScriptClick(Sender: TObject);
         procedure MenuStopWorkClick(Sender: TObject);
-    procedure N10Click(Sender: TObject);
-    procedure N6Click(Sender: TObject);
+        procedure N10Click(Sender: TObject);
+        procedure N6Click(Sender: TObject);
     private
         { Private declarations }
         FEnableCopyData: boolean;
@@ -107,7 +107,7 @@ uses System.Types, dateutils, myutils, api, UnitApiClient,
     logfile, apitypes, vclutils, UnitFormCharts,
     UnitFormChart, UnitFormRawModbus, UnitFormTemperatureHardware, UnitFormGas,
     UnitFormCoefficients, UnitFormJournal, UnitFormDelay, UnitFormPartyValues,
-  UnitFormProductsData;
+    UnitFormProductsData;
 
 procedure TAToolMainForm.FormCreate(Sender: TObject);
 begin
@@ -362,10 +362,11 @@ begin
 end;
 
 procedure TAToolMainForm.N6Click(Sender: TObject);
-var f:TFormProductsData;
+var
+    f: TFormProductsData;
 begin
-    f:=TFormProductsData.Create(nil);
-	f.setup;
+    f := TFormProductsData.create(nil);
+    f.setup;
     f.ShowModal;
     f.Free;
 end;
@@ -397,7 +398,7 @@ begin
         cdcNewProductParamValue:
             FormCurrentParty.AddNewProductParamValue
               (TJsonCD.unmarshal<TProductParamValue>(Message));
-        cdcNewChart:
+        cdcChart:
             FormCurrentParty.AddMeasurements
               (TMeasurement.Deserialize(cd.lpData));
         cdcStatus:
@@ -409,8 +410,7 @@ begin
             FormCurrentParty.SetProductConnection
               (TJsonCD.unmarshal<TProductConnection>(Message));
         cdcDelay:
-        	FormDelay.Delay
-              (TJsonCD.unmarshal<TDelayInfo>(Message));
+            FormDelay.Delay(TJsonCD.unmarshal<TDelayInfo>(Message));
     else
         raise Exception.create('wrong message: ' + IntToStr(Message.WParam));
     end;
@@ -606,9 +606,8 @@ begin
         Show;
     end;
 
-    if x.PopupLevel > 0 then
-        FormJournal.AddLine(x.Text, x.Ok);
-    
+    if X.PopupLevel > 0 then
+        FormJournal.AddLine(X.Text, X.Ok);
 
 end;
 

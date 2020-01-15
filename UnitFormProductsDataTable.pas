@@ -97,6 +97,8 @@ end;
 
 procedure TFormProductsDataTable.StringGrid1SetEditText(Sender: TObject; ACol,
   ARow: Integer; const Value: string);
+var productID:int64;
+    key:string;
 begin
     With StringGrid1 do
     begin
@@ -108,10 +110,10 @@ begin
             Last_Edited_Row := -1; // Indicate no cell is edited
             // Do whatever wanted after user has finish editing a cell
 
-
+            productID := FormCurrentParty.FParty.Products[ACol-1].ProductID;
+            key := FKeys[ARow-1];
             try
-                CurrFileClient.setProductParamValue(FKeys[ARow-1],
-                FormCurrentParty.FParty.Products[ACol-1].ProductID, Value);
+                ProdPrmClient.setValue(key, productID, Value);
                 FFormPopup2.Hide;
             except
                 on e: Exception do
@@ -119,7 +121,7 @@ begin
                     FFormPopup2.SetText(e.Message, false);
                     FFormPopup2.Show;
                     StringGrid1.OnSetEditText := nil;
-                    //Cells[ACol,Arow] := FPartyParamValues[ARow - 1].Value;
+                    Cells[ACol,Arow] := ProdPrmClient.getValue(key, productID) ;
                     StringGrid1.OnSetEditText := StringGrid1SetEditText;
                 end;
             end;

@@ -880,4 +880,10 @@ object FormChart: TFormChart
       OnClick = N1Click
     end
   end
+  object TimerRepaint: TTimer
+    Interval = 10000
+    OnTimer = TimerRepaintTimer
+    Left = 408
+    Top = 121
+  end
 end

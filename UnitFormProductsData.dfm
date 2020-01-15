@@ -1,7 +1,7 @@
 object FormProductsData: TFormProductsData
   Left = 0
   Top = 0
-  Caption = 'FormProductsData'
+  Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1087#1088#1080#1073#1086#1088#1086#1074' '#1090#1077#1082#1091#1097#1077#1075#1086' '#1092#1072#1081#1083#1072
   ClientHeight = 299
   ClientWidth = 635
   Color = clBtnHighlight

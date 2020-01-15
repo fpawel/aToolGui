@@ -17,6 +17,7 @@ var
     TempDeviceClient: TTemperatureDeviceService.Iface;
     CoefsClient: TCoefficientsService.Iface;
     ScriptClient: TScriptService.Iface;
+    ProdPrmClient: TProductParamService.Iface;
 
 implementation
 
@@ -64,6 +65,9 @@ begin
 
     ScriptClient := TScriptService.TClient.create
           (prot('ScriptService'));
+
+    ProdPrmClient := TProductParamService.TClient.Create
+        (prot('ProductParamService'));
 end;
 
 

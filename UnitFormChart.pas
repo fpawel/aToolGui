@@ -28,6 +28,7 @@ type
         N1: TMenuItem;
         N2: TMenuItem;
         N3: TMenuItem;
+    TimerRepaint: TTimer;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
           Rect: TRect; State: TGridDrawState);
         procedure StringGrid1MouseDown(Sender: TObject; Button: TMouseButton;
@@ -42,6 +43,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure ToolButton1Click(Sender: TObject);
     procedure ToolButton3Click(Sender: TObject);
+    procedure TimerRepaintTimer(Sender: TObject);
     private
         { Private declarations }
         function SeriesOfColRow(ACol, ARow: Integer): TFastLineSeries;
@@ -408,6 +410,12 @@ begin
         end;
 
     end;
+end;
+
+procedure TFormChart.TimerRepaintTimer(Sender: TObject);
+begin
+    Chart1.Repaint;
+    TimerRepaint.Enabled := false;
 end;
 
 procedure TFormChart.ToolButton1Click(Sender: TObject);
