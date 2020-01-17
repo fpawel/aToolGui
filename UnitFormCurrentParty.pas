@@ -791,6 +791,7 @@ begin
                 else
                 begin
                     ser.ParentChart := nil;
+                    ser.ParentChart.RemoveSeries(ser);
                     ser.Active := false;
                 end;
                 prod_param := ProductsClient.getProductParamSeries
