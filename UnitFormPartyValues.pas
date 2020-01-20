@@ -6,11 +6,12 @@ uses
     Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
     System.Classes, Vcl.Graphics,
     Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, apitypes,
-    UnitFormPopup2, Thrift.Collections;
+    UnitFormPopup2, Thrift.Collections, Vcl.Menus;
 
 type
     TFormPartyValues = class(TForm)
         StringGrid1: TStringGrid;
+        PopupMenu1: TPopupMenu;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
           Rect: TRect; State: TGridDrawState);
         procedure FormCreate(Sender: TObject);
@@ -21,11 +22,13 @@ type
           const Value: string);
     private
         { Private declarations }
-        FPartyParamValues: IThriftList<IPartyParamValue>;
+        FConfigParamValues: IThriftList<IConfigParamValue>;
         Last_Edited_Col, Last_Edited_Row: Integer;
 
         procedure FFormPopup2ToolButton3Click(Sender: TObject);
         procedure setup;
+        procedure setParamValue(ARow: Integer; Value: string);
+        procedure OnPopupMenuItemClick(Sender: TObject);
     public
         { Public declarations }
         FFormPopup2: TFormPopup2;
@@ -81,17 +84,21 @@ end;
 procedure TFormPartyValues.setup;
 var
     I: Integer;
+    CanSelect:boolean;
 begin
-    FPartyParamValues := CurrFileClient.getParamValues;
+    FConfigParamValues := AppCfgClient.getParamValues;
     With StringGrid1 do
     begin
-        RowCount := FPartyParamValues.Count + 1;
-        for I := 0 to FPartyParamValues.Count - 1 do
+        RowCount := FConfigParamValues.Count + 1;
+        for I := 0 to FConfigParamValues.Count - 1 do
         begin
-            Cells[0, I + 1] := FPartyParamValues[I].Name;
-            Cells[1, I + 1] := FPartyParamValues[I].Value;
+            Cells[0, I + 1] := FConfigParamValues[I].Name;
+            Cells[1, I + 1] := FConfigParamValues[I].Value;
         end;
     end;
+
+    CanSelect := true;
+    StringGrid1SelectCell(StringGrid1, 1, 1, CanSelect);
 
 end;
 
@@ -119,9 +126,8 @@ begin
     end;
 
     ta := taCenter;
-    if ((ACol = 0) AND (ARow > 0)) OR TryStrToFloat2(grd.Cells[ACol, ARow],
-      floatValue) then
-        ta := taRightJustify;
+    if ARow > 0 then
+        ta := taLeftJustify;
 
     if (ARow = 0) then
         cnv.Font.Style := [fsBold];
@@ -130,12 +136,43 @@ begin
     StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
 end;
 
+procedure TFormPartyValues.OnPopupMenuItemClick(Sender: TObject);
+var
+    ACol, ARow: Integer;
+    Value: string;
+begin
+    with StringGrid1 do
+    begin
+        ACol := Col;
+        ARow := Row;
+        Value := (Sender as TMenuItem).Caption;
+    end;
+
+    try
+        setParamValue(ARow, Value);
+        FFormPopup2.Hide;
+        StringGrid1.Cells[ACol, ARow] := Value;
+    except
+        on e: Exception do
+        begin
+            FFormPopup2.SetText(e.Message, false);
+            FFormPopup2.Show;
+        end;
+    end;
+
+end;
+
 procedure TFormPartyValues.StringGrid1SelectCell(Sender: TObject;
   ACol, ARow: Integer; var CanSelect: Boolean);
 var
     r: TRect;
     grd: TStringGrid;
     gr: TGridRect;
+
+    c: IConfigParamValue;
+    I: Integer;
+    mn: TMenuItem;
+
 begin
 
     grd := Sender as TStringGrid;
@@ -151,10 +188,62 @@ begin
         // Just make the call
     end;
     // Do whatever else wanted
+
+    if ARow < 1 then
+        exit;
+
+    PopupMenu1.Items.Clear;
+
+    c := FConfigParamValues[ARow - 1];
+
+    with StringGrid1 do
+        if c.ValuesList.Count = 0 then
+            Options := Options + [goEditing]
+        else
+        begin
+            Options := Options - [goEditing];
+            for I := 0 to c.ValuesList.Count - 1 do
+            begin
+                mn := TMenuItem.Create(self);
+                mn.Caption := c.ValuesList[I];
+                mn.OnClick := OnPopupMenuItemClick;
+                PopupMenu1.Items.Add(mn);
+            end;
+        end;
+end;
+
+procedure TFormPartyValues.setParamValue(ARow: Integer; Value: string);
+var
+    c: IConfigParamValue;
+    s: string;
+    I: Integer;
+begin
+    c := FConfigParamValues[ARow - 1];
+
+    if c.Type_ = 'float' then
+        StrToFloat2(Value);
+
+    if c.Type_ = 'int' then
+        StrToInt(Value);
+
+    if (c.ValuesList.Count > 0) and not(c.ValuesList.Contains(Value)) then
+    begin
+        s := '"' + c.ValuesList[0] + '"';
+        for I := 1 to c.ValuesList.Count - 1 do
+            s := s + ', "' + c.ValuesList[I] + '"';
+        s := format('Ќедопустимое значение "%s": должно быть из списка: %s',
+          [Value, s]);
+        raise Exception.Create(s);
+    end;
+
+    AppCfgClient.setParamValue(c.Key, Value);
+    c.Value := Value;
+
 end;
 
 procedure TFormPartyValues.StringGrid1SetEditText(Sender: TObject;
   ACol, ARow: Integer; const Value: string);
+
 begin
     With StringGrid1 do
     begin
@@ -166,10 +255,8 @@ begin
             Last_Edited_Row := -1; // Indicate no cell is edited
             // Do whatever wanted after user has finish editing a cell
 
-
             try
-                CurrFileClient.setParamValue(FPartyParamValues[ARow - 1].Key, Value);
-                FPartyParamValues[ARow - 1].Value := Value;
+                setParamValue(ARow, Value);
                 FFormPopup2.Hide;
             except
                 on e: Exception do
@@ -177,7 +264,7 @@ begin
                     FFormPopup2.SetText(e.Message, false);
                     FFormPopup2.Show;
                     StringGrid1.OnSetEditText := nil;
-                    Cells[ACol,Arow] := FPartyParamValues[ARow - 1].Value;
+                    Cells[ACol, ARow] := FConfigParamValues[ARow - 1].Value;
                     StringGrid1.OnSetEditText := StringGrid1SetEditText;
                 end;
             end;
