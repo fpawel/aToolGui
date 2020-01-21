@@ -49,6 +49,8 @@ type
         TabSheetJournal: TTabSheet;
         N10: TMenuItem;
         N6: TMenuItem;
+    N11: TMenuItem;
+    N12: TMenuItem;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -106,8 +108,8 @@ uses System.Types, dateutils, myutils, api, UnitApiClient,
     Thrift.Collections, math, UnitFormPopup2,
     logfile, apitypes, vclutils, UnitFormCharts,
     UnitFormChart, UnitFormRawModbus, UnitFormTemperatureHardware, UnitFormGas,
-    UnitFormCoefficients, UnitFormJournal, UnitFormDelay, UnitFormPartyValues,
-    UnitFormProductsData;
+    UnitFormCoefficients, UnitFormJournal, UnitFormDelay, UnitFormAppConfig,
+    UnitFormProductsData, luahelp;
 
 procedure TAToolMainForm.FormCreate(Sender: TObject);
 begin
@@ -134,6 +136,7 @@ end;
 
 procedure TAToolMainForm.FormShow(Sender: TObject);
 begin
+    LuaListDirs;
     OnShow := nil;
     OpenApiClient;
 
@@ -298,8 +301,8 @@ end;
 
 procedure TAToolMainForm.N10Click(Sender: TObject);
 begin
-    FormPartyValues.FFormPopup2.Hide;
-    FormPartyValues.ExecuteDialog;
+    FormAppConfig.FFormPopup2.Hide;
+    FormAppConfig.ExecuteDialog;
 end;
 
 procedure TAToolMainForm.N2Click(Sender: TObject);
@@ -424,12 +427,7 @@ end;
 
 procedure TAToolMainForm.PageControl1Change(Sender: TObject);
 begin
-    if PageControl1.ActivePage = TabSheet4 then
-    begin
-        FormGas.setup;
-        FormTemperatureHardware.setup;
-    end
-    else if PageControl1.ActivePage = TabSheet3 then
+    if PageControl1.ActivePage = TabSheet3 then
     begin
         FormCoefficients.setup;
     end

@@ -120,8 +120,11 @@ object AToolMainForm: TAToolMainForm
         Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1087#1088#1080#1073#1086#1088#1099
         OnClick = N4Click
       end
+      object N11: TMenuItem
+        Caption = '-'
+      end
       object N10: TMenuItem
-        Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1092#1072#1081#1083#1072
+        Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
         OnClick = N10Click
       end
       object N6: TMenuItem
@@ -132,7 +135,7 @@ object AToolMainForm: TAToolMainForm
         Caption = '-'
       end
       object N5: TMenuItem
-        Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
+        Caption = #1050#1086#1085#1092#1080#1075#1091#1088#1072#1094#1080#1103
         OnClick = N5Click
       end
       object N9: TMenuItem
@@ -149,6 +152,9 @@ object AToolMainForm: TAToolMainForm
       object MenuRunScript: TMenuItem
         Caption = #1057#1094#1077#1085#1072#1088#1080#1081'...'
         OnClick = MenuRunScriptClick
+      end
+      object N12: TMenuItem
+        Caption = '-'
       end
     end
     object MenuStopWork: TMenuItem

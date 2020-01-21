@@ -1,4 +1,4 @@
-unit UnitFormPartyValues;
+unit UnitFormAppConfig;
 
 interface
 
@@ -9,7 +9,7 @@ uses
     UnitFormPopup2, Thrift.Collections, Vcl.Menus;
 
 type
-    TFormPartyValues = class(TForm)
+    TFormAppConfig = class(TForm)
         StringGrid1: TStringGrid;
         PopupMenu1: TPopupMenu;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
@@ -37,7 +37,7 @@ type
     end;
 
 var
-    FormPartyValues: TFormPartyValues;
+    FormAppConfig: TFormAppConfig;
 
 implementation
 
@@ -45,7 +45,7 @@ implementation
 
 uses stringutils, stringgridutils, UnitApiClient;
 
-procedure TFormPartyValues.FormCreate(Sender: TObject);
+procedure TFormAppConfig.FormCreate(Sender: TObject);
 begin
     with StringGrid1 do
     begin
@@ -61,27 +61,27 @@ begin
 
 end;
 
-procedure TFormPartyValues.FormResize(Sender: TObject);
+procedure TFormAppConfig.FormResize(Sender: TObject);
 begin
     With StringGrid1 do
     begin
         ColWidths[0] := Width div 2;
-        ColWidths[1] := Width - ColWidths[0] - 10;
+        ColWidths[1] := Width - ColWidths[0] - 30;
     end;
 end;
 
-procedure TFormPartyValues.FFormPopup2ToolButton3Click(Sender: TObject);
+procedure TFormAppConfig.FFormPopup2ToolButton3Click(Sender: TObject);
 begin
     FFormPopup2.Hide;
 end;
 
-procedure TFormPartyValues.ExecuteDialog;
+procedure TFormAppConfig.ExecuteDialog;
 begin
     setup;
     ShowModal;
 end;
 
-procedure TFormPartyValues.setup;
+procedure TFormAppConfig.setup;
 var
     I: Integer;
     CanSelect:boolean;
@@ -102,7 +102,7 @@ begin
 
 end;
 
-procedure TFormPartyValues.StringGrid1DrawCell(Sender: TObject;
+procedure TFormAppConfig.StringGrid1DrawCell(Sender: TObject;
   ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
 var
     grd: TStringGrid;
@@ -110,6 +110,7 @@ var
     ta: TAlignment;
     AText: string;
     floatValue: double;
+    cv:IConfigParamValue;
 begin
     grd := StringGrid1;
     cnv := grd.Canvas;
@@ -126,8 +127,17 @@ begin
     end;
 
     ta := taCenter;
-    if ARow > 0 then
-        ta := taLeftJustify;
+    if (ARow > 0) AND (ACol = 0) then
+        ta := taLeftJustify else
+    if (ARow > 0) AND (ACol = 1) then
+    begin
+        cv := FConfigParamValues[ARow-1];
+        if (cv.Type_ = 'float') or (cv.Type_ = 'int') then
+        begin
+
+        end;
+    end;
+
 
     if (ARow = 0) then
         cnv.Font.Style := [fsBold];
@@ -136,7 +146,7 @@ begin
     StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
 end;
 
-procedure TFormPartyValues.OnPopupMenuItemClick(Sender: TObject);
+procedure TFormAppConfig.OnPopupMenuItemClick(Sender: TObject);
 var
     ACol, ARow: Integer;
     Value: string;
@@ -162,7 +172,7 @@ begin
 
 end;
 
-procedure TFormPartyValues.StringGrid1SelectCell(Sender: TObject;
+procedure TFormAppConfig.StringGrid1SelectCell(Sender: TObject;
   ACol, ARow: Integer; var CanSelect: Boolean);
 var
     r: TRect;
@@ -212,7 +222,7 @@ begin
         end;
 end;
 
-procedure TFormPartyValues.setParamValue(ARow: Integer; Value: string);
+procedure TFormAppConfig.setParamValue(ARow: Integer; Value: string);
 var
     c: IConfigParamValue;
     s: string;
@@ -241,7 +251,7 @@ begin
 
 end;
 
-procedure TFormPartyValues.StringGrid1SetEditText(Sender: TObject;
+procedure TFormAppConfig.StringGrid1SetEditText(Sender: TObject;
   ACol, ARow: Integer; const Value: string);
 
 begin

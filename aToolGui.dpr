@@ -52,11 +52,12 @@ uses
   UnitFormCoefficients in 'UnitFormCoefficients.pas' {FormCoefficients},
   UnitFormInterrogate in 'UnitFormInterrogate.pas' {FormInterrogate},
   UnitFormDelay in 'UnitFormDelay.pas' {FormDelay},
-  UnitFormPartyValues in 'UnitFormPartyValues.pas' {FormPartyValues},
+  UnitFormAppConfig in 'UnitFormAppConfig.pas' {FormAppConfig},
   UnitFormExpander in 'UnitFormExpander.pas' {FormExpander},
   UnitFormProductsData in 'UnitFormProductsData.pas' {FormProductsData},
   UnitFormProductsDataTable in 'UnitFormProductsDataTable.pas' {FormProductsDataTable},
-  teechartutils in 'utils\teechartutils.pas';
+  teechartutils in 'utils\teechartutils.pas',
+  luahelp in 'luahelp.pas';
 
 {$R *.res}
 
@@ -76,7 +77,7 @@ begin
   Application.CreateForm(TFormCoefficients, FormCoefficients);
   Application.CreateForm(TFormInterrogate, FormInterrogate);
   Application.CreateForm(TFormDelay, FormDelay);
-  Application.CreateForm(TFormPartyValues, FormPartyValues);
+  Application.CreateForm(TFormAppConfig, FormAppConfig);
   Application.CreateForm(TFormProductsDataTable, FormProductsDataTable);
   Application.Run;
 

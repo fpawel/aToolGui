@@ -1,10 +1,10 @@
-object FormPartyValues: TFormPartyValues
+object FormAppConfig: TFormAppConfig
   Left = 0
   Top = 0
   BorderStyle = bsSizeToolWin
   Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1090#1077#1082#1091#1097#1077#1075#1086' '#1092#1072#1081#1083#1072
   ClientHeight = 434
-  ClientWidth = 589
+  ClientWidth = 355
   Color = clHighlightText
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,7 +21,7 @@ object FormPartyValues: TFormPartyValues
     AlignWithMargins = True
     Left = 10
     Top = 10
-    Width = 569
+    Width = 335
     Height = 414
     Margins.Left = 10
     Margins.Top = 10
@@ -41,10 +41,7 @@ object FormPartyValues: TFormPartyValues
     OnDrawCell = StringGrid1DrawCell
     OnSelectCell = StringGrid1SelectCell
     OnSetEditText = StringGrid1SetEditText
-    ExplicitLeft = -2
-    ExplicitTop = 8
-    ExplicitWidth = 583
-    ExplicitHeight = 428
+    ExplicitWidth = 569
   end
   object PopupMenu1: TPopupMenu
     AutoHotkeys = maManual

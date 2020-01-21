@@ -24,143 +24,93 @@ object FormTemperatureHardware: TFormTemperatureHardware
     Align = alClient
     Caption = #1058#1077#1084#1087#1077#1088#1072#1090#1091#1088#1085#1072#1103' '#1082#1072#1084#1077#1088#1072
     TabOrder = 0
-    ExplicitHeight = 55
-    object Label1: TLabel
-      AlignWithMargins = True
-      Left = 5
-      Top = 24
-      Width = 22
-      Height = 28
-      Margins.Top = 6
-      Align = alLeft
-      Caption = #1058#1080#1087
-      ExplicitHeight = 16
-    end
-    object Label2: TLabel
-      AlignWithMargins = True
-      Left = 127
-      Top = 24
-      Width = 58
-      Height = 28
-      Margins.Top = 6
-      Align = alLeft
-      Caption = #1057#1054#1052' '#1087#1086#1088#1090
-      ExplicitHeight = 16
-    end
     object Label4: TLabel
       AlignWithMargins = True
-      Left = 669
+      Left = 389
       Top = 24
-      Width = 79
+      Width = 132
       Height = 28
       Margins.Top = 6
       Align = alLeft
-      Caption = #1054#1093#1083#1072#1078#1076#1077#1085#1080#1077':'
+      Caption = #1054#1093#1083#1072#1078#1076#1077#1085#1080#1077' '#1050#1058#1061'-500:'
       ExplicitHeight = 16
-    end
-    object ComboBox1: TComboBox
-      AlignWithMargins = True
-      Left = 33
-      Top = 21
-      Width = 88
-      Height = 25
-      Align = alLeft
-      Style = csOwnerDrawFixed
-      ItemHeight = 19
-      TabOrder = 0
-      Items.Strings = (
-        '800'
-        '2500'
-        #1050#1058#1061'500')
-    end
-    object ComboBox2: TComboBox
-      AlignWithMargins = True
-      Left = 191
-      Top = 21
-      Width = 88
-      Height = 25
-      Align = alLeft
-      Style = csOwnerDrawFixed
-      ItemHeight = 19
-      TabOrder = 1
-      OnDropDown = ComboBox2DropDown
     end
     object Button1: TButton
       AlignWithMargins = True
-      Left = 285
+      Left = 5
       Top = 21
       Width = 90
       Height = 26
       Margins.Bottom = 8
       Align = alLeft
       Caption = #1059#1089#1090#1072#1074#1082#1072
-      TabOrder = 2
+      TabOrder = 0
       OnClick = Button1Click
-      ExplicitHeight = 24
+      ExplicitLeft = 285
     end
     object Button2: TButton
       AlignWithMargins = True
-      Left = 573
+      Left = 293
       Top = 21
       Width = 90
       Height = 26
       Margins.Bottom = 8
       Align = alLeft
       Caption = #1057#1090#1086#1087
-      TabOrder = 3
+      TabOrder = 1
       OnClick = Button2Click
-      ExplicitHeight = 24
+      ExplicitLeft = 573
     end
     object Button3: TButton
       AlignWithMargins = True
-      Left = 477
+      Left = 197
       Top = 21
       Width = 90
       Height = 26
       Margins.Bottom = 8
       Align = alLeft
       Caption = #1057#1090#1072#1088#1090
-      TabOrder = 4
+      TabOrder = 2
       OnClick = Button3Click
-      ExplicitHeight = 24
+      ExplicitLeft = 477
     end
     object Button4: TButton
       AlignWithMargins = True
-      Left = 381
+      Left = 101
       Top = 21
       Width = 90
       Height = 26
       Margins.Bottom = 8
       Align = alLeft
       Caption = #1058#1077#1084#1087#1077#1088#1072#1090#1091#1088#1072
-      TabOrder = 5
-      ExplicitHeight = 24
+      TabOrder = 3
+      ExplicitLeft = 381
     end
     object Button5: TButton
       AlignWithMargins = True
-      Left = 850
+      Left = 623
       Top = 21
       Width = 90
       Height = 26
       Margins.Bottom = 8
       Align = alLeft
       Caption = #1054#1090#1082#1083#1102#1095#1080#1090#1100
-      TabOrder = 6
+      TabOrder = 4
       OnClick = Button5Click
-      ExplicitHeight = 24
+      ExplicitLeft = 850
     end
     object Button6: TButton
       AlignWithMargins = True
-      Left = 754
+      Left = 527
       Top = 21
       Width = 90
       Height = 26
       Margins.Bottom = 8
       Align = alLeft
       Caption = #1042#1082#1083#1102#1095#1080#1090#1100
-      TabOrder = 7
+      TabOrder = 5
       OnClick = Button6Click
-      ExplicitHeight = 24
+      ExplicitLeft = 754
     end
   end
 end
