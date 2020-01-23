@@ -14,7 +14,7 @@ uses
 type
 
     TCopyDataCmd = (cdcNewCommTransaction, cdcNewProductParamValue, cdcChart,
-      cdcStatus, cdcCoefs, cdcProductConn, cdcDelay);
+      cdcStatus, cdcCoef, cdcProductConn, cdcDelay);
 
     TStatusMessage = record
         Text: string;
@@ -406,9 +406,9 @@ begin
               (TMeasurement.Deserialize(cd.lpData));
         cdcStatus:
             HandleStatusMessage(TJsonCD.unmarshal<TStatusMessage>(Message));
-        cdcCoefs:
-            FormCoefficients.HandleReadCoefsVals
-              (TJsonCD.unmarshal<TCoefVals>(Message));
+        cdcCoef:
+            FormCoefficients.HandleReadCoef
+              (TJsonCD.unmarshal<TCoefVal>(Message));
         cdcProductConn:
             FormCurrentParty.SetProductConnection
               (TJsonCD.unmarshal<TProductConnection>(Message));
@@ -427,15 +427,15 @@ end;
 
 procedure TAToolMainForm.PageControl1Change(Sender: TObject);
 begin
-    if PageControl1.ActivePage = TabSheet3 then
-    begin
-        FormCoefficients.setup;
-    end
-    else if PageControl1.ActivePage = TabSheet2 then
-    begin
-        FormCurrentParty.FParty := FilesClient.getCurrentParty;
-        FormCurrentParty.setupStringGrid;
-    end
+//    if PageControl1.ActivePage = TabSheet3 then
+//    begin
+//        FormCoefficients.setup;
+//    end
+//    else if PageControl1.ActivePage = TabSheet2 then
+//    begin
+//        FormCurrentParty.FParty := FilesClient.getCurrentParty;
+//        FormCurrentParty.setupStringGrid;
+//    end
 end;
 
 procedure TAToolMainForm.PageControlMainChange(Sender: TObject);

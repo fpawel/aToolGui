@@ -20,6 +20,8 @@ type
           var CanSelect: Boolean);
         procedure StringGrid1SetEditText(Sender: TObject; ACol, ARow: Integer;
           const Value: string);
+        procedure StringGrid1MouseDown(Sender: TObject; Button: TMouseButton;
+          Shift: TShiftState; X, Y: Integer);
     private
         { Private declarations }
         FConfigParamValues: IThriftList<IConfigParamValue>;
@@ -65,8 +67,8 @@ procedure TFormAppConfig.FormResize(Sender: TObject);
 begin
     With StringGrid1 do
     begin
-        ColWidths[0] := Width div 2;
-        ColWidths[1] := Width - ColWidths[0] - 30;
+        ColWidths[1] := Width div 4;
+        ColWidths[0] := Width - ColWidths[1] - 30;
     end;
 end;
 
@@ -84,7 +86,7 @@ end;
 procedure TFormAppConfig.setup;
 var
     I: Integer;
-    CanSelect:boolean;
+    CanSelect: Boolean;
 begin
     FConfigParamValues := AppCfgClient.getParamValues;
     With StringGrid1 do
@@ -110,7 +112,8 @@ var
     ta: TAlignment;
     AText: string;
     floatValue: double;
-    cv:IConfigParamValue;
+    cv: IConfigParamValue;
+    r2:TRect;
 begin
     grd := StringGrid1;
     cnv := grd.Canvas;
@@ -128,22 +131,64 @@ begin
 
     ta := taCenter;
     if (ARow > 0) AND (ACol = 0) then
-        ta := taLeftJustify else
-    if (ARow > 0) AND (ACol = 1) then
+        ta := taLeftJustify
+    else if (ARow > 0) AND (ACol = 1) then
     begin
-        cv := FConfigParamValues[ARow-1];
+        cv := FConfigParamValues[ARow - 1];
         if (cv.Type_ = 'float') or (cv.Type_ = 'int') then
         begin
 
+        end
+        else if cv.Type_ = 'bool' then
+        begin
+            grd.Canvas.FillRect(Rect);
+            r2 := Rect;
+            r2.Left := r2.Left + (r2.Width div 2) - 10;
+            DrawCheckbox(StringGrid1, cnv, r2, AText = 'true', '');
+            StringGrid_DrawCellBounds(StringGrid1.Canvas, ACol, ARow, Rect);
+            exit;
         end;
     end;
-
 
     if (ARow = 0) then
         cnv.Font.Style := [fsBold];
 
     StringGrid_DrawCellText(StringGrid1, ACol, ARow, Rect, ta, AText);
     StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
+end;
+
+procedure TFormAppConfig.StringGrid1MouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+    ACol, ARow: Integer;
+    cv: IConfigParamValue;
+    value : string;
+begin
+    if (GetAsyncKeyState(VK_LBUTTON) >= 0) then
+        exit;
+    StringGrid1.MouseToCell(X, Y, ACol, ARow);
+    if not((ARow > 0) and (ACol = 1)) then
+        exit;
+    cv := FConfigParamValues[ARow - 1];
+    if cv.Type_ <> 'bool' then
+        exit;
+    value := 'true';
+    if cv.Value = 'true' then
+        value := 'false';
+    try
+        setParamValue(ARow, Value);
+        FFormPopup2.Hide;
+        cv.Value := value;
+        StringGrid1.Cells[ACol,ARow] := value;
+
+    except
+        on e: Exception do
+        begin
+            FFormPopup2.SetText(e.Message, false);
+            FFormPopup2.Show;
+        end;
+    end;
+
 end;
 
 procedure TFormAppConfig.OnPopupMenuItemClick(Sender: TObject);
@@ -207,6 +252,12 @@ begin
     c := FConfigParamValues[ARow - 1];
 
     with StringGrid1 do
+    begin
+        if c.Type_ = 'bool' then
+        begin
+            Options := Options - [goEditing];
+            exit;
+        end;
         if c.ValuesList.Count = 0 then
             Options := Options + [goEditing]
         else
@@ -220,6 +271,7 @@ begin
                 PopupMenu1.Items.Add(mn);
             end;
         end;
+    end;
 end;
 
 procedure TFormAppConfig.setParamValue(ARow: Integer; Value: string);

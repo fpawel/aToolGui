@@ -6,12 +6,12 @@ uses
     Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
     System.Classes, Vcl.Graphics, Thrift.Collections, apitypes,
     Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, Vcl.Menus, Vcl.StdCtrls,
-  Vcl.ExtCtrls;
+    Vcl.ExtCtrls;
 
 type
     TCoefVal = record
         ProductID: int64;
-        What: string;
+        Read: boolean;
         Coefficient: integer;
         Result: string;
         Ok: boolean;
@@ -27,15 +27,15 @@ type
         N2: TMenuItem;
         N3: TMenuItem;
         N4: TMenuItem;
-    N5: TMenuItem;
-    N6: TMenuItem;
-    N7: TMenuItem;
-    N8: TMenuItem;
-    N9: TMenuItem;
-    N10: TMenuItem;
-    PanelPlaceholderBottom1: TPanel;
-    Button1: TButton;
-    Button2: TButton;
+        N5: TMenuItem;
+        N6: TMenuItem;
+        N7: TMenuItem;
+        N8: TMenuItem;
+        N9: TMenuItem;
+        N10: TMenuItem;
+        PanelPlaceholderBottom1: TPanel;
+        Button1: TButton;
+        Button2: TButton;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: integer;
           Rect: TRect; State: TGridDrawState);
         procedure FormCreate(Sender: TObject);
@@ -49,19 +49,19 @@ type
         procedure N3Click(Sender: TObject);
         procedure StringGrid1SetEditText(Sender: TObject; ACol, ARow: integer;
           const Value: string);
-    procedure N5Click(Sender: TObject);
-    procedure N7Click(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
+        procedure N5Click(Sender: TObject);
+        procedure N7Click(Sender: TObject);
+        procedure Button1Click(Sender: TObject);
+        procedure Button2Click(Sender: TObject);
     private
         { Private declarations }
-        FProducts: IThriftList<IProduct>;
+        // FProducts: IThriftList<IProduct>;
         FCoefs: IThriftList<ICoefficient>;
         Last_Edited_Col, Last_Edited_Row: integer;
     public
         { Public declarations }
         procedure setup;
-        procedure HandleReadCoefsVals(xs: TArray<TCoefVal>);
+        procedure HandleReadCoef(X: TCoefVal);
         procedure WriteCoefs;
     end;
 
@@ -73,7 +73,7 @@ implementation
 {$R *.dfm}
 
 uses stringgridutils, stringutils, UnitFormCurrentParty, myutils, UnitApiClient,
-    UnitAppIni, UnitAToolMainForm, UnitFormJournal;
+    UnitAppIni, UnitAToolMainForm;
 
 procedure TFormCoefficients.Button1Click(Sender: TObject);
 begin
@@ -102,7 +102,7 @@ begin
         for ACol := Left to Right do
         // for ARow := Top to Bottom do
         begin
-            p := FProducts[ACol - 1];
+            p := FormCurrentParty.FParty.Products[ACol - 1];
             p.Active := N1 = Sender;
             ProductsClient.setProductActive(p.ProductID, p.Active);
             With StringGrid1 do
@@ -135,9 +135,9 @@ var
     p: IProduct;
 begin
     with StringGrid1 do
-        for ACol := 1 to ColCount-1 do
+        for ACol := 1 to ColCount - 1 do
         begin
-            p := FProducts[ACol - 1];
+            p := FormCurrentParty.FParty.Products[ACol - 1];
             p.Active := N5 = Sender;
             ProductsClient.setProductActive(p.ProductID, p.Active);
             With StringGrid1 do
@@ -151,7 +151,7 @@ var
     c: ICoefficient;
 begin
     with StringGrid1 do
-        for ARow := 1 to RowCount-1 do
+        for ARow := 1 to RowCount - 1 do
         begin
             c := FCoefs[ARow - 1];
             c.Active := N7 = Sender;
@@ -173,12 +173,12 @@ begin
     cvals := TThriftListImpl<IProductCoefficientValue>.create;
     with StringGrid1 do
     begin
-        for ACol := 1 to colcount - 1 do
+        for ACol := 1 to ColCount - 1 do
         begin
-            p := FProducts[ACol - 1];
+            p := FormCurrentParty.FParty.Products[ACol - 1];
             if not p.Active then
                 continue;
-            for ARow := 1 to rowcount - 1 do
+            for ARow := 1 to RowCount - 1 do
             begin
                 c := FCoefs[ARow - 1];
                 if not c.Active then
@@ -199,40 +199,30 @@ begin
 
 end;
 
-procedure TFormCoefficients.HandleReadCoefsVals(xs: TArray<TCoefVal>);
+procedure TFormCoefficients.HandleReadCoef(X: TCoefVal);
 var
     ACol, ARow: integer;
-    cv: TCoefVal;
     p: IProduct;
 begin
     setup;
 
     with StringGrid1 do
     begin
-        for ACol := 1 to colcount - 1 do
-            for ARow := 1 to rowcount - 1 do
+        for ACol := 1 to ColCount - 1 do
+            for ARow := 1 to RowCount - 1 do
                 Cells[ACol, ARow] := '';
-        for cv in xs do
+        for ACol := 1 to ColCount - 1 do
         begin
-
-            for ACol := 1 to colcount - 1 do
+            p := FormCurrentParty.FParty.Products[ACol - 1];
+            if p.ProductID <> x.ProductID then
+                continue;
+            for ARow := 1 to RowCount - 1 do
             begin
-                p := FProducts[ACol - 1];
-                if p.ProductID <> cv.ProductID then
+                if FCoefs[ARow - 1].N <> x.Coefficient then
                     continue;
-                for ARow := 1 to rowcount - 1 do
-                begin
-                    if FCoefs[ARow - 1].N <> cv.Coefficient then
-                        continue;
-                    if (cv.What = 'read') AND cv.Ok then
-                        Cells[ACol, ARow] := cv.Result;
+                if x.Read AND x.Ok then
+                    Cells[ACol, ARow] := x.Result;
 
-                    FormJournal.AddLine(
-                      Format('%s коэф.%d %s сер.%d адр.%d = %s',
-                      [cv.What, cv.Coefficient, p.Device, p.Serial, p.Addr, cv.Result]),
-                       cv.Ok);
-
-                end;
             end;
         end;
     end;
@@ -246,19 +236,20 @@ var
 
     p: IProduct;
 begin
+    StringGrid_Clear(StringGrid1);
     FCoefs := CoefsClient.listCoefficients;
-    FProducts := UnitApiClient.FilesClient.getCurrentParty.Products;
+    // FProducts := UnitApiClient.FilesClient.getCurrentParty.Products;
     with StringGrid1 do
     begin
-        colcount := FProducts.Count + 1;
-        rowcount := FCoefs.Count + 1;
+        ColCount := FormCurrentParty.FParty.Products.Count + 1;
+        RowCount := FCoefs.Count + 1;
         FixedCols := 1;
         FixedRows := 1;
         Cells[0, 0] := '№';
         ColWidths[0] := 60;
-        for ACol := 1 to colcount - 1 do
+        for ACol := 1 to ColCount - 1 do
         begin
-            p := FProducts[ACol - 1];
+            p := FormCurrentParty.FParty.Products[ACol - 1];
             Cells[ACol, 0] := Format('%s #%d №%d',
               [p.Comport, p.Addr, p.Serial]);
 
@@ -272,7 +263,7 @@ begin
                 ColWidths[ACol] := 300;
 
         end;
-        for ARow := 1 to rowcount - 1 do
+        for ARow := 1 to RowCount - 1 do
         begin
             c := FCoefs[ARow - 1];
             Cells[0, ARow] := Format('%d', [c.N])
@@ -325,9 +316,9 @@ begin
     if (ARow = 0) then
     begin
         grd.Canvas.FillRect(Rect);
-        if (Assigned(FProducts)) AND (ACol > 0) then
+        if (Assigned(FormCurrentParty.FParty.Products)) AND (ACol > 0) then
             StringGrid_DrawCheckBoxCell(StringGrid1, ACol, ARow, Rect, State,
-              FProducts[ACol - 1].Active);
+              FormCurrentParty.FParty.Products[ACol - 1].Active);
         StringGrid_DrawCellBounds(StringGrid1.Canvas, ACol, ARow, Rect);
         exit;
     end;
@@ -348,7 +339,7 @@ begin
     StringGrid1.MouseToCell(X, Y, ACol, ARow);
     if (ARow = 0) and (ACol > 0) then
     begin
-        p := FProducts[ACol - 1];
+        p := FormCurrentParty.FParty.Products[ACol - 1];
         p.Active := not p.Active;
 
         ProductsClient.setProductActive(p.ProductID, p.Active);
@@ -375,7 +366,7 @@ var
 begin
     with StringGrid1 do
     begin
-        for ACol := 0 to colcount - 1 do
+        for ACol := 0 to ColCount - 1 do
         begin
             if ColWidths[ACol] < 30 then
                 ColWidths[ACol] := 30;
@@ -400,8 +391,9 @@ begin
         // Do an extra check if the LastEdited_ACol and LastEdited_ARow are not -1 already.
         // This is to be able to use also the arrow-keys up and down in the Grid.
         if (Last_Edited_Col <> -1) and (Last_Edited_Row <> -1) then
-            StringGrid1SetEditText(StringGrid1, Last_Edited_Col, Last_Edited_Row,
-              StringGrid1.Cells[Last_Edited_Col, Last_Edited_Row]);
+            StringGrid1SetEditText(StringGrid1, Last_Edited_Col,
+              Last_Edited_Row, StringGrid1.Cells[Last_Edited_Col,
+              Last_Edited_Row]);
         // Just make the call
     end;
     // Do whatever else wanted
@@ -411,7 +403,8 @@ end;
 
 procedure TFormCoefficients.StringGrid1SetEditText(Sender: TObject;
   ACol, ARow: integer; const Value: string);
-  var v:double;
+var
+    v: double;
 begin
     With StringGrid1 do
     begin

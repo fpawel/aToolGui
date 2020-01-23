@@ -108,7 +108,7 @@ implementation
 
 uses stringgridutils, stringutils, dateutils,
     vclutils, UnitFormPopup, UnitApiClient, myutils, UnitAToolMainForm,
-    UnitAppIni, UnitFormInterrogate, teechartutils;
+    UnitAppIni, UnitFormInterrogate, teechartutils, UnitFormCoefficients;
 
 {$R *.dfm}
 
@@ -616,6 +616,7 @@ begin
     setupStringGrid;
     setupSeries;
     AToolMainForm.SetupSeriesStringGrids;
+    FormCoefficients.setup;
     CurrFileClient.requestChart;
 end;
 

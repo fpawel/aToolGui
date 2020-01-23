@@ -35,7 +35,7 @@ var
 
 begin
     Transport := TSocketImpl.create('127.0.0.1',
-      StrToInt(GetEnvironmentVariable('ATOOL_API_PORT')), 10000);
+      StrToInt(GetEnvironmentVariable('ATOOL_API_PORT')), 60 *  1000);
     Protocol := TBinaryProtocolImpl.create(Transport, true, true);
     Transport.Open;
 

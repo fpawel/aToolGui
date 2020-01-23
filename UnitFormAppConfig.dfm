@@ -39,9 +39,9 @@ object FormAppConfig: TFormAppConfig
     PopupMenu = PopupMenu1
     TabOrder = 0
     OnDrawCell = StringGrid1DrawCell
+    OnMouseDown = StringGrid1MouseDown
     OnSelectCell = StringGrid1SelectCell
     OnSetEditText = StringGrid1SetEditText
-    ExplicitWidth = 569
   end
   object PopupMenu1: TPopupMenu
     AutoHotkeys = maManual
