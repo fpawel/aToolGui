@@ -11,6 +11,12 @@ uses
     Vcl.ExtCtrls, UnitFormInterrogate, Vcl.StdCtrls, Vcl.Buttons,
     UnitMeasurement, Thrift;
 
+const
+    wmuCurrentPartyChanged = WM_USER + 1;
+    wmuStartWork = WM_USER + 2;
+    wmuStopWork = WM_USER + 3;
+    wmuRequestConfigParams = WM_USER + 4;
+
 type
 
     TCopyDataCmd = (cdcNewCommTransaction, cdcNewProductParamValue, cdcChart,
@@ -49,8 +55,8 @@ type
         TabSheetJournal: TTabSheet;
         N10: TMenuItem;
         N6: TMenuItem;
-    N11: TMenuItem;
-    N12: TMenuItem;
+        N11: TMenuItem;
+        N12: TMenuItem;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -79,12 +85,15 @@ type
         procedure AppException(Sender: TObject; e: Exception);
         function ExceptionDialog(e: Exception): boolean;
         procedure HandleCurrentPartyChanged(var Message: TMessage);
-          message WM_USER + 1;
-        procedure HandleStartWork(var Message: TMessage); message WM_USER + 2;
-        procedure HandleStopWork(var Message: TMessage); message WM_USER + 3;
+          message wmuCurrentPartyChanged;
+        procedure HandleStartWork(var Message: TMessage); message wmuStartWork;
+        procedure HandleStopWork(var Message: TMessage); message wmuStopWork;
+        procedure HandleRequestLuaConfigParams(var Message: TMessage);
+          message wmuRequestConfigParams;
         procedure HandleCopydata(var Message: TMessage); message WM_COPYDATA;
         procedure HandleStatusMessage(X: TStatusMessage);
         procedure SetupGroupbox2Height;
+
     public
         { Public declarations }
         function GetChartByName(AName: string): TChart;
@@ -105,6 +114,9 @@ implementation
 
 uses System.Types, dateutils, myutils, api, UnitApiClient,
     UnitFormCurrentParty, unitappini, inifiles,
+
+    Grijjy.Bson, Grijjy.Bson.Serialization,
+
     Thrift.Collections, math, UnitFormPopup2,
     logfile, apitypes, vclutils, UnitFormCharts,
     UnitFormChart, UnitFormRawModbus, UnitFormTemperatureHardware, UnitFormGas,
@@ -271,6 +283,22 @@ begin
     MenuRun.Visible := not MenuStopWork.Visible;
 end;
 
+procedure TAToolMainForm.HandleRequestLuaConfigParams(var Message: TMessage);
+var
+    f: TFormAppConfig;
+begin
+    try
+        f := TFormAppConfig.create(nil);
+        f.Values := ScriptClient.getConfigParamValues;
+        f.FUpdateAppConfig := false;
+        f.ShowModal;
+        ScriptClient.setConfigParamValues(f.Values);
+    finally
+        f.Free;
+    end;
+
+end;
+
 procedure TAToolMainForm.MenuRunScriptClick(Sender: TObject);
 var
     dlg: TOpenDialog;
@@ -300,9 +328,17 @@ begin
 end;
 
 procedure TAToolMainForm.N10Click(Sender: TObject);
+var
+    f: TFormAppConfig;
 begin
-    FormAppConfig.FFormPopup2.Hide;
-    FormAppConfig.ExecuteDialog;
+    try
+        f := TFormAppConfig.create(nil);
+        f.Values := AppCfgClient.getParamValues;
+        f.FUpdateAppConfig := true;
+        f.ShowModal;
+    finally
+        f.Free;
+    end;
 end;
 
 procedure TAToolMainForm.N2Click(Sender: TObject);
@@ -324,19 +360,19 @@ end;
 procedure TAToolMainForm.N3Click(Sender: TObject);
 var
     parties: IThriftList<IPartyInfo>;
-    i: integer;
+    I: integer;
 begin
     parties := FilesClient.listParties;
 
     FormSelectCurrentParty.ListBox1.Clear;
-    for i := 0 to parties.Count - 1 do
-        with parties[i] do
+    for I := 0 to parties.Count - 1 do
+        with parties[I] do
         begin
             FormSelectCurrentParty.ListBox1.Items.Add
               (Format('[%d] %s %s', [PartyID, FormatDateTime('dd.MM.yy',
-              IncHour(unixMillisToDateTime(CreatedAt), -3)), parties[i].Name]));
+              IncHour(unixMillisToDateTime(CreatedAt), -3)), parties[I].Name]));
             if FormCurrentParty.FParty.PartyID = PartyID then
-                FormSelectCurrentParty.ListBox1.ItemIndex := i;
+                FormSelectCurrentParty.ListBox1.ItemIndex := I;
         end;
     if (FormSelectCurrentParty.ShowModal <> mrOk) or
       (FormSelectCurrentParty.ListBox1.ItemIndex = -1) then
@@ -403,7 +439,7 @@ begin
               (TJsonCD.unmarshal<TProductParamValue>(Message));
         cdcChart:
             FormCurrentParty.AddMeasurements
-              (TMeasurement.Deserialize(cd.lpData));
+              (TMeasurement.deserialize(cd.lpData));
         cdcStatus:
             HandleStatusMessage(TJsonCD.unmarshal<TStatusMessage>(Message));
         cdcCoef:
@@ -414,6 +450,7 @@ begin
               (TJsonCD.unmarshal<TProductConnection>(Message));
         cdcDelay:
             FormDelay.Delay(TJsonCD.unmarshal<TDelayInfo>(Message));
+
     else
         raise Exception.create('wrong message: ' + IntToStr(Message.WParam));
     end;
@@ -427,15 +464,15 @@ end;
 
 procedure TAToolMainForm.PageControl1Change(Sender: TObject);
 begin
-//    if PageControl1.ActivePage = TabSheet3 then
-//    begin
-//        FormCoefficients.setup;
-//    end
-//    else if PageControl1.ActivePage = TabSheet2 then
-//    begin
-//        FormCurrentParty.FParty := FilesClient.getCurrentParty;
-//        FormCurrentParty.setupStringGrid;
-//    end
+    // if PageControl1.ActivePage = TabSheet3 then
+    // begin
+    // FormCoefficients.setup;
+    // end
+    // else if PageControl1.ActivePage = TabSheet2 then
+    // begin
+    // FormCurrentParty.FParty := FilesClient.getCurrentParty;
+    // FormCurrentParty.setupStringGrid;
+    // end
 end;
 
 procedure TAToolMainForm.PageControlMainChange(Sender: TObject);
@@ -454,7 +491,7 @@ end;
 procedure TAToolMainForm.PageControlMainDrawTab(Control: TCustomTabControl;
   TabIndex: integer; const Rect: TRect; Active: boolean);
 var
-    i: integer;
+    I: integer;
     PageControl: TPageControl;
     AText: string;
 
@@ -486,7 +523,7 @@ begin
 
         X := Rect.Left + 7;
 
-        if Length(words) = 1 then
+        if length(words) = 1 then
         begin
             y := Rect.Top + round((Rect.Height - txt_height) / 2.0);
             PageControl.Canvas.TextRect(Rect, X, y, word);
@@ -548,13 +585,13 @@ end;
 
 function TAToolMainForm.GetChartByName(AName: string): TChart;
 var
-    i: integer;
+    I: integer;
     tbs: TTabSheet;
     AFormChart: TFormChart;
 begin
-    for i := PageIndexChart to PageControlMain.PageCount - 1 do
-        if PageControlMain.Pages[i].Caption = AName then
-            exit((PageControlMain.Pages[i].Controls[0] AS TFormChart).Chart1);
+    for I := PageIndexChart to PageControlMain.PageCount - 1 do
+        if PageControlMain.Pages[I].Caption = AName then
+            exit((PageControlMain.Pages[I].Controls[0] AS TFormChart).Chart1);
     tbs := TTabSheet.create(nil);
     tbs.Caption := AName;
     tbs.PageControl := PageControlMain;
@@ -580,11 +617,11 @@ end;
 
 procedure TAToolMainForm.SetupSeriesStringGrids;
 var
-    i: integer;
+    I: integer;
 begin
     with PageControlMain do
-        for i := PageIndexChart to PageCount - 1 do
-            (Pages[i].Controls[0] AS TFormChart).setupStringGrid;
+        for I := PageIndexChart to PageCount - 1 do
+            (Pages[I].Controls[0] AS TFormChart).setupStringGrid;
 end;
 
 procedure TAToolMainForm.HandleStatusMessage(X: TStatusMessage);
@@ -628,15 +665,15 @@ end;
 procedure TAToolMainForm.DeleteEmptyCharts;
 var
     xs: TList<TTabSheet>;
-    i: integer;
+    I: integer;
 begin
     xs := TList<TTabSheet>.create;
     with PageControlMain do
-        for i := PageIndexChart to PageCount - 1 do
-            if (Pages[i].Controls[0] AS TFormChart).Chart1.SeriesCount = 0 then
-                xs.Add(Pages[i]);
-    for i := 0 to xs.Count - 1 do
-        xs[i].Free;
+        for I := PageIndexChart to PageCount - 1 do
+            if (Pages[I].Controls[0] AS TFormChart).Chart1.SeriesCount = 0 then
+                xs.Add(Pages[I]);
+    for I := 0 to xs.Count - 1 do
+        xs[I].Free;
     xs.Free;
 end;
 

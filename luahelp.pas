@@ -16,10 +16,12 @@ type
     end;
 
 function LuaListDirs: TArray<TLuaDir>;
+function LuaPath: string;
 
 implementation
 
 uses classes;
+
 
 function LuaPath: string;
 begin

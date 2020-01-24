@@ -77,7 +77,6 @@ begin
   Application.CreateForm(TFormCoefficients, FormCoefficients);
   Application.CreateForm(TFormInterrogate, FormInterrogate);
   Application.CreateForm(TFormDelay, FormDelay);
-  Application.CreateForm(TFormAppConfig, FormAppConfig);
   Application.CreateForm(TFormProductsDataTable, FormProductsDataTable);
   Application.Run;
 

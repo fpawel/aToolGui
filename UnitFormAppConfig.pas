@@ -9,6 +9,7 @@ uses
     UnitFormPopup2, Thrift.Collections, Vcl.Menus;
 
 type
+
     TFormAppConfig = class(TForm)
         StringGrid1: TStringGrid;
         PopupMenu1: TPopupMenu;
@@ -24,18 +25,21 @@ type
           Shift: TShiftState; X, Y: Integer);
     private
         { Private declarations }
-        FConfigParamValues: IThriftList<IConfigParamValue>;
-        Last_Edited_Col, Last_Edited_Row: Integer;
 
+        Last_Edited_Col, Last_Edited_Row: Integer;
+        FConfigParamValues: IThriftList<IConfigParamValue>;
+        FFormPopup2: TFormPopup2;
         procedure FFormPopup2ToolButton3Click(Sender: TObject);
-        procedure setup;
+
         procedure setParamValue(ARow: Integer; Value: string);
         procedure OnPopupMenuItemClick(Sender: TObject);
+        procedure setup;
+        procedure SetValues(AConfigParamValues: IThriftList<IConfigParamValue>);
+        function GetValues:IThriftList<IConfigParamValue>;
     public
         { Public declarations }
-        FFormPopup2: TFormPopup2;
-        procedure ExecuteDialog;
-
+        FUpdateAppConfig:boolean;
+        property Values : IThriftList<IConfigParamValue> read GetValues write SetValues ;
     end;
 
 var
@@ -77,18 +81,14 @@ begin
     FFormPopup2.Hide;
 end;
 
-procedure TFormAppConfig.ExecuteDialog;
-begin
-    setup;
-    ShowModal;
-end;
+
 
 procedure TFormAppConfig.setup;
 var
     I: Integer;
     CanSelect: Boolean;
 begin
-    FConfigParamValues := AppCfgClient.getParamValues;
+    FFormPopup2.Hide;
     With StringGrid1 do
     begin
         RowCount := FConfigParamValues.Count + 1;
@@ -102,6 +102,17 @@ begin
     CanSelect := true;
     StringGrid1SelectCell(StringGrid1, 1, 1, CanSelect);
 
+end;
+
+function TFormAppConfig.GetValues:IThriftList<IConfigParamValue>;
+begin
+    result := FConfigParamValues;
+end;
+
+procedure TFormAppConfig.SetValues(AConfigParamValues: IThriftList<IConfigParamValue>);
+begin
+    FConfigParamValues := AConfigParamValues;
+    setup;
 end;
 
 procedure TFormAppConfig.StringGrid1DrawCell(Sender: TObject;
@@ -298,7 +309,9 @@ begin
         raise Exception.Create(s);
     end;
 
-    AppCfgClient.setParamValue(c.Key, Value);
+    if FUpdateAppConfig  then
+        AppCfgClient.setParamValue(c.Key, Value);
+
     c.Value := Value;
 
 end;
