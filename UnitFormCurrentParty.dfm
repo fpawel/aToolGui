@@ -507,6 +507,10 @@ object FormCurrentParty: TFormCurrentParty
       AutoHotkeys = maManual
       Caption = #1042#1099#1073#1088#1072#1090#1100' '#1090#1080#1087' '#1087#1088#1080#1073#1086#1088#1072
     end
+    object MenuSetNetAddr: TMenuItem
+      Caption = #1059#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1089#1077#1090#1077#1074#1086#1081' '#1072#1076#1088#1077#1089
+      OnClick = MenuSetNetAddrClick
+    end
     object MenuSetChartSeparator: TMenuItem
       Caption = '-'
     end

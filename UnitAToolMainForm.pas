@@ -82,6 +82,8 @@ type
     private
         { Private declarations }
         FEnableCopyData: boolean;
+
+
         procedure AppException(Sender: TObject; e: Exception);
         function ExceptionDialog(e: Exception): boolean;
         procedure HandleCurrentPartyChanged(var Message: TMessage);
@@ -93,6 +95,9 @@ type
         procedure HandleCopydata(var Message: TMessage); message WM_COPYDATA;
         procedure HandleStatusMessage(X: TStatusMessage);
         procedure SetupGroupbox2Height;
+
+        procedure CreateLuaScriptsMenu;
+        procedure LuaScriptMenuClick(Sender:TObject);
 
     public
         { Public declarations }
@@ -126,6 +131,7 @@ uses System.Types, dateutils, myutils, api, UnitApiClient,
 procedure TAToolMainForm.FormCreate(Sender: TObject);
 begin
     Application.OnException := AppException;
+    CreateLuaScriptsMenu;
 end;
 
 procedure TAToolMainForm.FormMouseWheel(Sender: TObject; Shift: TShiftState;
@@ -148,7 +154,7 @@ end;
 
 procedure TAToolMainForm.FormShow(Sender: TObject);
 begin
-    LuaListDirs;
+
     OnShow := nil;
     OpenApiClient;
 
@@ -225,6 +231,37 @@ begin
 
     FEnableCopyData := true;
     FormCurrentParty.upload;
+end;
+
+procedure TAToolMainForm.CreateLuaScriptsMenu;
+var
+    s, s1: string;
+    mp, m: TMenuItem;
+begin
+    for s in luaScripts.Keys do
+    begin
+        mp := TMenuItem.create(nil);
+        mp.Caption := s;
+        MenuRun.Add(mp);
+
+        for s1 in luaScripts[s].Keys do
+        begin
+            m := TMenuItem.create(nil);
+            mp.Add(m);
+            m.Caption := s1;
+            m.OnClick := LuaScriptMenuClick;
+
+        end;
+    end;
+
+end;
+
+procedure TAToolMainForm.LuaScriptMenuClick(Sender:TObject);
+var m, mp :TMenuItem;
+begin
+    m := sender as TMenuItem;
+    mp := m.Parent;
+    ScriptClient.runFile(luaScripts[mp.Caption][m.Caption]);
 end;
 
 procedure TAToolMainForm.SetupGroupbox2Height;

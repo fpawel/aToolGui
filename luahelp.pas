@@ -2,81 +2,82 @@ unit luahelp;
 
 interface
 
-uses sysutils;
+uses sysutils, System.Generics.Collections;
 
 type
-    TLuaFile = record
-        Name: string;
-        What: string;
-    end;
+    TLuaScripts = TDictionary<string, TDictionary<string, string>>;
 
-    TLuaDir = record
-        Name: string;
-        Files: TArray<TLuaFile>;
-    end;
-
-function LuaListDirs: TArray<TLuaDir>;
-function LuaPath: string;
+var luaScripts: TLuaScripts;
 
 implementation
 
-uses classes;
+uses classes, myutils, StrUtils, System.Types;
 
 
 function LuaPath: string;
 begin
-    result := ExtractFileDir(ParamStr(0)) + '\lua';
+    result := ExtractFileDir(ParamStr(0));
 end;
 
-procedure LuaListFiles(var X: TLuaDir);
+function TrimLeadingCommentSymbols(s: string): string;
+begin
+    while (length(s) > 0) AND (s[1] = '-') do
+        s := Copy(s, 2, length(s) - 1);
+    result := Trim(s);
+end;
+
+function ReadFirstLine(filename: string): string;
 var
-    SR: TSearchRec;
     AFile: TStreamReader;
-
 begin
-    if FindFirst(LuaPath + '\' + X.Name + '\*.lua', faAnyFile, SR) <> 0 then
-        exit;
-    repeat
-        SetLength(X.Files, length(X.Files) + 1);
-        with X.Files[length(X.Files) - 1] do
-        begin
-            Name := SR.Name;
-            AFile := TStreamReader.Create(LuaPath + '\' + X.Name + '\' +
-              SR.Name, TEncoding.UTF8, True);
-
-            try
-                What := AFile.ReadLine;
-            finally
-                AFile.Free;
-            end;
-
-            What := Trim(What);
-            while What[1] = '-' do
-                What := Copy(What, 2, length(What) - 1);
-            What := Trim(What);
-
-        end;
-    until FindNext(SR) <> 0;
-    FindClose(SR);
+    result := '';
+    AFile := TStreamReader.Create(filename, TEncoding.UTF8, True);
+    try
+        result := AFile.ReadLine;
+    finally
+        AFile.Free;
+    end;
 end;
 
-function LuaListDirs: TArray<TLuaDir>;
+function _LuaListScripts: TLuaScripts;
 var
     SR: TSearchRec;
-begin
-    if FindFirst(LuaPath + '\*', faDirectory, SR) <> 0 then
-        exit;
-    repeat
-        if ((SR.attr and faDirectory) = faDirectory) and (SR.Name <> '.') and
-          (SR.Name <> '..') then
-        begin
-            SetLength(result, length(result) + 1);
-            result[length(result) - 1].Name := SR.Name;
-            LuaListFiles(result[length(result) - 1]);
-        end;
+    AFiles: Tarray<string>;
+    s, AFileName: string;
+    xs: TStringDynArray;
+    x: TDictionary<string, string>;
+    I: Integer;
 
-    until FindNext(SR) <> 0;
-    FindClose(SR);
+begin
+    AFiles := myutils.FindAllFilesInDir(LuaPath, '*.*');
+    result := TLuaScripts.Create;
+    for AFileName in AFiles do
+    begin
+        if ExtractFileExt(AFileName) <> '.lua' then
+            continue;
+        xs := StrUtils.SplitString
+          (TrimLeadingCommentSymbols(ReadFirstLine(AFileName)), ':');
+        if length(xs) < 3 then
+            continue;
+
+        for I := 0 to length(xs) - 1 do
+            xs[I] := Trim(xs[I]);
+
+        if Trim(xs[0]) <> 'atoolgui' then
+            continue;
+        if not result.TryGetValue(xs[1], x) then
+        begin
+            x := TDictionary<string, string>.Create();
+            result.Add(xs[1], x);
+        end;
+        x.TryAdd(xs[2], AFileName);
+
+    end;
 end;
+
+initialization
+    luaScripts := _LuaListScripts;
+
+
 
 end.

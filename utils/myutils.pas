@@ -39,20 +39,59 @@ procedure ExecuteAndWait(const aCommando: string);
 
 function getCopyDataString(Message: TMessage): string;
 
+function FindAllFilesInDir(const Dir: string; const Mask: string)
+  : TArray<string>;
+
 implementation
 
-uses dateutils, registry, winapi.windows, sysutils;
+uses sysutils, dateutils, registry, winapi.windows;
 
 var
     unixTime: TDateTime;
 
+
+
+function FindAllFilesInDir(const Dir: string; const Mask: string)
+  : TArray<string>;
+var
+    SR: TSearchRec;
+    xs: TArray<string>;
+    x: string;
+begin
+    if sysutils.FindFirst(IncludeTrailingBackslash(Dir) + Mask,
+      faAnyFile or faDirectory, SR) <> 0 then
+        exit;
+    try
+        repeat
+            if (SR.Attr and faDirectory) = 0 then
+            begin
+                SetLength(result, length(result) + 1);
+                result[length(result) - 1] := IncludeTrailingBackslash(Dir) + SR.Name;
+
+            end
+            else if (SR.Name <> '.') and (SR.Name <> '..') then
+            begin
+                xs := FindAllFilesInDir(IncludeTrailingBackslash(Dir) +
+                  SR.Name, Mask);
+                for x in xs do
+                begin
+                    SetLength(result, length(result) + 1);
+                    result[length(result) - 1] := x;
+                end
+            end;
+            // recursive call!
+        until sysutils.FindNext(SR) <> 0;
+    finally
+        sysutils.FindClose(SR);
+    end;
+end;
 
 function getCopyDataString(Message: TMessage): string;
 var
     cd: PCOPYDATASTRUCT;
 begin
     cd := PCOPYDATASTRUCT(Message.LParam);
-    SetString(Result, PWideChar(cd.lpData), cd.cbData div 2);
+    SetString(result, PWideChar(cd.lpData), cd.cbData div 2);
 end;
 
 class function TJsonCD.unmarshal<T>(Message: TMessage): T;
@@ -60,7 +99,7 @@ var
     s: string;
 begin
     s := getCopyDataString(Message);
-    TgoBsonSerializer.deserialize(getCopyDataString(Message), Result);
+    TgoBsonSerializer.deserialize(getCopyDataString(Message), result);
 end;
 
 procedure EnumComports(const Ports: TStrings);
@@ -87,12 +126,12 @@ end;
 
 function UnixMillisToDateTime(T: int64): TDateTime;
 begin
-    Result := IncHour(IncMilliSecond(unixTime, T), 3);
+    result := IncHour(IncMilliSecond(unixTime, T), 3);
 end;
 
 function DateTimeToUnixMillis(T: TDateTime): int64;
 begin
-    Result := MilliSecondsBetween(unixTime, IncHour(T, -3));
+    result := MilliSecondsBetween(unixTime, IncHour(T, -3));
 end;
 
 procedure ExecuteAndWait(const aCommando: string);
@@ -129,7 +168,7 @@ end;
 
 function TPrimitiveBox<T>.getValue: T;
 begin
-    Result := value;
+    result := value;
 end;
 
 procedure TPrimitiveBox<T>.setValue(value: T);

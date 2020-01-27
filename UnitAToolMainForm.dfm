@@ -144,6 +144,8 @@ object AToolMainForm: TAToolMainForm
       end
     end
     object MenuRun: TMenuItem
+      AutoHotkeys = maManual
+      AutoLineReduction = maAutomatic
       Caption = #1047#1072#1087#1091#1089#1090#1080#1090#1100
       object MenuRunInterrogate: TMenuItem
         Caption = #1054#1087#1088#1086#1089

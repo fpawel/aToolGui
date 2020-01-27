@@ -49,6 +49,7 @@ type
         N7: TMenuItem;
         N8: TMenuItem;
         MenuDeleteChart: TMenuItem;
+        MenuSetNetAddr: TMenuItem;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: integer;
           Rect: TRect; State: TGridDrawState);
         procedure StringGrid1SelectCell(Sender: TObject; ACol, ARow: integer;
@@ -67,6 +68,7 @@ type
           Shift: TShiftState; X, Y: integer);
         procedure StringGrid1MouseUp(Sender: TObject; Button: TMouseButton;
           Shift: TShiftState; X, Y: integer);
+        procedure MenuSetNetAddrClick(Sender: TObject);
     private
         { Private declarations }
         FSeries: TDictionary<TProductVar, TFastLineSeries>;
@@ -804,6 +806,11 @@ begin
             end;
     AToolMainForm.DeleteEmptyCharts;
     AToolMainForm.PageControlMain.ActivePageIndex := 0;
+end;
+
+procedure TFormCurrentParty.MenuSetNetAddrClick(Sender: TObject);begin
+
+    ProductsClient.setNetAddr(FParty.Products[StringGrid1.Col - 1].ProductID);
 end;
 
 constructor TProductVar.Create(AProductID, AVarID: int64);
