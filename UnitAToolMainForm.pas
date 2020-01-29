@@ -9,18 +9,19 @@ uses
     Vcl.Controls, Vcl.Forms, Vcl.Dialogs, System.ImageList, Vcl.ImgList,
     Vcl.Menus, UnitFormSelectCurrentParty, VclTee.Chart, Vcl.ComCtrls,
     Vcl.ExtCtrls, UnitFormInterrogate, Vcl.StdCtrls, Vcl.Buttons,
-    UnitMeasurement, Thrift;
+    UnitMeasurement, Thrift, UnitFormPopup2;
 
 const
     wmuCurrentPartyChanged = WM_USER + 1;
     wmuStartWork = WM_USER + 2;
     wmuStopWork = WM_USER + 3;
     wmuRequestConfigParams = WM_USER + 4;
+    wmuLuaSuspended = WM_USER + 5;
 
 type
 
     TCopyDataCmd = (cdcNewCommTransaction, cdcNewProductParamValue, cdcChart,
-      cdcStatus, cdcCoef, cdcProductConn, cdcDelay);
+      cdcStatus, cdcCoef, cdcProductConn, cdcDelay, cdcLuaSuspended);
 
     TStatusMessage = record
         Text: string;
@@ -83,6 +84,7 @@ type
         { Private declarations }
         FEnableCopyData: boolean;
 
+        FFormPopupScripSuspended: TFormPopup2;
 
         procedure AppException(Sender: TObject; e: Exception);
         function ExceptionDialog(e: Exception): boolean;
@@ -92,12 +94,16 @@ type
         procedure HandleStopWork(var Message: TMessage); message wmuStopWork;
         procedure HandleRequestLuaConfigParams(var Message: TMessage);
           message wmuRequestConfigParams;
+
+        procedure HandleLuaSuspended(AText: String);
+
         procedure HandleCopydata(var Message: TMessage); message WM_COPYDATA;
         procedure HandleStatusMessage(X: TStatusMessage);
         procedure SetupGroupbox2Height;
 
         procedure CreateLuaScriptsMenu;
-        procedure LuaScriptMenuClick(Sender:TObject);
+        procedure LuaScriptMenuClick(Sender: TObject);
+        procedure LuaScriptIgnoreErrorClick(Sender: TObject);
 
     public
         { Public declarations }
@@ -122,7 +128,7 @@ uses System.Types, dateutils, myutils, api, UnitApiClient,
 
     Grijjy.Bson, Grijjy.Bson.Serialization,
 
-    Thrift.Collections, math, UnitFormPopup2,
+    Thrift.Collections, math,
     logfile, apitypes, vclutils, UnitFormCharts,
     UnitFormChart, UnitFormRawModbus, UnitFormTemperatureHardware, UnitFormGas,
     UnitFormCoefficients, UnitFormJournal, UnitFormDelay, UnitFormAppConfig,
@@ -225,6 +231,15 @@ begin
         Align := alBottom;
     end;
 
+    FFormPopupScripSuspended := TFormPopup2.create(self);
+    with FFormPopupScripSuspended do
+    begin
+        BorderStyle := bsNone;
+        parent := self;
+        Align := alBottom;
+        ToolButton3.OnClick := self.LuaScriptIgnoreErrorClick;
+    end;
+
     MenuStopWork.Visible := RunWorkClient.Connected;
     MenuRun.Visible := not MenuStopWork.Visible;
     NotifyGuiClient.open(Handle);
@@ -256,11 +271,18 @@ begin
 
 end;
 
-procedure TAToolMainForm.LuaScriptMenuClick(Sender:TObject);
-var m, mp :TMenuItem;
+procedure TAToolMainForm.LuaScriptIgnoreErrorClick(Sender: TObject);
 begin
-    m := sender as TMenuItem;
-    mp := m.Parent;
+    FFormPopupScripSuspended.Hide;
+    ScriptClient.IgnoreError;
+end;
+
+procedure TAToolMainForm.LuaScriptMenuClick(Sender: TObject);
+var
+    m, mp: TMenuItem;
+begin
+    m := Sender as TMenuItem;
+    mp := m.parent;
     ScriptClient.runFile(luaScripts[mp.Caption][m.Caption]);
 end;
 
@@ -318,6 +340,7 @@ procedure TAToolMainForm.HandleStopWork(var Message: TMessage);
 begin
     MenuStopWork.Visible := false;
     MenuRun.Visible := not MenuStopWork.Visible;
+    FFormPopupScripSuspended.Hide;
 end;
 
 procedure TAToolMainForm.HandleRequestLuaConfigParams(var Message: TMessage);
@@ -334,6 +357,19 @@ begin
         f.Free;
     end;
 
+end;
+
+procedure TAToolMainForm.HandleLuaSuspended(AText: String);
+begin
+    FormPopup2.Hide;
+    with FFormPopupScripSuspended do
+    begin
+        Top := 100500;
+        SetText('Произошла ошибка. Выполнение остановлено. ' +
+          'Чтобы игнорировать ошибку и продолжить выполнение, закройте это сообщение'#10#13#10#13
+          + AText, false);
+        Show;
+    end;
 end;
 
 procedure TAToolMainForm.MenuRunScriptClick(Sender: TObject);
@@ -487,6 +523,9 @@ begin
               (TJsonCD.unmarshal<TProductConnection>(Message));
         cdcDelay:
             FormDelay.Delay(TJsonCD.unmarshal<TDelayInfo>(Message));
+
+        cdcLuaSuspended:
+            HandleLuaSuspended(getCopyDataString(Message));
 
     else
         raise Exception.create('wrong message: ' + IntToStr(Message.WParam));

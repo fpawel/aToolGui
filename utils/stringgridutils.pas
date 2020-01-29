@@ -357,8 +357,8 @@ begin
         begin
             s := cells[acol, arow];
             w := Canvas.TextWidth(s);
-            if ColWidths[acol] < w + 5 then
-                ColWidths[acol] := w + 5;
+            if ColWidths[acol] < w + 30 then
+                ColWidths[acol] := w + 30;
         end;
     end;
 

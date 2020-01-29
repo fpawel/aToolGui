@@ -105,6 +105,10 @@ begin
                 FixedRows := 1;
 
             g.StringGrid1.Height := RowCount  * DefaultRowHeight + 20;
+            if g.StringGrid1.Height > 600 then
+                g.StringGrid1.Height := 600;
+
+
 
             for ARow := 0 to xs[I].Values.Count - 1 do
                 for ACol := 0 to xs[I].Values[ARow].Count - 1 do

@@ -40,7 +40,7 @@ implementation
 
 {$R *.dfm}
 
-uses UnitFormPopup;
+uses UnitFormPopup, UnitApiClient;
 
 procedure TFormPopup2.FormCreate(Sender: TObject);
 begin

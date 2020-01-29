@@ -70,7 +70,8 @@ begin
             x := TDictionary<string, string>.Create();
             result.Add(xs[1], x);
         end;
-        x.TryAdd(xs[2], AFileName);
+
+        x.TryAdd(string.Join(': ', xs, 2, Length(xs)-2), AFileName);
 
     end;
 end;
