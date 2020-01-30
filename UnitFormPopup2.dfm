@@ -292,18 +292,19 @@ object FormPopup2: TFormPopup2
     object Panel2: TPanel
       Left = 172
       Top = 0
-      Width = 560
+      Width = 566
       Height = 91
       Align = alClient
       BevelOuter = bvNone
       Caption = 'Panel1'
       ShowCaption = False
       TabOrder = 1
+      ExplicitWidth = 560
       object Label1: TLabel
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 554
+        Width = 560
         Height = 85
         Align = alClient
         AutoSize = False
@@ -317,9 +318,9 @@ object FormPopup2: TFormPopup2
       end
     end
     object ToolBar2: TToolBar
-      Left = 732
+      Left = 738
       Top = 0
-      Width = 35
+      Width = 29
       Height = 91
       Align = alRight
       ButtonHeight = 31
@@ -334,7 +335,19 @@ object FormPopup2: TFormPopup2
         Top = 0
         Caption = 'ToolButtonConsoleHide'
         ImageIndex = 0
+        Wrap = True
         OnClick = ToolButton3Click
+      end
+      object ToolButton1: TToolButton
+        Left = 0
+        Top = 31
+        Hint = #1048#1075#1085#1086#1088#1080#1088#1086#1074#1072#1090#1100' '#1086#1096#1080#1073#1082#1091' '#1080' '#1087#1088#1086#1076#1086#1083#1078#1080#1090#1100' '#1074#1099#1087#1086#1083#1085#1077#1085#1080#1077' '#1089#1094#1077#1085#1072#1088#1080#1103' '#1085#1072#1089#1090#1088#1086#1081#1082#1080
+        Caption = 'ToolButton1'
+        ImageIndex = 4
+        ParentShowHint = False
+        ShowHint = True
+        Visible = False
+        OnClick = ToolButton1Click
       end
     end
   end

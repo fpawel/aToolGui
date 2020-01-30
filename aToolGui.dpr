@@ -57,7 +57,8 @@ uses
   UnitFormProductsData in 'UnitFormProductsData.pas' {FormProductsData},
   UnitFormProductsDataTable in 'UnitFormProductsDataTable.pas' {FormProductsDataTable},
   teechartutils in 'utils\teechartutils.pas',
-  luahelp in 'luahelp.pas';
+  luahelp in 'luahelp.pas',
+  UnitFormSelectWorksDialog in 'UnitFormSelectWorksDialog.pas' {FormSelectWorksDialog};
 
 {$R *.res}
 
@@ -78,6 +79,7 @@ begin
   Application.CreateForm(TFormInterrogate, FormInterrogate);
   Application.CreateForm(TFormDelay, FormDelay);
   Application.CreateForm(TFormProductsDataTable, FormProductsDataTable);
+  Application.CreateForm(TFormSelectWorksDialog, FormSelectWorksDialog);
   Application.Run;
 
 end.

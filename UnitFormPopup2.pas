@@ -21,9 +21,11 @@ type
         ToolButton3: TToolButton;
         Panel3: TPanel;
         Label2: TLabel;
+    ToolButton1: TToolButton;
         procedure FormCreate(Sender: TObject);
         procedure ToolButton3Click(Sender: TObject);
     procedure Label1DblClick(Sender: TObject);
+    procedure ToolButton1Click(Sender: TObject);
     private
         { Private declarations }
 
@@ -72,6 +74,12 @@ begin
         Label1.Font.Color := clRed;
     ImageError.Visible := not ok;
     ImageInfo.Visible := ok;
+end;
+
+procedure TFormPopup2.ToolButton1Click(Sender: TObject);
+begin
+    Hide;
+    ScriptClient.IgnoreError;
 end;
 
 procedure TFormPopup2.ToolButton3Click(Sender: TObject);

@@ -21,7 +21,7 @@ const
 type
 
     TCopyDataCmd = (cdcNewCommTransaction, cdcNewProductParamValue, cdcChart,
-      cdcStatus, cdcCoef, cdcProductConn, cdcDelay, cdcLuaSuspended);
+      cdcStatus, cdcCoef, cdcProductConn, cdcDelay, cdcLuaSuspended, cdcLuaSelectWorks);
 
     TStatusMessage = record
         Text: string;
@@ -103,7 +103,7 @@ type
 
         procedure CreateLuaScriptsMenu;
         procedure LuaScriptMenuClick(Sender: TObject);
-        procedure LuaScriptIgnoreErrorClick(Sender: TObject);
+        procedure HandleLuaSelectWorks(xs:TArray<string>);
 
     public
         { Public declarations }
@@ -132,7 +132,7 @@ uses System.Types, dateutils, myutils, api, UnitApiClient,
     logfile, apitypes, vclutils, UnitFormCharts,
     UnitFormChart, UnitFormRawModbus, UnitFormTemperatureHardware, UnitFormGas,
     UnitFormCoefficients, UnitFormJournal, UnitFormDelay, UnitFormAppConfig,
-    UnitFormProductsData, luahelp;
+    UnitFormProductsData, luahelp, UnitFormSelectWorksDialog;
 
 procedure TAToolMainForm.FormCreate(Sender: TObject);
 begin
@@ -237,7 +237,8 @@ begin
         BorderStyle := bsNone;
         parent := self;
         Align := alBottom;
-        ToolButton3.OnClick := self.LuaScriptIgnoreErrorClick;
+        ToolButton1.Visible := true;
+        ToolButton3.Visible := false;
     end;
 
     MenuStopWork.Visible := RunWorkClient.Connected;
@@ -271,11 +272,7 @@ begin
 
 end;
 
-procedure TAToolMainForm.LuaScriptIgnoreErrorClick(Sender: TObject);
-begin
-    FFormPopupScripSuspended.Hide;
-    ScriptClient.IgnoreError;
-end;
+
 
 procedure TAToolMainForm.LuaScriptMenuClick(Sender: TObject);
 var
@@ -365,9 +362,7 @@ begin
     with FFormPopupScripSuspended do
     begin
         Top := 100500;
-        SetText('Произошла ошибка. Выполнение остановлено. ' +
-          'Чтобы игнорировать ошибку и продолжить выполнение, закройте это сообщение'#10#13#10#13
-          + AText, false);
+        SetText(AText, false);
         Show;
     end;
 end;
@@ -526,6 +521,9 @@ begin
 
         cdcLuaSuspended:
             HandleLuaSuspended(getCopyDataString(Message));
+
+        cdcLuaSelectWorks:
+            HandleLuaSelectWorks(TJsonCD.unmarshal<TArray<string>>(Message));
 
     else
         raise Exception.create('wrong message: ' + IntToStr(Message.WParam));
@@ -698,6 +696,34 @@ begin
     with PageControlMain do
         for I := PageIndexChart to PageCount - 1 do
             (Pages[I].Controls[0] AS TFormChart).setupStringGrid;
+end;
+
+procedure TAToolMainForm.HandleLuaSelectWorks(xs:TArray<string>);
+var works:IThriftList<boolean>;
+  I: Integer;
+  f:TFormSelectWorksDialog;
+begin
+
+    f := TFormSelectWorksDialog.Create(nil);
+    f.CheckListBox1.Items.Clear;
+    for I := 0 to length(xs)-1 do
+    begin
+        f.CheckListBox1.Items.Add(xs[i]);
+        f.CheckListBox1.Checked[i] := AppIni.ReadBool('select_works', xs[i], true);
+        //works.Add(true);
+    end;
+
+    f.ShowModal;
+
+    works := TThriftListImpl<boolean>.create;
+    for I := 0 to length(xs)-1 do
+    begin
+        AppIni.WriteBool('select_works', xs[i], f.CheckListBox1.Checked[i]);
+        works.Add(f.CheckListBox1.Checked[i]);
+    end;
+    f.Free;
+
+    ScriptClient.selectWorks(works);
 end;
 
 procedure TAToolMainForm.HandleStatusMessage(X: TStatusMessage);
