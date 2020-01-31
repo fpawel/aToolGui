@@ -1,10 +1,10 @@
 object FormSelectWorksDialog: TFormSelectWorksDialog
   Left = 0
   Top = 0
-  BorderStyle = bsDialog
+  BorderStyle = bsSizeToolWin
   Caption = #1042#1099#1073#1086#1088' '#1074#1099#1087#1086#1083#1085#1103#1077#1084#1099#1093' '#1080#1085#1089#1090#1088#1091#1082#1094#1080#1081
-  ClientHeight = 388
-  ClientWidth = 392
+  ClientHeight = 378
+  ClientWidth = 382
   Color = clWindow
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,24 +18,24 @@ object FormSelectWorksDialog: TFormSelectWorksDialog
   object Panel14: TPanel
     Left = 0
     Top = 0
-    Width = 392
-    Height = 388
+    Width = 382
+    Height = 378
     Align = alClient
     BevelKind = bkFlat
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitWidth = 188
-    ExplicitHeight = 192
+    ExplicitWidth = 392
+    ExplicitHeight = 388
     object CheckListBox1: TCheckListBox
       Left = 0
       Top = 0
-      Width = 356
-      Height = 384
+      Width = 346
+      Height = 374
       Align = alClient
       BevelOuter = bvNone
       BorderStyle = bsNone
       Columns = 1
-      ItemHeight = 30
+      ItemHeight = 22
       Items.Strings = (
         '+20 '#8304'C'
         #1055#1086#1075#1088#1077#1096#1085#1086#1089#1090#1100
@@ -43,14 +43,14 @@ object FormSelectWorksDialog: TFormSelectWorksDialog
         '+50 '#8304'C')
       Style = lbOwnerDrawFixed
       TabOrder = 0
-      ExplicitWidth = 152
-      ExplicitHeight = 188
+      ExplicitWidth = 356
+      ExplicitHeight = 384
     end
     object ToolBarStop: TToolBar
-      Left = 356
+      Left = 346
       Top = 0
       Width = 32
-      Height = 384
+      Height = 374
       Align = alRight
       ButtonHeight = 31
       ButtonWidth = 32
@@ -59,8 +59,8 @@ object FormSelectWorksDialog: TFormSelectWorksDialog
       EdgeOuter = esNone
       Images = ImageList3
       TabOrder = 1
-      ExplicitLeft = 152
-      ExplicitHeight = 188
+      ExplicitLeft = 356
+      ExplicitHeight = 384
       object ToolButton2: TToolButton
         Left = 0
         Top = 0

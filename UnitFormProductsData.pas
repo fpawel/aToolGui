@@ -86,7 +86,7 @@ begin
     FExpanders.Clear;
 
 
-    for I := 0 to xs.Count - 1 do
+    for i := xs.Count - 1 downto 0 do
     begin
         f := TFormExpander.create(nil);
         f.Parent := ScrollBox1;
@@ -116,6 +116,7 @@ begin
         end;
         StringGrid_SetupColumnsWidth(g.StringGrid1);
         f.setup(xs[I].Section, g.StringGrid1);
+        f.Top := 100500;
         f.Show;
     end;
 end;

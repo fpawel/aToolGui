@@ -343,10 +343,13 @@ end;
 procedure TAToolMainForm.HandleRequestLuaConfigParams(var Message: TMessage);
 var
     f: TFormAppConfig;
+  I: Integer;
+  xs:IThriftList<IConfigParamValue>;
 begin
     try
+        xs := ScriptClient.getConfigParamValues;
         f := TFormAppConfig.create(nil);
-        f.Values := ScriptClient.getConfigParamValues;
+        f.Values := xs;
         f.FUpdateAppConfig := false;
         f.ShowModal;
         ScriptClient.setConfigParamValues(f.Values);
@@ -359,6 +362,7 @@ end;
 procedure TAToolMainForm.HandleLuaSuspended(AText: String);
 begin
     FormPopup2.Hide;
+    FormJournal.AddLine(AText, false);
     with FFormPopupScripSuspended do
     begin
         Top := 100500;
@@ -513,9 +517,11 @@ begin
         cdcCoef:
             FormCoefficients.HandleReadCoef
               (TJsonCD.unmarshal<TCoefVal>(Message));
+
         cdcProductConn:
             FormCurrentParty.SetProductConnection
               (TJsonCD.unmarshal<TProductConnection>(Message));
+
         cdcDelay:
             FormDelay.Delay(TJsonCD.unmarshal<TDelayInfo>(Message));
 

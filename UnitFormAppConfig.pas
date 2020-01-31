@@ -35,11 +35,12 @@ type
         procedure OnPopupMenuItemClick(Sender: TObject);
         procedure setup;
         procedure SetValues(AConfigParamValues: IThriftList<IConfigParamValue>);
-        function GetValues:IThriftList<IConfigParamValue>;
+        function GetValues: IThriftList<IConfigParamValue>;
     public
         { Public declarations }
-        FUpdateAppConfig:boolean;
-        property Values : IThriftList<IConfigParamValue> read GetValues write SetValues ;
+        FUpdateAppConfig: Boolean;
+        property Values: IThriftList<IConfigParamValue> read GetValues
+          write SetValues;
     end;
 
 var
@@ -81,8 +82,6 @@ begin
     FFormPopup2.Hide;
 end;
 
-
-
 procedure TFormAppConfig.setup;
 var
     I: Integer;
@@ -96,6 +95,7 @@ begin
         begin
             Cells[0, I + 1] := FConfigParamValues[I].Name;
             Cells[1, I + 1] := FConfigParamValues[I].Value;
+
         end;
     end;
 
@@ -104,12 +104,13 @@ begin
 
 end;
 
-function TFormAppConfig.GetValues:IThriftList<IConfigParamValue>;
+function TFormAppConfig.GetValues: IThriftList<IConfigParamValue>;
 begin
     result := FConfigParamValues;
 end;
 
-procedure TFormAppConfig.SetValues(AConfigParamValues: IThriftList<IConfigParamValue>);
+procedure TFormAppConfig.SetValues(AConfigParamValues
+  : IThriftList<IConfigParamValue>);
 begin
     FConfigParamValues := AConfigParamValues;
     setup;
@@ -124,7 +125,7 @@ var
     AText: string;
     floatValue: double;
     cv: IConfigParamValue;
-    r2:TRect;
+    r2: TRect;
 begin
     grd := StringGrid1;
     cnv := grd.Canvas;
@@ -173,7 +174,7 @@ procedure TFormAppConfig.StringGrid1MouseDown(Sender: TObject;
 var
     ACol, ARow: Integer;
     cv: IConfigParamValue;
-    value : string;
+    Value: string;
 begin
     if (GetAsyncKeyState(VK_LBUTTON) >= 0) then
         exit;
@@ -183,14 +184,14 @@ begin
     cv := FConfigParamValues[ARow - 1];
     if cv.Type_ <> 'bool' then
         exit;
-    value := 'true';
+    Value := 'true';
     if cv.Value = 'true' then
-        value := 'false';
+        Value := 'false';
     try
         setParamValue(ARow, Value);
         FFormPopup2.Hide;
-        cv.Value := value;
-        StringGrid1.Cells[ACol,ARow] := value;
+        cv.Value := Value;
+        StringGrid1.Cells[ACol, ARow] := Value;
 
     except
         on e: Exception do
@@ -309,7 +310,7 @@ begin
         raise Exception.Create(s);
     end;
 
-    if FUpdateAppConfig  then
+    if FUpdateAppConfig then
         AppCfgClient.setParamValue(c.Key, Value);
 
     c.Value := Value;
