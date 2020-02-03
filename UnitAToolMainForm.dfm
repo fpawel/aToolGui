@@ -164,5 +164,8 @@ object AToolMainForm: TAToolMainForm
       Visible = False
       OnClick = MenuStopWorkClick
     end
+    object MenuData: TMenuItem
+      Caption = #1044#1072#1085#1085#1099#1077
+    end
   end
 end

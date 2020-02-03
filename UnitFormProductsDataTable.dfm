@@ -3,7 +3,7 @@ object FormProductsDataTable: TFormProductsDataTable
   Top = 0
   BorderStyle = bsNone
   Caption = 'FormProductsDataTable'
-  ClientHeight = 104
+  ClientHeight = 138
   ClientWidth = 651
   Color = clBtnHighlight
   Font.Charset = DEFAULT_CHARSET
@@ -16,12 +16,15 @@ object FormProductsDataTable: TFormProductsDataTable
   TextHeight = 16
   object StringGrid1: TStringGrid
     AlignWithMargins = True
-    Left = 3
-    Top = 3
-    Width = 645
-    Height = 428
-    Align = alTop
-    BorderStyle = bsNone
+    Left = 5
+    Top = 5
+    Width = 446
+    Height = 128
+    Margins.Left = 5
+    Margins.Top = 5
+    Margins.Right = 200
+    Margins.Bottom = 5
+    Align = alClient
     DefaultColWidth = 100
     DefaultDrawing = False
     FixedColor = clBackground
@@ -34,5 +37,9 @@ object FormProductsDataTable: TFormProductsDataTable
     OnDrawCell = StringGrid1DrawCell
     OnSelectCell = StringGrid1SelectCell
     OnSetEditText = StringGrid1SetEditText
+    ExplicitLeft = 3
+    ExplicitTop = 3
+    ExplicitWidth = 645
+    ExplicitHeight = 118
   end
 end

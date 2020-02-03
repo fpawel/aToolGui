@@ -104,17 +104,20 @@ begin
             if RowCount > 1 then
                 FixedRows := 1;
 
-            g.StringGrid1.Height := RowCount  * DefaultRowHeight + 20;
-            if g.StringGrid1.Height > 600 then
-                g.StringGrid1.Height := 600;
+            g.Height := RowCount  * DefaultRowHeight + 30;
+            if g.Height > 600 then
+                g.Height := 600;
 
 
 
             for ARow := 0 to xs[I].Values.Count - 1 do
                 for ACol := 0 to xs[I].Values[ARow].Count - 1 do
                     Cells[ACol, ARow] := xs[I].Values[ARow][ACol];
+
+            StringGrid_SetupColumnsWidth(g.StringGrid1);
+
         end;
-        StringGrid_SetupColumnsWidth(g.StringGrid1);
+
         f.setup(xs[I].Section, g.StringGrid1);
         f.Top := 100500;
         f.Show;

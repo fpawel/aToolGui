@@ -11,7 +11,7 @@ uses
 type
 	TMouseWheel = reference to procedure (delta:boolean);
 	TFormProductsDataTable = class(TForm)
-		StringGrid1: TStringGrid;
+    StringGrid1: TStringGrid;
 		procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
 		  Rect: TRect; State: TGridDrawState);
     procedure StringGrid1SelectCell(Sender: TObject; ACol, ARow: Integer;

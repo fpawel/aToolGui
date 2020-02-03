@@ -58,6 +58,7 @@ type
         N6: TMenuItem;
         N11: TMenuItem;
         N12: TMenuItem;
+    MenuData: TMenuItem;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -254,13 +255,13 @@ var
     s, s1: string;
     mp, m: TMenuItem;
 begin
-    for s in luaScripts.Keys do
+    for s in luaWorkScripts.Keys do
     begin
         mp := TMenuItem.create(nil);
         mp.Caption := s;
         MenuRun.Add(mp);
 
-        for s1 in luaScripts[s].Keys do
+        for s1 in luaWorkScripts[s].Keys do
         begin
             m := TMenuItem.create(nil);
             mp.Add(m);
@@ -268,6 +269,13 @@ begin
             m.OnClick := LuaScriptMenuClick;
 
         end;
+    end;
+
+    for s in luaDataScripts.Keys do
+    begin
+        mp := TMenuItem.create(nil);
+        mp.Caption := s;
+        MenuData.Add(mp);
     end;
 
 end;
@@ -280,7 +288,7 @@ var
 begin
     m := Sender as TMenuItem;
     mp := m.parent;
-    ScriptClient.runFile(luaScripts[mp.Caption][m.Caption]);
+    ScriptClient.runFile(luaWorkScripts[mp.Caption][m.Caption]);
 end;
 
 procedure TAToolMainForm.SetupGroupbox2Height;

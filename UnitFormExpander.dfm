@@ -28,15 +28,13 @@ object FormExpander: TFormExpander
       AlignWithMargins = True
       Left = 39
       Top = 8
-      Width = 609
-      Height = 23
+      Width = 37
+      Height = 16
       Cursor = crHandPoint
       Margins.Top = 8
       Align = alClient
       Caption = 'Label1'
       OnClick = Label1Click
-      ExplicitWidth = 37
-      ExplicitHeight = 16
     end
     object Button1: TButton
       AlignWithMargins = True

@@ -5,9 +5,12 @@ interface
 uses sysutils, System.Generics.Collections;
 
 type
-    TLuaScripts = TDictionary<string, TDictionary<string, string>>;
+    TNameFileMap = TDictionary<string, string>;
+    TLuaScripts = TDictionary<string, TNameFileMap>;
 
-var luaScripts: TLuaScripts;
+
+var luaWorkScripts: TLuaScripts;
+    luaDataScripts: TNameFileMap;
 
 implementation
 
@@ -39,13 +42,13 @@ begin
     end;
 end;
 
-function _LuaListScripts: TLuaScripts;
+function _LuaListWorkScripts: TLuaScripts;
 var
     SR: TSearchRec;
     AFiles: Tarray<string>;
     s, AFileName: string;
     xs: TStringDynArray;
-    x: TDictionary<string, string>;
+    x: TNameFileMap;
     I: Integer;
 
 begin
@@ -67,7 +70,7 @@ begin
             continue;
         if not result.TryGetValue(xs[1], x) then
         begin
-            x := TDictionary<string, string>.Create();
+            x := TNameFileMap.Create();
             result.Add(xs[1], x);
         end;
 
@@ -76,8 +79,40 @@ begin
     end;
 end;
 
+function _LuaListDataScripts: TNameFileMap;
+var
+    SR: TSearchRec;
+    AFiles: TArray<string>;
+    s, AFileName: string;
+    xs: TStringDynArray;
+    x: TNameFileMap;
+    I: Integer;
+
+begin
+    AFiles := myutils.FindAllFilesInDir(LuaPath, '*.*');
+    result := TNameFileMap.Create;
+    for AFileName in AFiles do
+    begin
+        if ExtractFileExt(AFileName) <> '.lua' then
+            continue;
+        xs := StrUtils.SplitString
+          (TrimLeadingCommentSymbols(ReadFirstLine(AFileName)), ':');
+        if length(xs) < 2 then
+            continue;
+
+        for I := 0 to length(xs) - 1 do
+            xs[I] := Trim(xs[I]);
+
+        if Trim(xs[0]) <> 'atool-data' then
+            continue;
+
+        Result.TryAdd(string.Join(': ', xs, 1, Length(xs)-1), AFileName);
+    end;
+end;
+
 initialization
-    luaScripts := _LuaListScripts;
+    luaWorkScripts := _LuaListWorkScripts;
+    luaDataScripts := _LuaListDataScripts;
 
 
 
