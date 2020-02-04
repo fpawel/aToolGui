@@ -233,16 +233,24 @@ object FormPopup: TFormPopup
       08AD54EA5EE8A304D46AF2CE18DC21D04FFC1F91D8A19C9B3B02200000000049
       454E44AE426082}
   end
-  object Label1: TLabel
+  object RichEdit1: TRichEdit
     Left = 104
     Top = 8
     Width = 643
     Height = 94
     Anchors = [akLeft, akTop, akRight, akBottom]
-    AutoSize = False
-    Caption = 'Label1'
-    WordWrap = True
-    ExplicitWidth = 617
-    ExplicitHeight = 154
+    Font.Charset = RUSSIAN_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    Lines.Strings = (
+      'RichEdit1')
+    ParentFont = False
+    ReadOnly = True
+    ScrollBars = ssVertical
+    TabOrder = 0
+    Zoom = 100
+    OnMouseDown = RichEdit1MouseDown
   end
 end

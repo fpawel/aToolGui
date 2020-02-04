@@ -12,9 +12,11 @@ type
     TFormPopup = class(TForm)
     ImageError: TImage;
     ImageInfo: TImage;
-    Label1: TLabel;
+    RichEdit1: TRichEdit;
         procedure FormDeactivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure RichEdit1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     private
         { Private declarations }
     public
@@ -31,9 +33,11 @@ implementation
 
 {$R *.dfm}
 
+uses vclutils;
+
 procedure TFormPopup.FormCreate(Sender: TObject);
 begin
-    //
+    //RichEdit_PopupMenu(RichEdit1);
 end;
 
 procedure TFormPopup.FormDeactivate(Sender: TObject);
@@ -41,9 +45,16 @@ begin
     Hide;
 end;
 
+procedure TFormPopup.RichEdit1MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+    if Button = TMouseButton.mbRight then
+        RichEdit_PopupMenu(RichEdit1);
+end;
+
 procedure TFormPopup.SetText(s:string);
 begin
-    Label1.Caption := stringreplace(s, ': ', #13#10#9' - ', [rfReplaceAll, rfIgnoreCase]);
+    RichEdit1.Text := stringreplace(s, ': ', #13#10#9' - ', [rfReplaceAll, rfIgnoreCase]);
 end;
 
 
