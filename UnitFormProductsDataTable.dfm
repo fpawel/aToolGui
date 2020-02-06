@@ -18,11 +18,11 @@ object FormProductsDataTable: TFormProductsDataTable
     AlignWithMargins = True
     Left = 5
     Top = 5
-    Width = 446
+    Width = 641
     Height = 128
     Margins.Left = 5
     Margins.Top = 5
-    Margins.Right = 200
+    Margins.Right = 5
     Margins.Bottom = 5
     Align = alClient
     DefaultColWidth = 100
@@ -37,9 +37,6 @@ object FormProductsDataTable: TFormProductsDataTable
     OnDrawCell = StringGrid1DrawCell
     OnSelectCell = StringGrid1SelectCell
     OnSetEditText = StringGrid1SetEditText
-    ExplicitLeft = 3
-    ExplicitTop = 3
-    ExplicitWidth = 645
-    ExplicitHeight = 118
+    ExplicitWidth = 446
   end
 end

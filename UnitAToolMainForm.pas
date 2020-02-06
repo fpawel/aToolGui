@@ -21,7 +21,8 @@ const
 type
 
     TCopyDataCmd = (cdcNewCommTransaction, cdcNewProductParamValue, cdcChart,
-      cdcStatus, cdcCoef, cdcProductConn, cdcDelay, cdcLuaSuspended, cdcLuaSelectWorks);
+      cdcStatus, cdcCoef, cdcProductConn, cdcDelay, cdcLuaSuspended,
+      cdcLuaSelectWorks);
 
     TStatusMessage = record
         Text: string;
@@ -47,7 +48,6 @@ type
         TabSheet3: TTabSheet;
         TabSheet4: TTabSheet;
         N8: TMenuItem;
-        N9: TMenuItem;
         MenuRunScript: TMenuItem;
         MenuRun: TMenuItem;
         MenuStopWork: TMenuItem;
@@ -58,7 +58,12 @@ type
         N6: TMenuItem;
         N11: TMenuItem;
         N12: TMenuItem;
-    MenuData: TMenuItem;
+        MenuData: TMenuItem;
+        N9: TMenuItem;
+        N13: TMenuItem;
+        N14: TMenuItem;
+        N15: TMenuItem;
+        N16: TMenuItem;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -76,11 +81,13 @@ type
         procedure Splitter1Moved(Sender: TObject);
         procedure PageControl1Change(Sender: TObject);
         procedure N8Click(Sender: TObject);
-        procedure N9Click(Sender: TObject);
         procedure MenuRunScriptClick(Sender: TObject);
         procedure MenuStopWorkClick(Sender: TObject);
         procedure N10Click(Sender: TObject);
         procedure N6Click(Sender: TObject);
+        procedure N9Click(Sender: TObject);
+        procedure N14Click(Sender: TObject);
+        procedure N15Click(Sender: TObject);
     private
         { Private declarations }
         FEnableCopyData: boolean;
@@ -104,7 +111,8 @@ type
 
         procedure CreateLuaScriptsMenu;
         procedure LuaScriptMenuClick(Sender: TObject);
-        procedure HandleLuaSelectWorks(xs:TArray<string>);
+        procedure LuaDataMenuClick(Sender: TObject);
+        procedure HandleLuaSelectWorks(xs: TArray<string>);
 
     public
         { Public declarations }
@@ -275,12 +283,29 @@ begin
     begin
         mp := TMenuItem.create(nil);
         mp.Caption := s;
+        mp.OnClick := LuaDataMenuClick;
         MenuData.Add(mp);
     end;
 
 end;
 
+procedure TAToolMainForm.LuaDataMenuClick(Sender: TObject);
+var
+    m: TMenuItem;
+    f:TFormProductsData;
+begin
+    m := Sender as TMenuItem;
 
+    f := TFormProductsData.create(nil);
+    try
+        f.setup(CurrFileClient.getProductsParamsValues(luaDataScripts[m.Caption]));
+        //f.WindowState := wsMaximized;
+        f.ShowModal;
+    finally
+        f.Free;
+    end;
+
+end;
 
 procedure TAToolMainForm.LuaScriptMenuClick(Sender: TObject);
 var
@@ -351,8 +376,8 @@ end;
 procedure TAToolMainForm.HandleRequestLuaConfigParams(var Message: TMessage);
 var
     f: TFormAppConfig;
-  I: Integer;
-  xs:IThriftList<IConfigParamValue>;
+    I: integer;
+    xs: IThriftList<IConfigParamValue>;
 begin
     try
         xs := ScriptClient.getConfigParamValues;
@@ -415,6 +440,29 @@ begin
         f := TFormAppConfig.create(nil);
         f.Values := AppCfgClient.getParamValues;
         f.FUpdateAppConfig := true;
+        f.ShowModal;
+    finally
+        f.Free;
+    end;
+end;
+
+procedure TAToolMainForm.N14Click(Sender: TObject);
+begin
+    if MessageDlg('Подтвердите необходимость удаления данных текущего файла. ' +
+      'Данные будут удалены без возможности восстановления', mtConfirmation,
+      [mbYes, mbNo], 0) <> mrYes then
+        exit;
+    CurrFileClient.deleteAll;
+end;
+
+procedure TAToolMainForm.N15Click(Sender: TObject);
+var
+    f: TFormProductsData;
+begin
+    f := TFormProductsData.create(nil);
+    try
+        f.setup1(CurrFileClient.getAllProductsParamsValues);
+        //f.WindowState := wsMaximized;
         f.ShowModal;
     finally
         f.Free;
@@ -485,9 +533,12 @@ var
     f: TFormProductsData;
 begin
     f := TFormProductsData.create(nil);
-    f.setup;
-    f.ShowModal;
-    f.Free;
+    try
+        //f.setup(CurrFileClient.getSectionsProductsParamsValues);
+        f.ShowModal;
+    finally
+        f.Free;
+    end;
 end;
 
 procedure TAToolMainForm.N8Click(Sender: TObject);
@@ -496,8 +547,24 @@ begin
 end;
 
 procedure TAToolMainForm.N9Click(Sender: TObject);
+var
+    dlg: TOpenDialog;
 begin
-    CurrFileClient.runEdit;
+    dlg := TOpenDialog.create(nil);
+    dlg.Filter := 'Файлы json (*.json)|*.json';
+    dlg.InitialDir := AppIni.ReadString('AToolMainForm',
+      'external_files_dialog_idir', '');
+
+    try
+        if dlg.Execute() then
+
+            CurrFileClient.openFile(dlg.FileName);
+
+    finally
+        AppIni.WriteString('AToolMainForm', 'external_files_dialog_idir',
+          ExtractFilePath(dlg.FileName));
+        dlg.Free;
+    end;
 end;
 
 procedure TAToolMainForm.HandleCopydata(var Message: TMessage);
@@ -537,7 +604,8 @@ begin
             HandleLuaSuspended(getCopyDataString(Message));
 
         cdcLuaSelectWorks:
-            HandleLuaSelectWorks(TJsonCD.unmarshal<TArray<string>>(Message));
+            HandleLuaSelectWorks(TJsonCD.unmarshal < TArray < string >>
+              (Message));
 
     else
         raise Exception.create('wrong message: ' + IntToStr(Message.WParam));
@@ -712,28 +780,30 @@ begin
             (Pages[I].Controls[0] AS TFormChart).setupStringGrid;
 end;
 
-procedure TAToolMainForm.HandleLuaSelectWorks(xs:TArray<string>);
-var works:IThriftList<boolean>;
-  I: Integer;
-  f:TFormSelectWorksDialog;
+procedure TAToolMainForm.HandleLuaSelectWorks(xs: TArray<string>);
+var
+    works: IThriftList<boolean>;
+    I: integer;
+    f: TFormSelectWorksDialog;
 begin
 
-    f := TFormSelectWorksDialog.Create(nil);
+    f := TFormSelectWorksDialog.create(nil);
     f.CheckListBox1.Items.Clear;
-    for I := 0 to length(xs)-1 do
+    for I := 0 to length(xs) - 1 do
     begin
-        f.CheckListBox1.Items.Add(xs[i]);
-        f.CheckListBox1.Checked[i] := AppIni.ReadBool('select_works', xs[i], true);
-        //works.Add(true);
+        f.CheckListBox1.Items.Add(xs[I]);
+        f.CheckListBox1.Checked[I] := AppIni.ReadBool('select_works',
+          xs[I], true);
+        // works.Add(true);
     end;
 
     f.ShowModal;
 
     works := TThriftListImpl<boolean>.create;
-    for I := 0 to length(xs)-1 do
+    for I := 0 to length(xs) - 1 do
     begin
-        AppIni.WriteBool('select_works', xs[i], f.CheckListBox1.Checked[i]);
-        works.Add(f.CheckListBox1.Checked[i]);
+        AppIni.WriteBool('select_works', xs[I], f.CheckListBox1.Checked[I]);
+        works.Add(f.CheckListBox1.Checked[I]);
     end;
     f.Free;
 
