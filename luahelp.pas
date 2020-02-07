@@ -6,16 +6,17 @@ uses sysutils, System.Generics.Collections;
 
 type
     TNameFileMap = TDictionary<string, string>;
-    TLuaScripts = TDictionary<string, TNameFileMap>;
 
-
-var luaWorkScripts: TLuaScripts;
+var
+    luaWorkScripts: TNameFileMap;
     luaDataScripts: TNameFileMap;
+    luaReportScripts: TNameFileMap;
+
+procedure InitLuaScriptFiles;
 
 implementation
 
 uses classes, myutils, StrUtils, System.Types;
-
 
 function LuaPath: string;
 begin
@@ -42,78 +43,70 @@ begin
     end;
 end;
 
-function _LuaListWorkScripts: TLuaScripts;
+function joinStrsAt(xs: TStringDynArray; n: integer): string;
+begin
+    result := string.Join(': ', xs, n, length(xs) - n);
+end;
+
+procedure InitLuaScriptFiles;
 var
     SR: TSearchRec;
     AFiles: Tarray<string>;
-    s, AFileName: string;
+    AFileName2, AStr, AFileName, ALine, AScripType: string;
     xs: TStringDynArray;
-    x: TNameFileMap;
-    I: Integer;
+    I: integer;
+    AMap: TNameFileMap;
 
 begin
+    luaWorkScripts := TNameFileMap.Create;
+    luaDataScripts := TNameFileMap.Create;
+    luaReportScripts := TNameFileMap.Create;
+
     AFiles := myutils.FindAllFilesInDir(LuaPath, '*.*');
-    result := TLuaScripts.Create;
     for AFileName in AFiles do
     begin
         if ExtractFileExt(AFileName) <> '.lua' then
             continue;
-        xs := StrUtils.SplitString
-          (TrimLeadingCommentSymbols(ReadFirstLine(AFileName)), ':');
+
+        ALine := ReadFirstLine(AFileName);
+
+        xs := StrUtils.SplitString(TrimLeadingCommentSymbols(ALine), ':');
         if length(xs) < 3 then
             continue;
 
         for I := 0 to length(xs) - 1 do
             xs[I] := Trim(xs[I]);
 
-        if Trim(xs[0]) <> 'atoolgui' then
+        if Trim(xs[0]) <> 'atool' then
             continue;
-        if not result.TryGetValue(xs[1], x) then
+
+        AStr := joinStrsAt(xs, 2);
+        AMap := nil;
+
+        AScripType := Trim(xs[1]);
+
+        if AScripType = 'work' then
+            AMap := luaWorkScripts
+        else if AScripType = 'data' then
+            AMap := luaDataScripts
+        else if AScripType = 'report' then
+            AMap := luaReportScripts;
+
+        if AMap <> nil then
         begin
-            x := TNameFileMap.Create();
-            result.Add(xs[1], x);
+
+            if AMap.TryGetValue(AStr, AFileName2) then
+            begin
+                if AFileName = AFileName2 then
+                    continue;
+                raise Exception.Create('Дублирование метаданных скрипта: '#10#10
+                  + ALine + #10#10 + AFileName + #10#10 + AFileName2);
+            end;
+
+            AMap.Add(AStr, AFileName);
         end;
 
-        x.TryAdd(string.Join(': ', xs, 2, Length(xs)-2), AFileName);
-
     end;
 end;
-
-function _LuaListDataScripts: TNameFileMap;
-var
-    SR: TSearchRec;
-    AFiles: TArray<string>;
-    s, AFileName: string;
-    xs: TStringDynArray;
-    x: TNameFileMap;
-    I: Integer;
-
-begin
-    AFiles := myutils.FindAllFilesInDir(LuaPath, '*.*');
-    result := TNameFileMap.Create;
-    for AFileName in AFiles do
-    begin
-        if ExtractFileExt(AFileName) <> '.lua' then
-            continue;
-        xs := StrUtils.SplitString
-          (TrimLeadingCommentSymbols(ReadFirstLine(AFileName)), ':');
-        if length(xs) < 2 then
-            continue;
-
-        for I := 0 to length(xs) - 1 do
-            xs[I] := Trim(xs[I]);
-
-        if Trim(xs[0]) <> 'atool-data' then
-            continue;
-
-        Result.TryAdd(string.Join(': ', xs, 1, Length(xs)-1), AFileName);
-    end;
-end;
-
-initialization
-    luaWorkScripts := _LuaListWorkScripts;
-    luaDataScripts := _LuaListDataScripts;
-
-
 
 end.

@@ -182,5 +182,8 @@ object AToolMainForm: TAToolMainForm
         Caption = '-'
       end
     end
+    object MenuReport: TMenuItem
+      Caption = #1054#1090#1095#1105#1090
+    end
   end
 end

@@ -64,6 +64,7 @@ type
         N14: TMenuItem;
         N15: TMenuItem;
         N16: TMenuItem;
+    MenuReport: TMenuItem;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -112,6 +113,7 @@ type
         procedure CreateLuaScriptsMenu;
         procedure LuaScriptMenuClick(Sender: TObject);
         procedure LuaDataMenuClick(Sender: TObject);
+        procedure LuaReportMenuClick(Sender: TObject);
         procedure HandleLuaSelectWorks(xs: TArray<string>);
 
     public
@@ -135,6 +137,8 @@ implementation
 uses System.Types, dateutils, myutils, api, UnitApiClient,
     UnitFormCurrentParty, unitappini, inifiles,
 
+    Generics.Defaults,
+
     Grijjy.Bson, Grijjy.Bson.Serialization,
 
     Thrift.Collections, math,
@@ -146,7 +150,7 @@ uses System.Types, dateutils, myutils, api, UnitApiClient,
 procedure TAToolMainForm.FormCreate(Sender: TObject);
 begin
     Application.OnException := AppException;
-    CreateLuaScriptsMenu;
+
 end;
 
 procedure TAToolMainForm.FormMouseWheel(Sender: TObject; Shift: TShiftState;
@@ -169,6 +173,9 @@ end;
 
 procedure TAToolMainForm.FormShow(Sender: TObject);
 begin
+
+
+    CreateLuaScriptsMenu;
 
     OnShow := nil;
     OpenApiClient;
@@ -260,46 +267,65 @@ end;
 
 procedure TAToolMainForm.CreateLuaScriptsMenu;
 var
-    s, s1: string;
-    mp, m: TMenuItem;
+    s: string;
+    m: TMenuItem;
+
+    function sort_keys(xs:TNameFileMap):TArray<string>;
+    begin
+        result := xs.Keys.ToArray;
+        TArray.Sort<String>(result, TStringComparer.Ordinal);
+    end;
+
 begin
-    for s in luaWorkScripts.Keys do
+
+    InitLuaScriptFiles;
+
+    for s in sort_keys(luaWorkScripts) do
     begin
-        mp := TMenuItem.create(nil);
-        mp.Caption := s;
-        MenuRun.Add(mp);
-
-        for s1 in luaWorkScripts[s].Keys do
-        begin
-            m := TMenuItem.create(nil);
-            mp.Add(m);
-            m.Caption := s1;
-            m.OnClick := LuaScriptMenuClick;
-
-        end;
+        m := TMenuItem.create(nil);
+        m.Caption := s;
+        m.OnClick := LuaScriptMenuClick;
+        MenuRun.Add(m);
     end;
 
-    for s in luaDataScripts.Keys do
+    for s in sort_keys(luaDataScripts) do
     begin
-        mp := TMenuItem.create(nil);
-        mp.Caption := s;
-        mp.OnClick := LuaDataMenuClick;
-        MenuData.Add(mp);
+        m := TMenuItem.create(nil);
+        m.Caption := s;
+        m.OnClick := LuaDataMenuClick;
+        MenuData.Add(m);
     end;
 
+    for s in sort_keys(luaReportScripts) do
+    begin
+        m := TMenuItem.create(nil);
+        m.Caption := s;
+        m.OnClick := LuaReportMenuClick;
+        MenuReport.Add(m);
+    end;
+
+end;
+
+procedure TAToolMainForm.LuaReportMenuClick(Sender: TObject);
+var
+    m: TMenuItem;
+begin
+    m := Sender as TMenuItem;
+    luaReportScripts[m.Caption];
 end;
 
 procedure TAToolMainForm.LuaDataMenuClick(Sender: TObject);
 var
     m: TMenuItem;
-    f:TFormProductsData;
+    f: TFormProductsData;
 begin
     m := Sender as TMenuItem;
 
     f := TFormProductsData.create(nil);
     try
-        f.setup(CurrFileClient.getProductsParamsValues(luaDataScripts[m.Caption]));
-        //f.WindowState := wsMaximized;
+        f.setup(CurrFileClient.getProductsParamsValues(luaDataScripts
+          [m.Caption]));
+        // f.WindowState := wsMaximized;
         f.ShowModal;
     finally
         f.Free;
@@ -309,11 +335,10 @@ end;
 
 procedure TAToolMainForm.LuaScriptMenuClick(Sender: TObject);
 var
-    m, mp: TMenuItem;
+    m: TMenuItem;
 begin
     m := Sender as TMenuItem;
-    mp := m.parent;
-    ScriptClient.runFile(luaWorkScripts[mp.Caption][m.Caption]);
+    ScriptClient.runFile(luaWorkScripts[m.Caption]);
 end;
 
 procedure TAToolMainForm.SetupGroupbox2Height;
@@ -462,7 +487,7 @@ begin
     f := TFormProductsData.create(nil);
     try
         f.setup1(CurrFileClient.getAllProductsParamsValues);
-        //f.WindowState := wsMaximized;
+        // f.WindowState := wsMaximized;
         f.ShowModal;
     finally
         f.Free;
@@ -534,7 +559,7 @@ var
 begin
     f := TFormProductsData.create(nil);
     try
-        //f.setup(CurrFileClient.getSectionsProductsParamsValues);
+        // f.setup(CurrFileClient.getSectionsProductsParamsValues);
         f.ShowModal;
     finally
         f.Free;
