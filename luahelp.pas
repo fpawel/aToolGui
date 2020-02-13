@@ -10,7 +10,6 @@ type
 var
     luaWorkScripts: TNameFileMap;
     luaDataScripts: TNameFileMap;
-    luaReportScripts: TNameFileMap;
 
 procedure InitLuaScriptFiles;
 
@@ -60,7 +59,7 @@ var
 begin
     luaWorkScripts := TNameFileMap.Create;
     luaDataScripts := TNameFileMap.Create;
-    luaReportScripts := TNameFileMap.Create;
+
 
     AFiles := myutils.FindAllFilesInDir(LuaPath, '*.*');
     for AFileName in AFiles do
@@ -88,9 +87,7 @@ begin
         if AScripType = 'work' then
             AMap := luaWorkScripts
         else if AScripType = 'data' then
-            AMap := luaDataScripts
-        else if AScripType = 'report' then
-            AMap := luaReportScripts;
+            AMap := luaDataScripts;
 
         if AMap <> nil then
         begin

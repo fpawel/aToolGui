@@ -58,7 +58,8 @@ uses
   UnitFormProductsDataTable in 'UnitFormProductsDataTable.pas' {FormProductsDataTable},
   teechartutils in 'utils\teechartutils.pas',
   luahelp in 'luahelp.pas',
-  UnitFormSelectWorksDialog in 'UnitFormSelectWorksDialog.pas' {FormSelectWorksDialog};
+  UnitFormSelectWorksDialog in 'UnitFormSelectWorksDialog.pas' {FormSelectWorksDialog},
+  UnitFormNewPartyDialog in 'UnitFormNewPartyDialog.pas' {FormNewPartyDialog};
 
 {$R *.res}
 

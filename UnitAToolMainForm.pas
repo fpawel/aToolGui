@@ -55,7 +55,6 @@ type
         TabSheetCOMPort: TTabSheet;
         TabSheetJournal: TTabSheet;
         N10: TMenuItem;
-        N6: TMenuItem;
         N11: TMenuItem;
         N12: TMenuItem;
         MenuData: TMenuItem;
@@ -64,7 +63,7 @@ type
         N14: TMenuItem;
         N15: TMenuItem;
         N16: TMenuItem;
-    MenuReport: TMenuItem;
+    N6: TMenuItem;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -85,7 +84,6 @@ type
         procedure MenuRunScriptClick(Sender: TObject);
         procedure MenuStopWorkClick(Sender: TObject);
         procedure N10Click(Sender: TObject);
-        procedure N6Click(Sender: TObject);
         procedure N9Click(Sender: TObject);
         procedure N14Click(Sender: TObject);
         procedure N15Click(Sender: TObject);
@@ -113,7 +111,7 @@ type
         procedure CreateLuaScriptsMenu;
         procedure LuaScriptMenuClick(Sender: TObject);
         procedure LuaDataMenuClick(Sender: TObject);
-        procedure LuaReportMenuClick(Sender: TObject);
+
         procedure HandleLuaSelectWorks(xs: TArray<string>);
 
     public
@@ -145,7 +143,8 @@ uses System.Types, dateutils, myutils, api, UnitApiClient,
     logfile, apitypes, vclutils, UnitFormCharts,
     UnitFormChart, UnitFormRawModbus, UnitFormTemperatureHardware, UnitFormGas,
     UnitFormCoefficients, UnitFormJournal, UnitFormDelay, UnitFormAppConfig,
-    UnitFormProductsData, luahelp, UnitFormSelectWorksDialog;
+    UnitFormProductsData, luahelp, UnitFormSelectWorksDialog,
+  UnitFormNewPartyDialog;
 
 procedure TAToolMainForm.FormCreate(Sender: TObject);
 begin
@@ -296,22 +295,6 @@ begin
         MenuData.Add(m);
     end;
 
-    for s in sort_keys(luaReportScripts) do
-    begin
-        m := TMenuItem.create(nil);
-        m.Caption := s;
-        m.OnClick := LuaReportMenuClick;
-        MenuReport.Add(m);
-    end;
-
-end;
-
-procedure TAToolMainForm.LuaReportMenuClick(Sender: TObject);
-var
-    m: TMenuItem;
-begin
-    m := Sender as TMenuItem;
-    luaReportScripts[m.Caption];
 end;
 
 procedure TAToolMainForm.LuaDataMenuClick(Sender: TObject);
@@ -496,17 +479,24 @@ end;
 
 procedure TAToolMainForm.N2Click(Sender: TObject);
 var
-    xs: array of string;
-    ProductsCount: integer;
+   f:TFormNewPartyDialog;
 
 begin
-    SetLength(xs, 2);
-    if not InputQuery('Создание новой партии приборов',
-      ['Количество приборов:', 'Имя файла'], xs) or
-      not TryStrToInt(xs[0], ProductsCount) then
-        exit;
-    FilesClient.CreateNewParty(ProductsCount, xs[1]);
-    FormCurrentParty.upload;
+    f := TFormNewPartyDialog.Create(nil);
+    try
+        f.ShowModal;
+        if f.ModalResult = mrOk then
+        begin
+            FilesClient.CreateNewParty(StrToInt(f.Edit1.Text),
+                f.Edit2.Text, f.ComboBox1.Text, f.ComboBox2.Text);
+            FormCurrentParty.upload;
+
+        end;
+    finally
+        f.Free;
+    end;
+
+
 
 end;
 
@@ -551,19 +541,6 @@ end;
 procedure TAToolMainForm.N5Click(Sender: TObject);
 begin
     AppCfgClient.EditConfig;
-end;
-
-procedure TAToolMainForm.N6Click(Sender: TObject);
-var
-    f: TFormProductsData;
-begin
-    f := TFormProductsData.create(nil);
-    try
-        // f.setup(CurrFileClient.getSectionsProductsParamsValues);
-        f.ShowModal;
-    finally
-        f.Free;
-    end;
 end;
 
 procedure TAToolMainForm.N8Click(Sender: TObject);
