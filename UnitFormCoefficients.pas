@@ -243,8 +243,11 @@ begin
     begin
         ColCount := FormCurrentParty.FParty.Products.Count + 1;
         RowCount := FCoefs.Count + 1;
+        if FCoefs.Count > 0 then
+            FixedRows := 1;
+
         FixedCols := 1;
-        FixedRows := 1;
+
         Cells[0, 0] := '¹';
         ColWidths[0] := 60;
         for ACol := 1 to ColCount - 1 do

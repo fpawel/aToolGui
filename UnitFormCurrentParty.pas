@@ -115,15 +115,8 @@ uses stringgridutils, stringutils, dateutils,
 {$R *.dfm}
 
 const
-    FirstParamRow = 4;
+    FirstParamRow = 3;
 
-function formatDeviceParam(p: IDeviceParam): string;
-begin
-    if length(p.Name) > 0 then
-        result := Format('%d,%s', [p.ParamAddr, p.Name])
-    else
-        result := Format('%d', [p.ParamAddr]);
-end;
 
 procedure TFormCurrentParty.FormCreate(Sender: TObject);
 var
@@ -529,17 +522,15 @@ begin
         ColWidths[0] := 100;
 
         Cells[0, 0] := 'СОМ порт';
-        Cells[0, 1] := 'Тип';
-        Cells[0, 2] := 'Адрес';
-        Cells[0, 3] := 'Номер';
+        Cells[0, 1] := 'Адрес';
+        Cells[0, 2] := 'Номер';
 
         for ACol := 1 to ColCount - 1 do
         begin
             p := FParty.Products[ACol - 1];
             Cells[ACol, 0] := p.Comport;
-            Cells[ACol, 1] := p.Device;
-            Cells[ACol, 2] := IntToStr(p.Addr);
-            Cells[ACol, 3] := IntToStr(p.Serial);
+            Cells[ACol, 1] := IntToStr(p.Addr);
+            Cells[ACol, 2] := IntToStr(p.Serial);
 
             ColWidths[ACol] := AppIni.ReadInteger('StringGrid1.ColWidth',
               IntToStr(ACol), ColWidths[ACol]);
@@ -555,7 +546,7 @@ begin
         begin
             ARow := n + FirstParamRow;
             AParam := FParams[n];
-            Cells[0, ARow] := formatDeviceParam(AParam);
+            Cells[0, ARow] := FParams[n].Name;
         end;
     end;
 
@@ -589,8 +580,8 @@ begin
         begin
             ser := TFastLineSeries.Create(nil);
             ser.XValues.DateTime := true;
-            ser.Title := Format('%s,%s:%d,%s', [p.Device, p.Comport, p.Addr,
-              formatDeviceParam(AParam)]);
+            ser.Title := Format('%s:%d,%s', [p.Comport, p.Addr,
+              AParam.Name]);
 
             ser.LinePen.Width := 2;
             ser.Active := false;
@@ -625,9 +616,17 @@ end;
 procedure TFormCurrentParty.AddMeasurements(xs: TArray<TMeasurement>);
 var
     X: TMeasurement;
+    ser:TFastLineSeries;
+  I: Integer;
+  kv:TPair<TFastLineSeries,TProductVar>;
 begin
     for X in xs do
-        GetSeries(X.ProductID, X.ParamAddr).AddXY(X.Time, X.Value);
+    begin
+        ser := GetSeries(X.ProductID, X.ParamAddr);
+        ser.AddXY(X.Time, X.Value);
+        i := ser.XValues.Count;
+        i := ser.XValues.Count;
+    end;
 end;
 
 function TFormCurrentParty.GetSelectedProductsIDs

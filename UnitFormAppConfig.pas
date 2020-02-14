@@ -72,7 +72,7 @@ procedure TFormAppConfig.FormResize(Sender: TObject);
 begin
     With StringGrid1 do
     begin
-        ColWidths[1] := Width div 4;
+        ColWidths[1] := Width div 3;
         ColWidths[0] := Width - ColWidths[1] - 30;
     end;
 end;
@@ -207,6 +207,7 @@ procedure TFormAppConfig.OnPopupMenuItemClick(Sender: TObject);
 var
     ACol, ARow: Integer;
     Value: string;
+    var CanSelect: Boolean;
 begin
     with StringGrid1 do
     begin
@@ -214,6 +215,9 @@ begin
         ARow := Row;
         Value := (Sender as TMenuItem).Caption;
     end;
+
+    if FConfigParamValues[ARow - 1].Value = Value then
+        exit;
 
     try
         setParamValue(ARow, Value);
@@ -225,6 +229,13 @@ begin
             FFormPopup2.SetText(e.Message, false);
             FFormPopup2.Show;
         end;
+    end;
+
+    if FUpdateAppConfig and (FConfigParamValues[ARow - 1].Key = 'device_type')
+    then
+    begin
+        Values := AppCfgClient.getParamValues;
+        StringGrid1SelectCell(StringGrid1, ACol, ARow,CanSelect);
     end;
 
 end;
@@ -260,6 +271,9 @@ begin
         exit;
 
     PopupMenu1.Items.Clear;
+    if (ARow < 1) or (ARow - 1 >= FConfigParamValues.Count ) then
+        exit;
+
 
     c := FConfigParamValues[ARow - 1];
 
@@ -270,6 +284,7 @@ begin
             Options := Options - [goEditing];
             exit;
         end;
+
         if c.ValuesList.Count = 0 then
             Options := Options + [goEditing]
         else

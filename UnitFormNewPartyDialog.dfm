@@ -3,8 +3,8 @@ object FormNewPartyDialog: TFormNewPartyDialog
   Top = 0
   BorderStyle = bsDialog
   Caption = #1057#1086#1079#1076#1072#1085#1080#1077' '#1085#1086#1074#1086#1081' '#1087#1072#1088#1090#1080#1080
-  ClientHeight = 274
-  ClientWidth = 319
+  ClientHeight = 93
+  ClientWidth = 296
   Color = clWindow
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,27 +13,25 @@ object FormNewPartyDialog: TFormNewPartyDialog
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
-  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 19
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 204
-    Height = 274
+    Width = 181
+    Height = 93
     Align = alClient
     BevelOuter = bvNone
     Caption = 'Panel1'
     ShowCaption = False
     TabOrder = 0
-    ExplicitLeft = -3
-    ExplicitWidth = 219
-    ExplicitHeight = 410
+    ExplicitWidth = 204
+    ExplicitHeight = 274
     object Label1: TLabel
       AlignWithMargins = True
       Left = 10
-      Top = 76
-      Width = 184
+      Top = 10
+      Width = 161
       Height = 19
       Margins.Left = 10
       Margins.Top = 10
@@ -41,58 +39,14 @@ object FormNewPartyDialog: TFormNewPartyDialog
       Margins.Bottom = 0
       Align = alTop
       Caption = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1087#1088#1080#1073#1086#1088#1086#1074
-      ExplicitLeft = 184
-      ExplicitTop = 128
+      ExplicitTop = 76
       ExplicitWidth = 162
-    end
-    object Label2: TLabel
-      AlignWithMargins = True
-      Left = 10
-      Top = 10
-      Width = 184
-      Height = 19
-      Margins.Left = 10
-      Margins.Top = 10
-      Margins.Right = 10
-      Margins.Bottom = 0
-      Align = alTop
-      Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
-      ExplicitWidth = 106
-    end
-    object Label3: TLabel
-      AlignWithMargins = True
-      Left = 10
-      Top = 142
-      Width = 184
-      Height = 19
-      Margins.Left = 10
-      Margins.Top = 10
-      Margins.Right = 10
-      Margins.Bottom = 0
-      Align = alTop
-      Caption = #1058#1080#1087' '#1087#1088#1080#1073#1086#1088#1086#1074
-      ExplicitWidth = 104
-    end
-    object Label4: TLabel
-      AlignWithMargins = True
-      Left = 10
-      Top = 207
-      Width = 184
-      Height = 19
-      Margins.Left = 10
-      Margins.Top = 10
-      Margins.Right = 10
-      Margins.Bottom = 0
-      Align = alTop
-      Caption = #1048#1089#1087#1086#1083#1085#1077#1085#1080#1077
-      ExplicitTop = 203
-      ExplicitWidth = 88
     end
     object Edit1: TEdit
       AlignWithMargins = True
       Left = 10
-      Top = 105
-      Width = 184
+      Top = 39
+      Width = 161
       Height = 27
       Margins.Left = 10
       Margins.Top = 10
@@ -101,71 +55,22 @@ object FormNewPartyDialog: TFormNewPartyDialog
       Align = alTop
       TabOrder = 0
       Text = '10'
-      ExplicitLeft = 184
-      ExplicitTop = 128
-      ExplicitWidth = 121
-    end
-    object Edit2: TEdit
-      AlignWithMargins = True
-      Left = 10
-      Top = 39
-      Width = 184
-      Height = 27
-      Margins.Left = 10
-      Margins.Top = 10
-      Margins.Right = 10
-      Margins.Bottom = 0
-      Align = alTop
-      TabOrder = 1
-      ExplicitLeft = 7
-      ExplicitTop = 29
-      ExplicitWidth = 205
-    end
-    object ComboBox1: TComboBox
-      AlignWithMargins = True
-      Left = 10
-      Top = 171
-      Width = 184
-      Height = 26
-      Margins.Left = 10
-      Margins.Top = 10
-      Margins.Right = 10
-      Margins.Bottom = 0
-      Align = alTop
-      Style = csOwnerDrawFixed
-      ItemHeight = 20
-      TabOrder = 2
-      OnChange = ComboBox1Change
-    end
-    object ComboBox2: TComboBox
-      AlignWithMargins = True
-      Left = 10
-      Top = 236
-      Width = 184
-      Height = 26
-      Margins.Left = 10
-      Margins.Top = 10
-      Margins.Right = 10
-      Margins.Bottom = 0
-      Align = alTop
-      Style = csOwnerDrawFixed
-      ItemHeight = 20
-      TabOrder = 3
-      ExplicitTop = 232
+      ExplicitTop = 105
+      ExplicitWidth = 184
     end
   end
   object Panel2: TPanel
-    Left = 204
+    Left = 181
     Top = 0
     Width = 115
-    Height = 274
+    Height = 93
     Align = alRight
     BevelOuter = bvNone
     Caption = 'Panel1'
     ShowCaption = False
     TabOrder = 1
-    ExplicitLeft = 526
-    ExplicitHeight = 299
+    ExplicitLeft = 204
+    ExplicitHeight = 274
     object Button1: TButton
       AlignWithMargins = True
       Left = 5
@@ -180,7 +85,6 @@ object FormNewPartyDialog: TFormNewPartyDialog
       Caption = #1055#1088#1080#1084#1077#1085#1080#1090#1100
       ModalResult = 1
       TabOrder = 0
-      ExplicitTop = 5
     end
     object Button2: TButton
       AlignWithMargins = True
@@ -196,7 +100,6 @@ object FormNewPartyDialog: TFormNewPartyDialog
       Caption = #1054#1090#1084#1077#1085#1072
       ModalResult = 2
       TabOrder = 1
-      ExplicitTop = 45
     end
   end
 end

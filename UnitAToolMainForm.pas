@@ -63,7 +63,7 @@ type
         N14: TMenuItem;
         N15: TMenuItem;
         N16: TMenuItem;
-    N6: TMenuItem;
+        N6: TMenuItem;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -87,6 +87,7 @@ type
         procedure N9Click(Sender: TObject);
         procedure N14Click(Sender: TObject);
         procedure N15Click(Sender: TObject);
+        procedure N6Click(Sender: TObject);
     private
         { Private declarations }
         FEnableCopyData: boolean;
@@ -135,6 +136,7 @@ implementation
 uses System.Types, dateutils, myutils, api, UnitApiClient,
     UnitFormCurrentParty, unitappini, inifiles,
 
+    ShellApi,
     Generics.Defaults,
 
     Grijjy.Bson, Grijjy.Bson.Serialization,
@@ -144,7 +146,7 @@ uses System.Types, dateutils, myutils, api, UnitApiClient,
     UnitFormChart, UnitFormRawModbus, UnitFormTemperatureHardware, UnitFormGas,
     UnitFormCoefficients, UnitFormJournal, UnitFormDelay, UnitFormAppConfig,
     UnitFormProductsData, luahelp, UnitFormSelectWorksDialog,
-  UnitFormNewPartyDialog;
+    UnitFormNewPartyDialog;
 
 procedure TAToolMainForm.FormCreate(Sender: TObject);
 begin
@@ -172,7 +174,6 @@ end;
 
 procedure TAToolMainForm.FormShow(Sender: TObject);
 begin
-
 
     CreateLuaScriptsMenu;
 
@@ -269,7 +270,7 @@ var
     s: string;
     m: TMenuItem;
 
-    function sort_keys(xs:TNameFileMap):TArray<string>;
+    function sort_keys(xs: TNameFileMap): TArray<string>;
     begin
         result := xs.Keys.ToArray;
         TArray.Sort<String>(result, TStringComparer.Ordinal);
@@ -444,14 +445,17 @@ procedure TAToolMainForm.N10Click(Sender: TObject);
 var
     f: TFormAppConfig;
 begin
+    f := TFormAppConfig.create(nil);
+    f.FUpdateAppConfig := true;
     try
-        f := TFormAppConfig.create(nil);
         f.Values := AppCfgClient.getParamValues;
-        f.FUpdateAppConfig := true;
-        f.ShowModal;
-    finally
+    except
         f.Free;
+        raise;
     end;
+    f.ShowModal;
+    FormCurrentParty.upload;
+
 end;
 
 procedure TAToolMainForm.N14Click(Sender: TObject);
@@ -479,24 +483,21 @@ end;
 
 procedure TAToolMainForm.N2Click(Sender: TObject);
 var
-   f:TFormNewPartyDialog;
+    f: TFormNewPartyDialog;
 
 begin
-    f := TFormNewPartyDialog.Create(nil);
+    f := TFormNewPartyDialog.create(nil);
     try
         f.ShowModal;
         if f.ModalResult = mrOk then
         begin
-            FilesClient.CreateNewParty(StrToInt(f.Edit1.Text),
-                f.Edit2.Text, f.ComboBox1.Text, f.ComboBox2.Text);
+            FilesClient.CreateNewParty(StrToInt(f.Edit1.Text));
             FormCurrentParty.upload;
 
         end;
     finally
         f.Free;
     end;
-
-
 
 end;
 
@@ -543,6 +544,14 @@ begin
     AppCfgClient.EditConfig;
 end;
 
+procedure TAToolMainForm.N6Click(Sender: TObject);
+var
+    URL: string;
+begin
+    URL := 'http://127.0.0.1:' + GetEnvironmentVariable('ATOOL_WEB_PORT');
+    ShellExecute(0, 'open', PChar(URL), nil, nil, SW_SHOWNORMAL);
+end;
+
 procedure TAToolMainForm.N8Click(Sender: TObject);
 begin
     CurrFileClient.createNewCopy;
@@ -576,9 +585,9 @@ begin
     if FEnableCopyData = false then
         exit;
     cd := PCOPYDATASTRUCT(Message.LParam);
-    Message.Result := 1;
+    Message.result := 1;
 
-    Message.Result := 1;
+    Message.result := 1;
     case TCopyDataCmd(Message.WParam) of
         cdcNewCommTransaction:
             FormInterrogate.AddCommTransaction
@@ -735,7 +744,7 @@ end;
 
 function TAToolMainForm.ExceptionDialog(e: Exception): boolean;
 begin
-    Result := MessageBox(Handle, PChar(e.ClassName + #10#10 + e.Message +
+    result := MessageBox(Handle, PChar(e.ClassName + #10#10 + e.Message +
       #10#10'Ok - продолжить'#10#10'Отмена - закрыть приложение'),
       PChar(ExtractFileName(Application.ExeName)), MB_OKCANCEL or MB_ICONERROR)
       = IDCANCEL;
@@ -760,7 +769,7 @@ begin
         BorderStyle := bsNone;
         parent := tbs;
         Align := alClient;
-        Result := Chart1;
+        result := Chart1;
         AFormChart.Caption := AName;
         Show;
     end;
