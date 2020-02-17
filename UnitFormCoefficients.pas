@@ -204,13 +204,13 @@ var
     ACol, ARow: integer;
     p: IProduct;
 begin
-    setup;
+    //setup;
 
     with StringGrid1 do
     begin
-        for ACol := 1 to ColCount - 1 do
-            for ARow := 1 to RowCount - 1 do
-                Cells[ACol, ARow] := '';
+//        for ACol := 1 to ColCount - 1 do
+//            for ARow := 1 to RowCount - 1 do
+//                Cells[ACol, ARow] := '';
         for ACol := 1 to ColCount - 1 do
         begin
             p := FormCurrentParty.FParty.Products[ACol - 1];
@@ -220,8 +220,13 @@ begin
             begin
                 if FCoefs[ARow - 1].N <> x.Coefficient then
                     continue;
-                if x.Read AND x.Ok then
-                    Cells[ACol, ARow] := x.Result;
+                if x.Read  then
+                begin
+                    if x.Ok then
+                        Cells[ACol, ARow] := x.Result
+                    else
+                        Cells[ACol, ARow] := '';
+                end;
 
             end;
         end;
@@ -253,8 +258,8 @@ begin
         for ACol := 1 to ColCount - 1 do
         begin
             p := FormCurrentParty.FParty.Products[ACol - 1];
-            Cells[ACol, 0] := Format('%s #%d ¹%d',
-              [p.Comport, p.Addr, p.Serial]);
+            Cells[ACol, 0] := Format('%d',
+              [p.Serial]);
 
             ColWidths[ACol] := AppIni.ReadInteger
               ('Coefficients.StringGrid1.ColWidth', IntToStr(ACol),

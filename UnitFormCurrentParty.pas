@@ -669,9 +669,9 @@ procedure TFormCurrentParty.setMainFormCaption;
 begin
     with Application.MainForm do
         with FParty do
-            Caption := Format('№%d %s',
+            Caption := Format('№%d %s "%s"',
               [PartyID, FormatDateTime('dd MMMM yyyy hh:nn',
-              IncHour(unixMillisToDateTime(CreatedAt), -3))]);
+              IncHour(unixMillisToDateTime(CreatedAt), -3)), FParty.Name]);
 end;
 
 function TFormCurrentParty.GetSeriesInfo(ser: TFastLineSeries): TProductVar;

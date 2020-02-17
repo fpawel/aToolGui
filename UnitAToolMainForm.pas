@@ -393,8 +393,19 @@ begin
         f := TFormAppConfig.create(nil);
         f.Values := xs;
         f.FUpdateAppConfig := false;
+        f.Caption := '¬выедите значени€ параметров';
         f.ShowModal;
-        ScriptClient.setConfigParamValues(f.Values);
+        if f.ModalResult = mrOk then
+            ScriptClient.setConfigParamValues(f.Values)
+        else
+        begin
+            TThread.CreateAnonymousThread(
+                procedure
+                begin
+                    RunWorkClient.interrupt();
+                end).Start;
+        end;
+
     finally
         f.Free;
     end;
@@ -453,6 +464,7 @@ begin
         f.Free;
         raise;
     end;
+    f.ToolBar1.Hide;
     f.ShowModal;
     FormCurrentParty.upload;
 
@@ -656,7 +668,7 @@ begin
 end;
 
 procedure TAToolMainForm.PageControlMainDrawTab(Control: TCustomTabControl;
-  TabIndex: integer; const Rect: TRect; Active: boolean);
+TabIndex: integer; const Rect: TRect; Active: boolean);
 var
     I: integer;
     PageControl: TPageControl;
@@ -810,15 +822,27 @@ begin
 
     f.ShowModal;
 
-    works := TThriftListImpl<boolean>.create;
-    for I := 0 to length(xs) - 1 do
+    if f.ModalResult = mrOk then
     begin
-        AppIni.WriteBool('select_works', xs[I], f.CheckListBox1.Checked[I]);
-        works.Add(f.CheckListBox1.Checked[I]);
+        works := TThriftListImpl<boolean>.create;
+        for I := 0 to length(xs) - 1 do
+        begin
+            AppIni.WriteBool('select_works', xs[I], f.CheckListBox1.Checked[I]);
+            works.Add(f.CheckListBox1.Checked[I]);
+        end;
+        ScriptClient.selectWorks(works);
+    end
+    else
+    begin
+        TThread.CreateAnonymousThread(
+            procedure
+            begin
+                RunWorkClient.interrupt;
+            end).Start;
     end;
+
     f.Free;
 
-    ScriptClient.selectWorks(works);
 end;
 
 procedure TAToolMainForm.HandleStatusMessage(X: TStatusMessage);

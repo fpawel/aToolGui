@@ -171,7 +171,7 @@ object AToolMainForm: TAToolMainForm
       AutoHotkeys = maManual
       Caption = #1044#1072#1085#1085#1099#1077
       object N15: TMenuItem
-        Caption = #1042#1089#1077' '#1089#1086#1093#1088#1072#1085#1105#1085#1085#1099#1077' '#1079#1085#1072#1095#1077#1085#1080#1103
+        Caption = 'C'#1086#1093#1088#1072#1085#1105#1085#1085#1099#1077' '#1079#1085#1072#1095#1077#1085#1080#1103
         OnClick = N15Click
       end
       object N6: TMenuItem

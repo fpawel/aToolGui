@@ -6,13 +6,18 @@ uses
     Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
     System.Classes, Vcl.Graphics,
     Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, apitypes,
-    UnitFormPopup2, Thrift.Collections, Vcl.Menus;
+    UnitFormPopup2, Thrift.Collections, Vcl.Menus, Vcl.ComCtrls, Vcl.ToolWin,
+  System.ImageList, Vcl.ImgList;
 
 type
 
     TFormAppConfig = class(TForm)
         StringGrid1: TStringGrid;
         PopupMenu1: TPopupMenu;
+    ImageList3: TImageList;
+    ToolBar1: TToolBar;
+    ToolButton2: TToolButton;
+    ToolButton1: TToolButton;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
           Rect: TRect; State: TGridDrawState);
         procedure FormCreate(Sender: TObject);
@@ -23,6 +28,8 @@ type
           const Value: string);
         procedure StringGrid1MouseDown(Sender: TObject; Button: TMouseButton;
           Shift: TShiftState; X, Y: Integer);
+    procedure ToolButton2Click(Sender: TObject);
+    procedure ToolButton1Click(Sender: TObject);
     private
         { Private declarations }
 
@@ -368,6 +375,16 @@ begin
         end;
         // Options := Options - [goEditing];
     end;
+end;
+
+procedure TFormAppConfig.ToolButton1Click(Sender: TObject);
+begin
+    ModalResult := mrCancel;
+end;
+
+procedure TFormAppConfig.ToolButton2Click(Sender: TObject);
+begin
+    ModalResult := mrOk;
 end;
 
 end.

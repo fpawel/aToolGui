@@ -15,7 +15,9 @@ type
         CheckListBox1: TCheckListBox;
         ToolBarStop: TToolBar;
         ToolButton2: TToolButton;
+    ToolButton1: TToolButton;
     procedure ToolButton2Click(Sender: TObject);
+    procedure ToolButton1Click(Sender: TObject);
     private
         { Private declarations }
     public
@@ -29,6 +31,11 @@ implementation
 
 {$R *.dfm}
 
+
+procedure TFormSelectWorksDialog.ToolButton1Click(Sender: TObject);
+begin
+    ModalResult := mrCancel;
+end;
 
 procedure TFormSelectWorksDialog.ToolButton2Click(Sender: TObject);
 begin
