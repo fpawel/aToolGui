@@ -4,9 +4,8 @@ interface
 
 uses
 	Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-	System.Classes, Vcl.Graphics, thrift.collections,
-	Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, UnitFormPopup2,
-  UnitFormCurrentParty;
+	System.Classes, Vcl.Graphics, thrift.collections, apitypes,
+	Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, UnitFormPopup2;
 
 type
 	TMouseWheel = reference to procedure (delta:boolean);
@@ -24,6 +23,7 @@ type
 	public
 		{ Public declarations }
         FKeys : IThriftList<string>;
+        FProducts: IThriftList<IProduct>;
         FFormPopup2: TFormPopup2;
 
 	end;
@@ -99,6 +99,7 @@ procedure TFormProductsDataTable.StringGrid1SetEditText(Sender: TObject; ACol,
   ARow: Integer; const Value: string);
 var productID:int64;
     key:string;
+    sect:ISectionProductParamsValues;
 begin
     With StringGrid1 do
     begin
@@ -110,7 +111,7 @@ begin
             Last_Edited_Row := -1; // Indicate no cell is edited
             // Do whatever wanted after user has finish editing a cell
 
-            productID := FormCurrentParty.FParty.Products[ACol-1].ProductID;
+            productID := FProducts[ACol-1].ProductID;
             key := FKeys[ARow-1];
             try
                 ProdPrmClient.setValue(key, productID, Value);

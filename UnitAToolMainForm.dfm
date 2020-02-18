@@ -98,6 +98,19 @@ object AToolMainForm: TAToolMainForm
         end
       end
     end
+    object TabSheetParties: TTabSheet
+      Caption = #1040#1088#1093#1080#1074
+      ImageIndex = 1
+      object Splitter2: TSplitter
+        Left = 0
+        Top = 0
+        Width = 5
+        Height = 544
+        Color = 16118769
+        ParentColor = False
+        OnMoved = Splitter1Moved
+      end
+    end
   end
   object MainMenu1: TMainMenu
     Left = 894
@@ -166,21 +179,6 @@ object AToolMainForm: TAToolMainForm
       Caption = #1055#1088#1077#1088#1074#1072#1090#1100' '#1074#1099#1087#1086#1083#1085#1077#1085#1080#1077
       Visible = False
       OnClick = MenuStopWorkClick
-    end
-    object MenuData: TMenuItem
-      AutoHotkeys = maManual
-      Caption = #1044#1072#1085#1085#1099#1077
-      object N15: TMenuItem
-        Caption = 'C'#1086#1093#1088#1072#1085#1105#1085#1085#1099#1077' '#1079#1085#1072#1095#1077#1085#1080#1103
-        OnClick = N15Click
-      end
-      object N6: TMenuItem
-        Caption = #1054#1090#1095#1105#1090
-        OnClick = N6Click
-      end
-      object N16: TMenuItem
-        Caption = '-'
-      end
     end
   end
 end

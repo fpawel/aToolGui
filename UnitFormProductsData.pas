@@ -4,25 +4,28 @@ interface
 
 uses
     Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-    System.Classes, Vcl.Graphics, UnitFormExpander,
+    System.Classes, Vcl.Graphics, UnitFormExpander, UnitFormProductsDataTable,
     Vcl.Controls, Vcl.Forms, Vcl.Dialogs, System.Generics.Collections,
-    thrift.Collections, apitypes, Vcl.Grids, UnitFormPopup2;
+    thrift.Collections, apitypes, Vcl.Grids, UnitFormPopup2, Vcl.StdCtrls,
+    Vcl.ExtCtrls;
 
 type
     TFormProductsData = class(TForm)
-        ScrollBox1: TScrollBox;
+        Panel1: TPanel;
+        Label1: TLabel;
+        ComboBox1: TComboBox;
         procedure FormCreate(Sender: TObject);
-        procedure ScrollBox1MouseWheel(Sender: TObject; Shift: TShiftState;
-          WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+        procedure ComboBox1Change(Sender: TObject);
     private
         { Private declarations }
         FExpanders: TList<TFormExpander>;
+        FFormPopup2: TFormPopup2;
+        FPartyProductsValues: IPartyProductsValues;
+        FFormProductsDataTable: TFormProductsDataTable;
         procedure FFormPopup2ToolButton3Click(Sender: TObject);
     public
         { Public declarations }
-        FFormPopup2: TFormPopup2;
-        procedure setup(xs: IThriftList<ISectionProductParamsValues>);
-        procedure setup1(x: ISectionProductParamsValues);
+        procedure setup(x: IPartyProductsValues);
 
     end;
 
@@ -33,7 +36,7 @@ implementation
 
 {$R *.dfm}
 
-uses UnitFormProductsDataTable, UnitApiClient,
+uses UnitApiClient,
     stringgridutils;
 
 procedure TFormProductsData.FormCreate(Sender: TObject);
@@ -45,116 +48,76 @@ begin
     FFormPopup2.ToolButton3.OnClick := FFormPopup2ToolButton3Click;
 end;
 
+procedure TFormProductsData.ComboBox1Change(Sender: TObject);
+var
+    sect: ISectionProductParamsValues;
+    ACol, ARow: integer;
+begin
+    if assigned(FFormProductsDataTable) then
+        FFormProductsDataTable.Free;
+    if ComboBox1.ItemIndex < 0 then
+        exit;
+    sect := FPartyProductsValues.Sections[ComboBox1.ItemIndex];
+    FFormProductsDataTable := TFormProductsDataTable.create(nil);
+
+    with FFormProductsDataTable do
+    begin
+        FKeys := sect.Keys;
+        FProducts := FPartyProductsValues.Products;
+        FFormPopup2 := self.FFormPopup2;
+        BorderStyle := bsNone;
+        Parent := self;
+        Align := alClient;
+
+        with StringGrid1 do
+        begin
+            ColCount := FProducts.Count + 1;
+            RowCount := FKeys.Count + 1;
+
+            if RowCount > 1 then
+                FixedRows := 1;
+
+            Cells[0, 0] := 'Прибор';
+
+            for ACol := 1 to ColCount - 1 do
+                Cells[ACol, 0] := IntToStr(FProducts[ACol - 1].Serial);
+
+            for ARow := 1 to RowCount - 1 do
+                for ACol := 0 to ColCount - 1 do
+                    Cells[ACol, ARow] := sect.Values[ARow - 1][ACol];
+
+        end;
+
+        Show;
+    end;
+
+end;
+
 procedure TFormProductsData.FFormPopup2ToolButton3Click(Sender: TObject);
 begin
     FFormPopup2.Hide;
 end;
 
-procedure TFormProductsData.ScrollBox1MouseWheel(Sender: TObject;
-  Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
-  var Handled: Boolean);
-begin
-    Handled := true;
-    // if (WheelDelta > 0) then
-    // WheelDelta := 10
-    // else if (WheelDelta < 0) then
-    // WheelDelta := -10
-    // else
-    // Exit;
-    ScrollBox1.VertScrollBar.Position := ScrollBox1.VertScrollBar.Position -
-      WheelDelta;
-
-end;
-
-procedure TFormProductsData.setup1(x: ISectionProductParamsValues);
+procedure TFormProductsData.setup(x: IPartyProductsValues);
 var
-    I: Integer;
-    g: TFormProductsDataTable;
-    ACol: Integer;
-    ARow: Integer;
+    n, I: integer;
+    sect: ISectionProductParamsValues;
 begin
-    g := TFormProductsDataTable.create(self);
-    g.FKeys := x.Keys;
-    g.FFormPopup2 := FFormPopup2;
-    with g.StringGrid1 do
+    FPartyProductsValues := x;
+
+    n := ComboBox1.ItemIndex;
+
+    ComboBox1.OnChange := nil;
+    ComboBox1.Clear;
+
+    for I := 0 to x.Sections.Count - 1 do
     begin
-        RowCount := x.Values.Count;
-        if x.Values.Count > 0 then
-            ColCount := x.Values[0].Count;
-        if ColCount > 1 then
-            FixedCols := 1;
-        if RowCount > 1 then
-            FixedRows := 1;
-
-        g.Height := RowCount * DefaultRowHeight + 30;
-        if g.Height > 600 then
-            g.Height := 600;
-
-        for ARow := 0 to x.Values.Count - 1 do
-            for ACol := 0 to x.Values[ARow].Count - 1 do
-                Cells[ACol, ARow] := x.Values[ARow][ACol];
-
-        StringGrid_SetupColumnsWidth(g.StringGrid1);
-
+        sect := x.Sections[I];
+        ComboBox1.Items.Add(sect.Section);
     end;
-    g.Align := alClient;
-    g.Parent := self;
-    g.Show;
-end;
-
-procedure TFormProductsData.setup(xs: IThriftList<ISectionProductParamsValues>);
-var
-    I: Integer;
-    f: TFormExpander;
-    g: TFormProductsDataTable;
-    ACol: Integer;
-    ARow: Integer;
-begin
-    // xs := CurrFileClient.getSectionsProductsParamsValues;
-
-    for I := 0 to FExpanders.Count - 1 do
-    begin
-        FExpanders[I].Hide;
-        FExpanders[I].Parent := nil;
-        ScrollBox1.RemoveControl(FExpanders[I]);
-        FExpanders[I].Free;
-    end;
-    FExpanders.Clear;
-
-    for I := xs.Count - 1 downto 0 do
-    begin
-        f := TFormExpander.create(nil);
-        f.Parent := ScrollBox1;
-        f.Align := alTop;
-        g := TFormProductsDataTable.create(f);
-        g.FKeys := xs[I].Keys;
-        g.FFormPopup2 := FFormPopup2;
-        with g.StringGrid1 do
-        begin
-            RowCount := xs[I].Values.Count;
-            if xs[I].Values.Count > 0 then
-                ColCount := xs[I].Values[0].Count;
-            if ColCount > 1 then
-                FixedCols := 1;
-            if RowCount > 1 then
-                FixedRows := 1;
-
-            g.Height := RowCount * DefaultRowHeight + 30;
-            if g.Height > 600 then
-                g.Height := 600;
-
-            for ARow := 0 to xs[I].Values.Count - 1 do
-                for ACol := 0 to xs[I].Values[ARow].Count - 1 do
-                    Cells[ACol, ARow] := xs[I].Values[ARow][ACol];
-
-            StringGrid_SetupColumnsWidth(g.StringGrid1);
-
-        end;
-
-        f.setup(xs[I].Section, g.StringGrid1);
-        f.Top := 100500;
-        f.Show;
-    end;
+    ComboBox1.ItemIndex := n;
+    ComboBox1.OnChange := ComboBox1Change;
+    ComboBox1Change(ComboBox1);
 end;
 
 end.

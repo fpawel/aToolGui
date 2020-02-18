@@ -57,13 +57,11 @@ type
         N10: TMenuItem;
         N11: TMenuItem;
         N12: TMenuItem;
-        MenuData: TMenuItem;
         N9: TMenuItem;
         N13: TMenuItem;
         N14: TMenuItem;
-        N15: TMenuItem;
-        N16: TMenuItem;
-        N6: TMenuItem;
+        TabSheetParties: TTabSheet;
+    Splitter2: TSplitter;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -86,8 +84,6 @@ type
         procedure N10Click(Sender: TObject);
         procedure N9Click(Sender: TObject);
         procedure N14Click(Sender: TObject);
-        procedure N15Click(Sender: TObject);
-        procedure N6Click(Sender: TObject);
     private
         { Private declarations }
         FEnableCopyData: boolean;
@@ -111,7 +107,6 @@ type
 
         procedure CreateLuaScriptsMenu;
         procedure LuaScriptMenuClick(Sender: TObject);
-        procedure LuaDataMenuClick(Sender: TObject);
 
         procedure HandleLuaSelectWorks(xs: TArray<string>);
 
@@ -127,7 +122,7 @@ var
     AToolMainForm: TAToolMainForm;
 
 const
-    PageIndexChart = 1;
+    PageIndexChart = 2;
 
 implementation
 
@@ -146,7 +141,7 @@ uses System.Types, dateutils, myutils, api, UnitApiClient,
     UnitFormChart, UnitFormRawModbus, UnitFormTemperatureHardware, UnitFormGas,
     UnitFormCoefficients, UnitFormJournal, UnitFormDelay, UnitFormAppConfig,
     UnitFormProductsData, luahelp, UnitFormSelectWorksDialog,
-    UnitFormNewPartyDialog;
+    UnitFormNewPartyDialog, UnitFormParties;
 
 procedure TAToolMainForm.FormCreate(Sender: TObject);
 begin
@@ -247,6 +242,21 @@ begin
         Align := alBottom;
     end;
 
+    
+
+    with FormParties do
+    begin
+        BorderStyle := bsNone;
+        parent := TabSheetParties;
+        Align := alLeft;
+        Width := 400;
+        upload;
+        Left := 0;
+        Show;
+    end;
+
+
+
     FFormPopupScripSuspended := TFormPopup2.create(self);
     with FFormPopupScripSuspended do
     begin
@@ -287,34 +297,6 @@ begin
         m.OnClick := LuaScriptMenuClick;
         MenuRun.Add(m);
     end;
-
-    for s in sort_keys(luaDataScripts) do
-    begin
-        m := TMenuItem.create(nil);
-        m.Caption := s;
-        m.OnClick := LuaDataMenuClick;
-        MenuData.Add(m);
-    end;
-
-end;
-
-procedure TAToolMainForm.LuaDataMenuClick(Sender: TObject);
-var
-    m: TMenuItem;
-    f: TFormProductsData;
-begin
-    m := Sender as TMenuItem;
-
-    f := TFormProductsData.create(nil);
-    try
-        f.setup(CurrFileClient.getProductsParamsValues(luaDataScripts
-          [m.Caption]));
-        // f.WindowState := wsMaximized;
-        f.ShowModal;
-    finally
-        f.Free;
-    end;
-
 end;
 
 procedure TAToolMainForm.LuaScriptMenuClick(Sender: TObject);
@@ -479,20 +461,6 @@ begin
     CurrFileClient.deleteAll;
 end;
 
-procedure TAToolMainForm.N15Click(Sender: TObject);
-var
-    f: TFormProductsData;
-begin
-    f := TFormProductsData.create(nil);
-    try
-        f.setup1(CurrFileClient.getAllProductsParamsValues);
-        // f.WindowState := wsMaximized;
-        f.ShowModal;
-    finally
-        f.Free;
-    end;
-end;
-
 procedure TAToolMainForm.N2Click(Sender: TObject);
 var
     f: TFormNewPartyDialog;
@@ -554,14 +522,6 @@ end;
 procedure TAToolMainForm.N5Click(Sender: TObject);
 begin
     AppCfgClient.EditConfig;
-end;
-
-procedure TAToolMainForm.N6Click(Sender: TObject);
-var
-    URL: string;
-begin
-    URL := 'http://127.0.0.1:' + GetEnvironmentVariable('ATOOL_WEB_PORT');
-    ShellExecute(0, 'open', PChar(URL), nil, nil, SW_SHOWNORMAL);
 end;
 
 procedure TAToolMainForm.N8Click(Sender: TObject);
@@ -663,6 +623,10 @@ begin
     if PageControl.ActivePage = TabSheetHardware then
     begin
         PageControl1.OnChange(PageControl1);
+    end
+    else if PageControl.ActivePage = TabSheetParties then
+    begin
+        FormParties.upload;
     end
 
 end;

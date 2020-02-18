@@ -17,7 +17,6 @@ type
     private
         { Private declarations }
         FControl: TWinControl;
-
     public
         { Public declarations }
         procedure Setup(s: string; c: TWinControl);

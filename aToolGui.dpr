@@ -59,7 +59,8 @@ uses
   teechartutils in 'utils\teechartutils.pas',
   luahelp in 'luahelp.pas',
   UnitFormSelectWorksDialog in 'UnitFormSelectWorksDialog.pas' {FormSelectWorksDialog},
-  UnitFormNewPartyDialog in 'UnitFormNewPartyDialog.pas' {FormNewPartyDialog};
+  UnitFormNewPartyDialog in 'UnitFormNewPartyDialog.pas' {FormNewPartyDialog},
+  UnitFormParties in 'UnitFormParties.pas' {FormParties};
 
 {$R *.res}
 
@@ -79,8 +80,8 @@ begin
   Application.CreateForm(TFormCoefficients, FormCoefficients);
   Application.CreateForm(TFormInterrogate, FormInterrogate);
   Application.CreateForm(TFormDelay, FormDelay);
-  Application.CreateForm(TFormProductsDataTable, FormProductsDataTable);
   Application.CreateForm(TFormSelectWorksDialog, FormSelectWorksDialog);
+  Application.CreateForm(TFormParties, FormParties);
   Application.Run;
 
 end.

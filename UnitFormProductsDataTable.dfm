@@ -25,6 +25,7 @@ object FormProductsDataTable: TFormProductsDataTable
     Margins.Right = 5
     Margins.Bottom = 5
     Align = alClient
+    BorderStyle = bsNone
     DefaultColWidth = 100
     DefaultDrawing = False
     FixedColor = clBackground
@@ -32,11 +33,10 @@ object FormProductsDataTable: TFormProductsDataTable
     RowCount = 4
     FixedRows = 0
     GradientEndColor = clBlack
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goEditing]
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goEditing, goTabs]
     TabOrder = 0
     OnDrawCell = StringGrid1DrawCell
     OnSelectCell = StringGrid1SelectCell
     OnSetEditText = StringGrid1SetEditText
-    ExplicitWidth = 446
   end
 end

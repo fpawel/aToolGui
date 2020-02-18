@@ -8,6 +8,7 @@ procedure OpenApiClient;
 
 var
     FilesClient: TFilesService.Iface;
+    FileClient: TFileService.Iface;
     RunWorkClient: TRunWorkService.Iface;
     CurrFileClient: TCurrentFileService.Iface;
     ProductsClient: TProductService.Iface;
@@ -38,6 +39,9 @@ begin
       StrToInt(GetEnvironmentVariable('ATOOL_API_PORT')), 60 *  1000);
     Protocol := TBinaryProtocolImpl.create(Transport, true, true);
     Transport.Open;
+
+
+    FileClient:= TFileService.TClient.create(prot('FileService'));
 
     FilesClient := TFilesService.TClient.create(prot('FilesService'));
 
