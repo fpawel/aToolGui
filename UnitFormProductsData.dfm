@@ -25,7 +25,6 @@ object FormProductsData: TFormProductsData
     Caption = 'Panel1'
     ShowCaption = False
     TabOrder = 0
-    ExplicitWidth = 899
     object Label1: TLabel
       AlignWithMargins = True
       Left = 3
@@ -42,10 +41,10 @@ object FormProductsData: TFormProductsData
       Left = 130
       Top = 3
       Width = 577
-      Height = 26
+      Height = 28
       Align = alClient
       Style = csOwnerDrawFixed
-      ItemHeight = 20
+      ItemHeight = 22
       ItemIndex = 0
       TabOrder = 0
       Text = 'dfhg'
