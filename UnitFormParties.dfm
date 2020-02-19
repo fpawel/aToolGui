@@ -34,6 +34,5 @@ object FormParties: TFormParties
     OnDrawCell = StringGrid1DrawCell
     OnMouseUp = StringGrid1MouseUp
     OnSelectCell = StringGrid1SelectCell
-    ExplicitWidth = 538
   end
 end

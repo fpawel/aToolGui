@@ -250,7 +250,6 @@ begin
         parent := TabSheetParties;
         Align := alLeft;
         Width := 400;
-        upload;
         Left := 0;
         Show;
     end;
@@ -273,6 +272,7 @@ begin
 
     FEnableCopyData := true;
     FormCurrentParty.upload;
+    FormParties.upload;
 end;
 
 procedure TAToolMainForm.CreateLuaScriptsMenu;

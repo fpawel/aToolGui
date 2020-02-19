@@ -46,7 +46,7 @@ procedure TFormParties.setup;
 var
     ACol, I: Integer;
     p: IPartyInfo;
-    canselect:boolean;
+    CanSelect: Boolean;
 begin
     with StringGrid1 do
     begin
@@ -89,9 +89,8 @@ begin
                 ColWidths[ACol] := 200;
         end;
         OnSelectCell := StringGrid1SelectCell;
-        StringGrid1SelectCell(StringGrid1, Col, row, canselect);
+        StringGrid1SelectCell(StringGrid1, Col, row, CanSelect);
     end;
-
 
 end;
 
@@ -145,6 +144,10 @@ end;
 
 procedure TFormParties.StringGrid1SelectCell(Sender: TObject;
   ACol, ARow: Integer; var CanSelect: Boolean);
+
+var
+    thr: TThread;
+
 begin
     if (ARow < 1) or (ARow - 1 >= FParties.Count) then
     begin
@@ -165,10 +168,27 @@ begin
         Margins.Right := 5;
         Margins.Top := 5;
         Margins.Bottom := 5;
-        setup(fileClient.getProductsValues(FParties[ARow - 1].PartyID));
-
-        Show;
     end;
+
+    FFormProductsData.setup(fileClient.getProductsValues(FParties[ARow - 1]
+      .PartyID));
+    FFormProductsData.Show;
+
+//    thr := TThread.CreateAnonymousThread(
+//        procedure
+//        var
+//            values: IPartyProductsValues;
+//        begin
+//            values := fileClient.getProductsValues(FParties[ARow - 1].PartyID);
+//            TThread.Synchronize(thr,
+//                procedure
+//                begin
+//                    FFormProductsData.setup(values);
+//                    FFormProductsData.Show;
+//
+//                end);
+//        end);
+//    thr.Start;
 
 end;
 

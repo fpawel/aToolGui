@@ -52,6 +52,7 @@ object FormProductsData: TFormProductsData
       Items.Strings = (
         'dfhg'
         'dfh')
+      ExplicitWidth = 200
     end
   end
 end
