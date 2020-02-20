@@ -205,8 +205,8 @@
             <Form>FormProductsData</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="UnitFormProductsDataTable.pas">
-            <Form>FormProductsDataTable</Form>
+        <DCCReference Include="UnitFormProductsCalcTable.pas">
+            <Form>FormProductsCalcTable</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="utils\teechartutils.pas"/>
@@ -221,6 +221,10 @@
         </DCCReference>
         <DCCReference Include="UnitFormParties.pas">
             <Form>FormParties</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="UnitFormProductsDataTable.pas">
+            <Form>FormProductsDataTable</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Release">

@@ -55,12 +55,13 @@ uses
   UnitFormAppConfig in 'UnitFormAppConfig.pas' {FormAppConfig},
   UnitFormExpander in 'UnitFormExpander.pas' {FormExpander},
   UnitFormProductsData in 'UnitFormProductsData.pas' {FormProductsData},
-  UnitFormProductsDataTable in 'UnitFormProductsDataTable.pas' {FormProductsDataTable},
+  UnitFormProductsCalcTable in 'UnitFormProductsCalcTable.pas' {FormProductsCalcTable},
   teechartutils in 'utils\teechartutils.pas',
   luahelp in 'luahelp.pas',
   UnitFormSelectWorksDialog in 'UnitFormSelectWorksDialog.pas' {FormSelectWorksDialog},
   UnitFormNewPartyDialog in 'UnitFormNewPartyDialog.pas' {FormNewPartyDialog},
-  UnitFormParties in 'UnitFormParties.pas' {FormParties};
+  UnitFormParties in 'UnitFormParties.pas' {FormParties},
+  UnitFormProductsDataTable in 'UnitFormProductsDataTable.pas' {FormProductsDataTable};
 
 {$R *.res}
 
@@ -82,6 +83,9 @@ begin
   Application.CreateForm(TFormDelay, FormDelay);
   Application.CreateForm(TFormSelectWorksDialog, FormSelectWorksDialog);
   Application.CreateForm(TFormParties, FormParties);
+  Application.CreateForm(TFormProductsDataTable, FormProductsDataTable);
+  Application.CreateForm(TFormProductsCalcTable, FormProductsCalcTable);
+  Application.CreateForm(TFormProductsData, FormProductsData);
   Application.Run;
 
 end.

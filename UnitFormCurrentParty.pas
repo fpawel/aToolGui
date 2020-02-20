@@ -83,6 +83,7 @@ type
 
         procedure setMainFormCaption;
         function GetSelectedProductsIDs: Thrift.Collections.IThriftList<int64>;
+        procedure doSetupSeries;
         procedure setupSeries;
         procedure MenuSetChartClick(Sender: TObject);
         procedure DrawAddrConnection(ACol, ARow: integer; ARect: TRect;
@@ -116,7 +117,6 @@ uses stringgridutils, stringutils, dateutils,
 
 const
     FirstParamRow = 3;
-
 
 procedure TFormCurrentParty.FormCreate(Sender: TObject);
 var
@@ -552,18 +552,16 @@ begin
 
 end;
 
-procedure TFormCurrentParty.setupSeries;
+procedure TFormCurrentParty.doSetupSeries;
 var
     ser: TFastLineSeries;
     p: IProduct;
     AParam: IDeviceParam;
     pvs: IProductParamSeries;
     xx: TPair<TFastLineSeries, TProductVar>;
+    pageIndex: integer;
 
 begin
-    // FSeries: TDictionary<TProductVar, TFastLineSeries>;
-    // FSeriesInfo: TDictionary<TFastLineSeries, TProductVar>;
-
     for xx in FSeriesInfo do
         xx.Key.ParentChart := nil;
 
@@ -580,8 +578,7 @@ begin
         begin
             ser := TFastLineSeries.Create(nil);
             ser.XValues.DateTime := true;
-            ser.Title := Format('%s:%d,%s', [p.Comport, p.Addr,
-              AParam.Name]);
+            ser.Title := Format('%s:%d,%s', [p.Comport, p.Addr, AParam.Name]);
 
             ser.LinePen.Width := 2;
             ser.Active := false;
@@ -599,6 +596,35 @@ begin
                 ser.Active := pvs.SeriesActive;
             end;
         end;
+
+end;
+
+procedure TFormCurrentParty.setupSeries;
+var
+    ser: TFastLineSeries;
+    p: IProduct;
+    AParam: IDeviceParam;
+    pvs: IProductParamSeries;
+    xx: TPair<TFastLineSeries, TProductVar>;
+    pageIndex: integer;
+
+begin
+    // FSeries: TDictionary<TProductVar, TFastLineSeries>;
+    // FSeriesInfo: TDictionary<TFastLineSeries, TProductVar>;
+
+    pageIndex := AToolMainForm.PageControlMain.ActivePageIndex;
+    AToolMainForm.PageControlMain.Hide;
+    AToolMainForm.PageControlMain.OnChange := nil;
+    try
+        doSetupSeries;
+        AToolMainForm.PageControlMain.ActivePageIndex := pageIndex;
+    finally
+        AToolMainForm.PageControlMain.OnChange :=
+          AToolMainForm.PageControlMainChange;
+
+        AToolMainForm.PageControlMain.Show;
+    end;
+
 end;
 
 procedure TFormCurrentParty.upload;
@@ -616,9 +642,9 @@ end;
 procedure TFormCurrentParty.AddMeasurements(xs: TArray<TMeasurement>);
 var
     X: TMeasurement;
-    ser:TFastLineSeries;
-  I: Integer;
-  kv:TPair<TFastLineSeries,TProductVar>;
+    ser: TFastLineSeries;
+    i: integer;
+    kv: TPair<TFastLineSeries, TProductVar>;
 begin
     for X in xs do
     begin
@@ -804,10 +830,10 @@ begin
 
             end;
     AToolMainForm.DeleteEmptyCharts;
-    AToolMainForm.PageControlMain.ActivePageIndex := 0;
 end;
 
-procedure TFormCurrentParty.MenuSetNetAddrClick(Sender: TObject);begin
+procedure TFormCurrentParty.MenuSetNetAddrClick(Sender: TObject);
+begin
 
     ProductsClient.setNetAddr(FParty.Products[StringGrid1.Col - 1].ProductID);
 end;

@@ -44,6 +44,7 @@ object FormProductsData: TFormProductsData
       Height = 28
       Align = alClient
       Style = csOwnerDrawFixed
+      DropDownCount = 1000
       ItemHeight = 22
       ItemIndex = 0
       TabOrder = 0
@@ -52,7 +53,6 @@ object FormProductsData: TFormProductsData
       Items.Strings = (
         'dfhg'
         'dfh')
-      ExplicitWidth = 200
     end
   end
 end

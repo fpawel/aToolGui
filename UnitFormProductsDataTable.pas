@@ -3,33 +3,39 @@ unit UnitFormProductsDataTable;
 interface
 
 uses
-	Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-	System.Classes, Vcl.Graphics, thrift.collections, apitypes,
-	Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, UnitFormPopup2;
+    Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+    System.Classes, Vcl.Graphics, thrift.collections, apitypes,
+    Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, UnitFormPopup2;
 
 type
-	TMouseWheel = reference to procedure (delta:boolean);
-	TFormProductsDataTable = class(TForm)
-    StringGrid1: TStringGrid;
-		procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
-		  Rect: TRect; State: TGridDrawState);
-    procedure StringGrid1SelectCell(Sender: TObject; ACol, ARow: Integer;
-      var CanSelect: Boolean);
-    procedure StringGrid1SetEditText(Sender: TObject; ACol, ARow: Integer;
-      const Value: string);
-	private
-		{ Private declarations }
-        Last_Edited_Col, Last_Edited_Row: Integer;
-	public
-		{ Public declarations }
-        FKeys : IThriftList<string>;
-        FProducts: IThriftList<IProduct>;
-        FFormPopup2: TFormPopup2;
+    TMouseWheel = reference to procedure(delta: boolean);
 
-	end;
+    TFormProductsDataTable = class(TForm)
+        StringGrid1: TStringGrid;
+        procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
+          Rect: TRect; State: TGridDrawState);
+        procedure StringGrid1SelectCell(Sender: TObject; ACol, ARow: Integer;
+          var CanSelect: boolean);
+        procedure StringGrid1SetEditText(Sender: TObject; ACol, ARow: Integer;
+          const Value: string);
+    private
+        { Private declarations }
+        Last_Edited_Col, Last_Edited_Row: Integer;
+
+        FProducts: IThriftList<IProduct>;
+        FSect: ISectionProductParamsValues;
+        procedure doSetup;
+    public
+        { Public declarations }
+
+        FFormPopup2: TFormPopup2;
+        procedure Setup(Products: IThriftList<IProduct>;
+          Sect: ISectionProductParamsValues);
+
+    end;
 
 var
-	FormProductsDataTable: TFormProductsDataTable;
+    FormProductsDataTable: TFormProductsDataTable;
 
 implementation
 
@@ -37,43 +43,77 @@ implementation
 
 uses stringgridutils, stringutils, UnitApiClient;
 
+procedure TFormProductsDataTable.doSetup;
+var
+    ACol, ARow: Integer;
+begin
+
+    with StringGrid1 do
+    begin
+        ColCount := FProducts.Count + 1;
+        RowCount := FSect.Keys.Count + 1;
+
+        if RowCount > 1 then
+            FixedRows := 1;
+
+        Cells[0, 0] := 'Прибор';
+
+        for ACol := 1 to ColCount - 1 do
+            Cells[ACol, 0] := IntToStr(FProducts[ACol - 1].Serial);
+
+        for ARow := 1 to RowCount - 1 do
+            for ACol := 0 to ColCount - 1 do
+                Cells[ACol, ARow] := FSect.Values[ARow - 1][ACol];
+
+    end;
+
+end;
+
+procedure TFormProductsDataTable.Setup(Products: IThriftList<IProduct>;
+  Sect: ISectionProductParamsValues);
+begin
+    FProducts := Products;
+    FSect := Sect;
+    doSetup;
+end;
+
 procedure TFormProductsDataTable.StringGrid1DrawCell(Sender: TObject;
   ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
 var
-	grd: TStringGrid;
-	cnv: TCanvas;
-	ta: TAlignment;
-	AText: string;
-	floatValue: double;
+    grd: TStringGrid;
+    cnv: TCanvas;
+    ta: TAlignment;
+    AText: string;
+    floatValue: double;
 begin
-	grd := StringGrid1;
-	cnv := grd.Canvas;
-	cnv.Brush.Color := clWhite;
-	cnv.Font.Assign(grd.Font);
-	AText := grd.Cells[ACol, ARow];
+    grd := StringGrid1;
+    cnv := grd.Canvas;
+    cnv.Brush.Color := clWhite;
+    cnv.Font.Assign(grd.Font);
+    AText := grd.Cells[ACol, ARow];
 
-	if (ARow = 0) or (ACol = 0) then
-		cnv.Brush.Color := cl3DLight;
+    if (ARow = 0) or (ACol = 0) then
+        cnv.Brush.Color := cl3DLight;
 
-	if (gdSelected in State) then
-	begin
-		cnv.Brush.Color := clGradientInactiveCaption;
-	end;
+    if (gdSelected in State) then
+    begin
+        cnv.Brush.Color := clGradientInactiveCaption;
+    end;
 
-	ta := taCenter;
-	if ((ACol = 0) AND (ARow > 0)) OR TryStrToFloat2(grd.Cells[ACol, ARow],
-	  floatValue) then
-		ta := taRightJustify;
+    ta := taCenter;
+    if ((ACol = 0) AND (ARow > 0)) OR TryStrToFloat2(grd.Cells[ACol, ARow],
+      floatValue) then
+        ta := taRightJustify;
 
-	if (ARow = 0) then
-		cnv.Font.Style := [fsBold];
+    if (ARow = 0) then
+        cnv.Font.Style := [fsBold];
 
-	StringGrid_DrawCellText(StringGrid1, ACol, ARow, Rect, ta, AText);
-	StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
+    StringGrid_DrawCellText(StringGrid1, ACol, ARow, Rect, ta, AText);
+    StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
 end;
 
-procedure TFormProductsDataTable.StringGrid1SelectCell(Sender: TObject; ACol,
-  ARow: Integer; var CanSelect: Boolean);
+procedure TFormProductsDataTable.StringGrid1SelectCell(Sender: TObject;
+  ACol, ARow: Integer; var CanSelect: boolean);
 var
     r: TRect;
     grd: TStringGrid;
@@ -95,11 +135,12 @@ begin
     // Do whatever else wanted
 end;
 
-procedure TFormProductsDataTable.StringGrid1SetEditText(Sender: TObject; ACol,
-  ARow: Integer; const Value: string);
-var productID:int64;
-    key:string;
-    sect:ISectionProductParamsValues;
+procedure TFormProductsDataTable.StringGrid1SetEditText(Sender: TObject;
+  ACol, ARow: Integer; const Value: string);
+var
+    productID: int64;
+    key: string;
+    Sect: ISectionProductParamsValues;
 begin
     With StringGrid1 do
     begin
@@ -111,8 +152,8 @@ begin
             Last_Edited_Row := -1; // Indicate no cell is edited
             // Do whatever wanted after user has finish editing a cell
 
-            productID := FProducts[ACol-1].ProductID;
-            key := FKeys[ARow-1];
+            productID := FProducts[ACol - 1].productID;
+            key := FSect.Keys[ARow - 1];
             try
                 ProdPrmClient.setValue(key, productID, Value);
                 FFormPopup2.Hide;
@@ -122,7 +163,7 @@ begin
                     FFormPopup2.SetText(e.Message, false);
                     FFormPopup2.Show;
                     StringGrid1.OnSetEditText := nil;
-                    Cells[ACol,Arow] := ProdPrmClient.getValue(key, productID) ;
+                    Cells[ACol, ARow] := ProdPrmClient.getValue(key, productID);
                     StringGrid1.OnSetEditText := StringGrid1SetEditText;
                 end;
             end;

@@ -6,23 +6,32 @@ uses
     Thrift.Collections, apitypes, Winapi.Windows, Winapi.Messages,
     System.SysUtils, System.Variants,
     System.Classes, Vcl.Graphics, UnitFormProductsData,
-    Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids;
+    Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, Vcl.Menus;
 
 type
     TFormParties = class(TForm)
         StringGrid1: TStringGrid;
+        PopupMenu1: TPopupMenu;
+        N1: TMenuItem;
+        N2: TMenuItem;
+        N3: TMenuItem;
+        N4: TMenuItem;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
           Rect: TRect; State: TGridDrawState);
         procedure StringGrid1MouseUp(Sender: TObject; Button: TMouseButton;
           Shift: TShiftState; X, Y: Integer);
         procedure StringGrid1SelectCell(Sender: TObject; ACol, ARow: Integer;
           var CanSelect: Boolean);
+        procedure N1Click(Sender: TObject);
+        procedure N3Click(Sender: TObject);
+        procedure N4Click(Sender: TObject);
+        procedure N2Click(Sender: TObject);
     private
         { Private declarations }
-        FFormProductsData: TFormProductsData;
     public
         { Public declarations }
         FParties: IThriftList<IPartyInfo>;
+        procedure init;
         procedure setup;
         procedure upload;
     end;
@@ -34,12 +43,102 @@ implementation
 
 {$R *.dfm}
 
-uses stringgridutils, api, UnitApiClient, dateutils, myutils, UnitAppIni;
+uses stringgridutils, api, UnitApiClient, dateutils, myutils, UnitAppIni,
+    UnitFormCurrentParty;
 
 procedure TFormParties.upload;
 begin
     FParties := FilesClient.listParties;
     setup;
+end;
+
+procedure TFormParties.init;
+begin
+    with FormProductsData do
+    begin
+        BorderStyle := bsNone;
+        parent := self.parent;
+        Align := alClient;
+        AlignWithMargins := true;
+        Margins.Left := 10;
+        Margins.Right := 5;
+        Margins.Top := 5;
+        Margins.Bottom := 5;
+        init;
+    end;
+end;
+
+procedure TFormParties.N1Click(Sender: TObject);
+var
+    p: IPartyInfo;
+begin
+    with StringGrid1 do
+    begin
+        if Row < 1 then
+            exit;
+
+        FilesClient.setCurrentParty(FParties[Row - 1].PartyID);
+
+    end;
+    FormCurrentParty.upload;
+    // self.upload;
+
+end;
+
+procedure TFormParties.N2Click(Sender: TObject);
+var
+    dlg: TSaveDialog;
+
+begin
+    if StringGrid1.Row < 1 then
+        exit;
+
+    dlg := TSaveDialog.create(nil);
+    dlg.Filter := 'Файлы json (*.json)|*.json';
+    dlg.InitialDir := AppIni.ReadString('AToolMainForm',
+      'external_files_dialog_idir', '');
+    dlg.DefaultExt := '*.json';
+
+    try
+        if dlg.Execute() then
+
+            FilesClient.saveFile(FParties[StringGrid1.Row - 1].PartyID,
+              dlg.FileName);
+
+    finally
+        AppIni.WriteString('AToolMainForm', 'external_files_dialog_idir',
+          ExtractFilePath(dlg.FileName));
+        dlg.Free;
+    end;
+end;
+
+procedure TFormParties.N3Click(Sender: TObject);
+begin
+    with StringGrid1 do
+    begin
+        if Row < 1 then
+            exit;
+        FilesClient.copyFile(FParties[Row - 1].PartyID);
+    end;
+    FormCurrentParty.upload;
+    self.upload;
+
+end;
+
+procedure TFormParties.N4Click(Sender: TObject);
+begin
+    if MessageDlg('Подтвердите необходимость удаления данных текущего файла. ' +
+      'Данные будут удалены без возможности восстановления', mtConfirmation,
+      [mbYes, mbNo], 0) <> mrYes then
+        exit;
+    with StringGrid1 do
+    begin
+        if Row < 1 then
+            exit;
+        FilesClient.deleteFile(FParties[Row - 1].PartyID);
+    end;
+    FormCurrentParty.upload;
+    self.upload;
 end;
 
 procedure TFormParties.setup;
@@ -89,7 +188,7 @@ begin
                 ColWidths[ACol] := 200;
         end;
         OnSelectCell := StringGrid1SelectCell;
-        StringGrid1SelectCell(StringGrid1, Col, row, CanSelect);
+        StringGrid1SelectCell(StringGrid1, Col, Row, CanSelect);
     end;
 
 end;
@@ -111,6 +210,13 @@ begin
 
     if (ARow = 0) or (ACol = 0) then
         cnv.Brush.Color := cl3DLight;
+
+    if (ARow > 0) AND (FormCurrentParty.FParty.PartyID = FParties[ARow - 1]
+      .PartyID) then
+    begin
+        cnv.Font.Color := clBlue;
+
+    end;
 
     if gdSelected in State then
         cnv.Brush.Color := clGradientInactiveCaption;
@@ -151,44 +257,29 @@ var
 begin
     if (ARow < 1) or (ARow - 1 >= FParties.Count) then
     begin
-        if Assigned(FFormProductsData) then
-            FFormProductsData.Free;
-        Exit;
+        FormProductsData.Hide;
+        exit;
     end;
 
-    FFormProductsData := TFormProductsData.Create(nil);
-
-    with FFormProductsData do
-    begin
-        BorderStyle := bsNone;
-        parent := self.parent;
-        Align := alClient;
-        AlignWithMargins := true;
-        Margins.Left := 10;
-        Margins.Right := 5;
-        Margins.Top := 5;
-        Margins.Bottom := 5;
-    end;
-
-    FFormProductsData.setup(fileClient.getProductsValues(FParties[ARow - 1]
+    FormProductsData.setup(fileClient.getProductsValues(FParties[ARow - 1]
       .PartyID));
-    FFormProductsData.Show;
+    FormProductsData.Show;
 
-//    thr := TThread.CreateAnonymousThread(
-//        procedure
-//        var
-//            values: IPartyProductsValues;
-//        begin
-//            values := fileClient.getProductsValues(FParties[ARow - 1].PartyID);
-//            TThread.Synchronize(thr,
-//                procedure
-//                begin
-//                    FFormProductsData.setup(values);
-//                    FFormProductsData.Show;
-//
-//                end);
-//        end);
-//    thr.Start;
+    // thr := TThread.CreateAnonymousThread(
+    // procedure
+    // var
+    // values: IPartyProductsValues;
+    // begin
+    // values := fileClient.getProductsValues(FParties[ARow - 1].PartyID);
+    // TThread.Synchronize(thr,
+    // procedure
+    // begin
+    // FFormProductsData.setup(values);
+    // FFormProductsData.Show;
+    //
+    // end);
+    // end);
+    // thr.Start;
 
 end;
 

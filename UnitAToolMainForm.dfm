@@ -73,10 +73,6 @@ object AToolMainForm: TAToolMainForm
           object TabSheetJournal: TTabSheet
             Caption = #1046#1091#1088#1085#1072#1083
             ImageIndex = 1
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
           end
         end
       end
@@ -95,28 +91,16 @@ object AToolMainForm: TAToolMainForm
         object TabSheet3: TTabSheet
           Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099
           ImageIndex = 1
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
         end
         object TabSheet4: TTabSheet
           Caption = #1059#1087#1088#1072#1074#1083#1077#1085#1080#1077
           ImageIndex = 2
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
         end
       end
     end
     object TabSheetParties: TTabSheet
       Caption = #1040#1088#1093#1080#1074
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Splitter2: TSplitter
         Left = 0
         Top = 0
@@ -132,22 +116,21 @@ object AToolMainForm: TAToolMainForm
     Left = 894
     Top = 38
     object N1: TMenuItem
-      Caption = #1060#1072#1081#1083
+      Caption = #1058#1077#1082#1091#1097#1072#1103' '#1079#1072#1075#1088#1091#1079#1082#1072
+      object N4: TMenuItem
+        Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1087#1088#1080#1073#1086#1088#1099
+        OnClick = N4Click
+      end
       object N2: TMenuItem
-        Caption = #1053#1086#1074#1099#1081
+        Caption = #1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1091#1102' '#1079#1072#1075#1088#1091#1079#1082#1091
         OnClick = N2Click
       end
       object N8: TMenuItem
         Caption = #1057#1086#1079#1076#1072#1090#1100' '#1082#1086#1087#1080#1102
-        OnClick = N8Click
       end
-      object N3: TMenuItem
-        Caption = #1054#1090#1082#1088#1099#1090#1100
-        OnClick = N3Click
-      end
-      object N4: TMenuItem
-        Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1087#1088#1080#1073#1086#1088#1099
-        OnClick = N4Click
+      object N9: TMenuItem
+        Caption = #1048#1084#1087#1086#1088#1090' '#1076#1072#1085#1085#1099#1093' '#1080#1079' '#1092#1072#1081#1083#1072'...'
+        OnClick = N9Click
       end
       object N11: TMenuItem
         Caption = '-'
@@ -159,20 +142,6 @@ object AToolMainForm: TAToolMainForm
       object N5: TMenuItem
         Caption = #1050#1086#1085#1092#1080#1075#1091#1088#1072#1094#1080#1103
         OnClick = N5Click
-      end
-      object N7: TMenuItem
-        Caption = '-'
-      end
-      object N9: TMenuItem
-        Caption = #1048#1084#1087#1086#1088#1090#1080#1088#1086#1074#1072#1090#1100' '#1076#1072#1085#1085#1099#1077
-        OnClick = N9Click
-      end
-      object N13: TMenuItem
-        Caption = '-'
-      end
-      object N14: TMenuItem
-        Caption = #1059#1076#1072#1083#1080#1090#1100
-        OnClick = N14Click
       end
     end
     object MenuRun: TMenuItem

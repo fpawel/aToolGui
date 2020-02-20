@@ -37,7 +37,6 @@ type
         MainMenu1: TMainMenu;
         N1: TMenuItem;
         N2: TMenuItem;
-        N3: TMenuItem;
         N4: TMenuItem;
         N5: TMenuItem;
         MenuRunInterrogate: TMenuItem;
@@ -58,8 +57,6 @@ type
         N11: TMenuItem;
         N12: TMenuItem;
         N9: TMenuItem;
-        N13: TMenuItem;
-        N14: TMenuItem;
         TabSheetParties: TTabSheet;
     Splitter2: TSplitter;
         procedure FormCreate(Sender: TObject);
@@ -71,19 +68,16 @@ type
         procedure FormResize(Sender: TObject);
         procedure MenuRunInterrogateClick(Sender: TObject);
         procedure N2Click(Sender: TObject);
-        procedure N3Click(Sender: TObject);
         procedure N4Click(Sender: TObject);
         procedure N5Click(Sender: TObject);
         procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
           WheelDelta: integer; MousePos: TPoint; var Handled: boolean);
         procedure Splitter1Moved(Sender: TObject);
         procedure PageControl1Change(Sender: TObject);
-        procedure N8Click(Sender: TObject);
         procedure MenuRunScriptClick(Sender: TObject);
         procedure MenuStopWorkClick(Sender: TObject);
         procedure N10Click(Sender: TObject);
         procedure N9Click(Sender: TObject);
-        procedure N14Click(Sender: TObject);
     private
         { Private declarations }
         FEnableCopyData: boolean;
@@ -251,6 +245,7 @@ begin
         Align := alLeft;
         Width := 400;
         Left := 0;
+        Init;
         Show;
     end;
 
@@ -452,15 +447,6 @@ begin
 
 end;
 
-procedure TAToolMainForm.N14Click(Sender: TObject);
-begin
-    if MessageDlg('Подтвердите необходимость удаления данных текущего файла. ' +
-      'Данные будут удалены без возможности восстановления', mtConfirmation,
-      [mbYes, mbNo], 0) <> mrYes then
-        exit;
-    CurrFileClient.deleteAll;
-end;
-
 procedure TAToolMainForm.N2Click(Sender: TObject);
 var
     f: TFormNewPartyDialog;
@@ -481,31 +467,6 @@ begin
 
 end;
 
-procedure TAToolMainForm.N3Click(Sender: TObject);
-var
-    parties: IThriftList<IPartyInfo>;
-    I: integer;
-begin
-    parties := FilesClient.listParties;
-
-    FormSelectCurrentParty.ListBox1.Clear;
-    for I := 0 to parties.Count - 1 do
-        with parties[I] do
-        begin
-            FormSelectCurrentParty.ListBox1.Items.Add
-              (Format('[%d] %s %s', [PartyID, FormatDateTime('dd.MM.yy',
-              IncHour(unixMillisToDateTime(CreatedAt), -3)), parties[I].Name]));
-            if FormCurrentParty.FParty.PartyID = PartyID then
-                FormSelectCurrentParty.ListBox1.ItemIndex := I;
-        end;
-    if (FormSelectCurrentParty.ShowModal <> mrOk) or
-      (FormSelectCurrentParty.ListBox1.ItemIndex = -1) then
-        exit;
-    FilesClient.setCurrentParty
-      (parties[FormSelectCurrentParty.ListBox1.ItemIndex].PartyID);
-    FormCurrentParty.upload;
-end;
-
 procedure TAToolMainForm.N4Click(Sender: TObject);
 var
     strProductsCount: string;
@@ -522,11 +483,6 @@ end;
 procedure TAToolMainForm.N5Click(Sender: TObject);
 begin
     AppCfgClient.EditConfig;
-end;
-
-procedure TAToolMainForm.N8Click(Sender: TObject);
-begin
-    CurrFileClient.createNewCopy;
 end;
 
 procedure TAToolMainForm.N9Click(Sender: TObject);
