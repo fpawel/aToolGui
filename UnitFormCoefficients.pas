@@ -274,7 +274,14 @@ begin
         for ARow := 1 to RowCount - 1 do
         begin
             c := FCoefs[ARow - 1];
-            Cells[0, ARow] := Format('%d', [c.N])
+            Cells[0, ARow] := Format('%d', [c.N]);
+
+            for ACol := 1 to ColCount - 1 do
+            begin
+                p := FormCurrentParty.FParty.Products[ACol - 1];
+
+            end;
+
         end;
     end;
 end;

@@ -37,98 +37,109 @@ object AToolMainForm: TAToolMainForm
     object TabSheetHardware: TTabSheet
       Caption = #1055#1088#1080#1073#1086#1088#1099
       ImageIndex = 4
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
-      object Splitter1: TSplitter
-        Left = 0
-        Top = 286
-        Width = 940
-        Height = 5
-        Cursor = crVSplit
-        Align = alBottom
-        Color = 16118769
-        ParentColor = False
-        OnMoved = Splitter1Moved
-        ExplicitTop = 155
-      end
-      object PanelPlaceholderBottom1: TPanel
-        Left = 0
-        Top = 291
-        Width = 940
-        Height = 253
-        Align = alBottom
-        BevelOuter = bvNone
-        Caption = 'PanelPlaceholderBottom1'
-        ShowCaption = False
-        TabOrder = 0
-        object PageControl2: TPageControl
-          Left = 0
-          Top = 0
-          Width = 940
-          Height = 253
-          ActivePage = TabSheetCOMPort
-          Align = alClient
-          TabOrder = 0
-          object TabSheetCOMPort: TTabSheet
-            Caption = #1057#1054#1052' '#1087#1086#1088#1090
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
-          end
-          object TabSheetJournal: TTabSheet
-            Caption = #1046#1091#1088#1085#1072#1083
-            ImageIndex = 1
-            ExplicitLeft = 0
-            ExplicitTop = 0
-            ExplicitWidth = 0
-            ExplicitHeight = 0
-          end
-        end
-      end
+      ExplicitHeight = 520
       object PageControl1: TPageControl
         Left = 0
         Top = 0
         Width = 940
-        Height = 286
+        Height = 544
         ActivePage = TabSheet2
         Align = alClient
-        TabOrder = 1
+        TabOrder = 0
         OnChange = PageControl1Change
+        ExplicitHeight = 262
         object TabSheet2: TTabSheet
           Caption = #1055#1072#1088#1090#1080#1103
-          ExplicitLeft = 0
-          ExplicitTop = 25
-          ExplicitWidth = 0
-          ExplicitHeight = 0
+          ExplicitHeight = 231
         end
         object TabSheet3: TTabSheet
           Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099
           ImageIndex = 1
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
+          ExplicitHeight = 231
         end
         object TabSheet4: TTabSheet
           Caption = #1059#1087#1088#1072#1074#1083#1077#1085#1080#1077
           ImageIndex = 2
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
+          ExplicitHeight = 231
+          object Panel1: TPanel
+            Left = 0
+            Top = 489
+            Width = 932
+            Height = 24
+            Align = alBottom
+            BevelOuter = bvNone
+            Caption = 'Panel1'
+            ShowCaption = False
+            TabOrder = 0
+            ExplicitTop = 530
+            ExplicitWidth = 1048
+            object LabelGas: TLabel
+              AlignWithMargins = True
+              Left = 3
+              Top = 5
+              Width = 114
+              Height = 16
+              Margins.Top = 5
+              Margins.Right = 15
+              Align = alLeft
+              Caption = #1043#1072#1079': '#1085#1077' '#1091#1089#1090#1072#1085#1086#1074#1083#1077#1085
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clNavy
+              Font.Height = -13
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              ParentFont = False
+            end
+            object LabelTemerature: TLabel
+              AlignWithMargins = True
+              Left = 135
+              Top = 5
+              Width = 151
+              Height = 16
+              Margins.Top = 5
+              Margins.Right = 15
+              Align = alLeft
+              Caption = #1058#1077#1084#1087#1077#1088#1072#1090#1091#1088#1072': '#1085#1077' '#1089#1095#1080#1090#1072#1085#1072
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clMaroon
+              Font.Height = -13
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              ParentFont = False
+              ExplicitLeft = 125
+            end
+            object LabelTemeratureSetup: TLabel
+              AlignWithMargins = True
+              Left = 304
+              Top = 5
+              Width = 195
+              Height = 16
+              Margins.Top = 5
+              Margins.Right = 15
+              Align = alLeft
+              Caption = #1059#1089#1090#1072#1074#1082#1072' '#1090#1077#1084#1087#1077#1088#1072#1090#1091#1088#1099': '#1085#1077' '#1079#1072#1076#1072#1085#1072
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clTeal
+              Font.Height = -13
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              ParentFont = False
+              ExplicitLeft = 284
+            end
+          end
         end
       end
+    end
+    object TabSheetJournal: TTabSheet
+      Caption = #1046#1091#1088#1085#1072#1083' '#1085#1072#1089#1090#1088#1086#1081#1082#1080
+      ImageIndex = 2
+      ExplicitHeight = 520
     end
     object TabSheetParties: TTabSheet
       Caption = #1040#1088#1093#1080#1074
       ImageIndex = 1
-      ExplicitLeft = 0
+      ExplicitLeft = 88
       ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Splitter2: TSplitter
         Left = 0
         Top = 0
@@ -136,7 +147,6 @@ object AToolMainForm: TAToolMainForm
         Height = 544
         Color = 16118769
         ParentColor = False
-        OnMoved = Splitter1Moved
       end
     end
   end
@@ -153,9 +163,6 @@ object AToolMainForm: TAToolMainForm
         Caption = #1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1091#1102' '#1079#1072#1075#1088#1091#1079#1082#1091
         OnClick = N2Click
       end
-      object N8: TMenuItem
-        Caption = #1057#1086#1079#1076#1072#1090#1100' '#1082#1086#1087#1080#1102
-      end
       object N9: TMenuItem
         Caption = #1048#1084#1087#1086#1088#1090' '#1076#1072#1085#1085#1099#1093' '#1080#1079' '#1092#1072#1081#1083#1072'...'
         OnClick = N9Click
@@ -170,6 +177,13 @@ object AToolMainForm: TAToolMainForm
       object N5: TMenuItem
         Caption = #1050#1086#1085#1092#1080#1075#1091#1088#1072#1094#1080#1103
         OnClick = N5Click
+      end
+      object N3: TMenuItem
+        Caption = '-'
+      end
+      object N6: TMenuItem
+        Caption = #1046#1091#1088#1085#1072#1083' '#1087#1088#1080#1105#1084#1086#1087#1077#1088#1077#1076#1072#1095#1080
+        OnClick = N6Click
       end
     end
     object MenuRun: TMenuItem

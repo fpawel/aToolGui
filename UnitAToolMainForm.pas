@@ -22,13 +22,12 @@ type
 
     TCopyDataCmd = (cdcNewCommTransaction, cdcNewProductParamValue, cdcChart,
       cdcStatus, cdcCoef, cdcProductConn, cdcDelay, cdcLuaSuspended,
-      cdcLuaSelectWorks);
+      cdcLuaSelectWorks, cdcGas, cdcTemperature, cdcTemperatureSetpoint);
 
     TStatusMessage = record
         Text: string;
         Ok: boolean;
         PopupLevel: integer;
-
     end;
 
     TAToolMainForm = class(TForm)
@@ -40,25 +39,26 @@ type
         N4: TMenuItem;
         N5: TMenuItem;
         MenuRunInterrogate: TMenuItem;
-        Splitter1: TSplitter;
-        PanelPlaceholderBottom1: TPanel;
         PageControl1: TPageControl;
         TabSheet2: TTabSheet;
         TabSheet3: TTabSheet;
         TabSheet4: TTabSheet;
-        N8: TMenuItem;
         MenuRunScript: TMenuItem;
         MenuRun: TMenuItem;
         MenuStopWork: TMenuItem;
-        PageControl2: TPageControl;
-        TabSheetCOMPort: TTabSheet;
-        TabSheetJournal: TTabSheet;
         N10: TMenuItem;
         N11: TMenuItem;
         N12: TMenuItem;
         N9: TMenuItem;
         TabSheetParties: TTabSheet;
-    Splitter2: TSplitter;
+        Splitter2: TSplitter;
+    TabSheetJournal: TTabSheet;
+    Panel1: TPanel;
+    LabelGas: TLabel;
+    LabelTemerature: TLabel;
+    LabelTemeratureSetup: TLabel;
+    N3: TMenuItem;
+    N6: TMenuItem;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -72,12 +72,12 @@ type
         procedure N5Click(Sender: TObject);
         procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
           WheelDelta: integer; MousePos: TPoint; var Handled: boolean);
-        procedure Splitter1Moved(Sender: TObject);
         procedure PageControl1Change(Sender: TObject);
         procedure MenuRunScriptClick(Sender: TObject);
         procedure MenuStopWorkClick(Sender: TObject);
         procedure N10Click(Sender: TObject);
         procedure N9Click(Sender: TObject);
+    procedure N6Click(Sender: TObject);
     private
         { Private declarations }
         FEnableCopyData: boolean;
@@ -97,7 +97,10 @@ type
 
         procedure HandleCopydata(var Message: TMessage); message WM_COPYDATA;
         procedure HandleStatusMessage(X: TStatusMessage);
-        procedure SetupGroupbox2Height;
+
+        procedure HandleGas(X: string);
+        procedure HandleTemperature(X: string);
+        procedure HandleTemperatureSetpoint(X: string);
 
         procedure CreateLuaScriptsMenu;
         procedure LuaScriptMenuClick(Sender: TObject);
@@ -116,7 +119,7 @@ var
     AToolMainForm: TAToolMainForm;
 
 const
-    PageIndexChart = 2;
+    PageIndexChart = 3;
 
 implementation
 
@@ -171,20 +174,10 @@ begin
 
     AppIni := TIniFile.create(ChangeFileExt(ParamStr(0), '.ini'));
 
-    SetupGroupbox2Height;
-
     with FormCurrentParty do
     begin
         BorderStyle := bsNone;
         parent := TabSheet2;
-        Align := alClient;
-        Show;
-    end;
-
-    with FormInterrogate do
-    begin
-        BorderStyle := bsNone;
-        parent := TabSheetCOMPort;
         Align := alClient;
         Show;
     end;
@@ -232,11 +225,9 @@ begin
     with FormDelay do
     begin
         BorderStyle := bsNone;
-        parent := TabSheetJournal;
+        parent := self;
         Align := alBottom;
     end;
-
-    
 
     with FormParties do
     begin
@@ -248,8 +239,6 @@ begin
         Init;
         Show;
     end;
-
-
 
     FFormPopupScripSuspended := TFormPopup2.create(self);
     with FFormPopupScripSuspended do
@@ -302,23 +291,7 @@ begin
     ScriptClient.runFile(luaWorkScripts[m.Caption]);
 end;
 
-procedure TAToolMainForm.SetupGroupbox2Height;
-var
-    h: double;
-begin
-    h := double(Height);
-    Splitter1.OnMoved := nil;
-    OnResize := nil;
-    PanelPlaceholderBottom1.Height :=
-      Ceil(AppIni.ReadFloat('AToolMainForm', 'rel_horiz1',
-      double(PanelPlaceholderBottom1.Height) / h) * h);
-    Splitter1.Top := 0;
-    PageControl1.Top := 0;
-    PanelPlaceholderBottom1.Top := 100500;
-    Realign;
-    Splitter1.OnMoved := Splitter1Moved;
-    OnResize := FormResize;
-end;
+
 
 procedure TAToolMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
@@ -343,7 +316,6 @@ procedure TAToolMainForm.FormResize(Sender: TObject);
 begin
     FormInterrogate.setupColsWidths;
     FormJournal.setupColsWidths;
-    SetupGroupbox2Height;
 end;
 
 procedure TAToolMainForm.HandleStartWork(var Message: TMessage);
@@ -485,6 +457,11 @@ begin
     AppCfgClient.EditConfig;
 end;
 
+procedure TAToolMainForm.N6Click(Sender: TObject);
+begin
+    FormInterrogate.Show;
+end;
+
 procedure TAToolMainForm.N9Click(Sender: TObject);
 var
     dlg: TOpenDialog;
@@ -545,6 +522,13 @@ begin
         cdcLuaSelectWorks:
             HandleLuaSelectWorks(TJsonCD.unmarshal < TArray < string >>
               (Message));
+
+        cdcGas:
+            HandleGas(getCopyDataString(Message));
+        cdcTemperature:
+            HandleTemperature(getCopyDataString(Message));
+        cdcTemperatureSetpoint:
+            HandleTemperatureSetpoint(getCopyDataString(Message));
 
     else
         raise Exception.create('wrong message: ' + IntToStr(Message.WParam));
@@ -765,6 +749,28 @@ begin
 
 end;
 
+procedure SetStatusLabelText(ALabel: TLabel; AText: string);
+begin
+    ALabel.Visible := true;
+    ALabel.Caption := TimeToStr(now) + ' ' + AText;
+end;
+
+procedure TAToolMainForm.HandleGas(X: string);
+begin
+    SetStatusLabelText(LabelGas, X);
+end;
+
+procedure TAToolMainForm.HandleTemperature(X: string);
+begin
+    SetStatusLabelText(LabelTemerature, X);
+
+end;
+
+procedure TAToolMainForm.HandleTemperatureSetpoint(X: string);
+begin
+    SetStatusLabelText(LabelTemeratureSetup, X);
+end;
+
 procedure TAToolMainForm.HandleStatusMessage(X: TStatusMessage);
 var
     f: TFormPopup2;
@@ -784,22 +790,6 @@ begin
 
     if X.PopupLevel > 0 then
         FormJournal.AddLine(X.Text, X.Ok);
-
-end;
-
-procedure TAToolMainForm.Splitter1Moved(Sender: TObject);
-begin
-    AppIni.WriteFloat('AToolMainForm', 'rel_horiz1',
-      double(PanelPlaceholderBottom1.Height) / double(Height));
-
-    Splitter1.OnMoved := nil;
-    OnResize := nil;
-    Splitter1.Top := 0;
-    PageControl1.Top := 0;
-    PanelPlaceholderBottom1.Top := 100500;
-    Realign;
-    Splitter1.OnMoved := Splitter1Moved;
-    OnResize := FormResize;
 
 end;
 

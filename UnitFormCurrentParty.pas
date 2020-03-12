@@ -43,7 +43,6 @@ type
         PopupMenu1: TPopupMenu;
         N1: TMenuItem;
         MenuProductsComport: TMenuItem;
-        MenuProductsDevice: TMenuItem;
         MenuSetChartSeparator: TMenuItem;
         MenuSetChart: TMenuItem;
         N7: TMenuItem;
@@ -79,7 +78,6 @@ type
         FProductConnection: TDictionary<int64, boolean>;
 
         procedure SetProductsComport(Sender: TObject);
-        procedure SetProductsDevice(Sender: TObject);
 
         procedure setMainFormCaption;
         function GetSelectedProductsIDs: Thrift.Collections.IThriftList<int64>;
@@ -172,9 +170,6 @@ var
     Ports: TStrings;
     i: integer;
     m: TMenuItem;
-
-    devices: IThriftList<string>;
-
 begin
     Ports := TStringList.Create;
     EnumComports(Ports);
@@ -187,16 +182,6 @@ begin
         MenuProductsComport.Add(m);
     end;
     Ports.Free;
-
-    MenuProductsDevice.Clear;
-    devices := AppCfgClient.listDevices;
-    for i := 0 to devices.Count - 1 do
-    begin
-        m := TMenuItem.Create(nil);
-        m.Caption := devices[i];
-        m.OnClick := SetProductsDevice;
-        MenuProductsDevice.Add(m);
-    end;
 
     with StringGrid1 do
     begin
@@ -667,13 +652,6 @@ begin
             result.Add(FParty.Products[ACol - 1].ProductID);
 end;
 
-procedure TFormCurrentParty.SetProductsDevice(Sender: TObject);
-begin
-    ProductsClient.SetProductsDevice(GetSelectedProductsIDs,
-      (Sender AS TMenuItem).Caption);
-    upload;
-
-end;
 
 procedure TFormCurrentParty.SetProductsComport(Sender: TObject);
 var

@@ -28,7 +28,7 @@ type
         N1: TMenuItem;
         N2: TMenuItem;
         N3: TMenuItem;
-    TimerRepaint: TTimer;
+        TimerRepaint: TTimer;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
           Rect: TRect; State: TGridDrawState);
         procedure StringGrid1MouseDown(Sender: TObject; Button: TMouseButton;
@@ -39,15 +39,18 @@ type
         procedure ToolButton4Click(Sender: TObject);
         procedure N2Click(Sender: TObject);
         procedure N3Click(Sender: TObject);
-    procedure Chart1BeforeDrawChart(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
-    procedure ToolButton1Click(Sender: TObject);
-    procedure ToolButton3Click(Sender: TObject);
-    procedure TimerRepaintTimer(Sender: TObject);
+        procedure Chart1BeforeDrawChart(Sender: TObject);
+        procedure FormCreate(Sender: TObject);
+        procedure ToolButton1Click(Sender: TObject);
+        procedure ToolButton3Click(Sender: TObject);
+        procedure TimerRepaintTimer(Sender: TObject);
+        procedure StringGrid1KeyDown(Sender: TObject; var Key: Word;
+          Shift: TShiftState);
     private
         { Private declarations }
         function SeriesOfColRow(ACol, ARow: Integer): TFastLineSeries;
         procedure ShowCurrentScaleValues;
+        procedure optimizeChart;
     public
         { Public declarations }
         procedure SetupStringGrid;
@@ -62,10 +65,41 @@ implementation
 {$R *.dfm}
 
 uses System.types, dateutils, teechartutils, apitypes, math, stringgridutils,
-    UnitFormCurrentParty, UnitAToolMainForm;
+    UnitFormCurrentParty, UnitAToolMainForm, logfile;
 
 const
     col_count = 6;
+
+procedure TFormChart.optimizeChart;
+var
+    i: Integer;
+    ser: TFastLineSeries;
+begin
+    // When using only a single thread, disable locking:
+    Chart1.Canvas.ReferenceCanvas.Pen.OwnerCriticalSection := nil;
+    Chart1.ClipPoints := False;
+    Chart1.Title.Visible := False;
+    Chart1.Legend.Visible := False;
+    Chart1.View3D := False;
+    Chart1.Axes.FastCalc := True;
+
+    for i := 0 to Chart1.AxesList.Count - 1 do
+    begin
+        Chart1.Axes[i].Axis.Width := 1;
+        Chart1.Axes[i].RoundFirstLabel := False;
+    end;
+
+    for i := 0 to Chart1.SeriesCount - 1 do
+    begin
+        ser := Chart1.Series[i] as TFastLineSeries;
+        ser.LinePen.OwnerCriticalSection := nil;
+        ser.AutoRepaint := False;
+        ser.FastPen := True;
+        ser.DrawAllPoints := False;
+        ser.LinePen.Width := 2;
+    end;
+
+end;
 
 procedure TFormChart.Chart1AfterDraw(Sender: TObject);
 var
@@ -144,7 +178,7 @@ begin
             begin
                 if System.types.IntersectRect(marker_rect, r2) then
                 begin
-                    marker_place := false;
+                    marker_place := False;
                     break;
                 end;
             end;
@@ -166,21 +200,20 @@ begin
 end;
 
 procedure TFormChart.Chart1BeforeDrawChart(Sender: TObject);
-var
-  I: Integer;
 begin
-    // When using only a single thread, disable locking:
-    Chart1.Canvas.ReferenceCanvas.Pen.OwnerCriticalSection := nil;
-    for I := 0 to Chart1.SeriesCount-1 do
-        teeChart_setOptimizedSeries(Chart1.series[i] as TFastLineSeries);
-
+    try
+        optimizeChart;
+    except
+        on e: exception do
+            LogfileWriteException(e);
+    end;
 
 end;
 
 procedure TFormChart.Chart1UndoZoom(Sender: TObject);
 begin
-    Chart1.BottomAxis.Automatic := true;
-    Chart1.LeftAxis.Automatic := true;
+    Chart1.BottomAxis.Automatic := True;
+    Chart1.LeftAxis.Automatic := True;
 end;
 
 procedure TFormChart.FormCreate(Sender: TObject);
@@ -378,6 +411,45 @@ begin
 
 end;
 
+procedure TFormChart.StringGrid1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var
+    ACol, ARow: Integer;
+    ser: TFastLineSeries;
+    prod_param: IProductParamSeries;
+    Rect: TRect;
+    sel: TGridRect;
+    AActive:boolean;
+begin
+    if not ( (Key = VK_SPACE) or (Key = VK_ESCAPE))  then
+        exit;
+    sel := StringGrid1.Selection;
+    AActive := false;
+    for ACol := sel.Left to sel.Right do
+        for ARow := sel.Top to sel.Bottom do
+        begin
+            ser := SeriesOfColRow(ACol, ARow);
+            if not Assigned(ser) then
+                Continue;
+            if ser.Active then
+            begin
+                AActive := true;
+                Break;
+            end;
+        end;
+
+    for ACol := sel.Left to sel.Right do
+        for ARow := sel.Top to sel.Bottom do
+        begin
+            ser := SeriesOfColRow(ACol, ARow);
+            if not Assigned(ser) then
+                Continue;
+            ser.Active := not AActive;
+            with StringGrid1 do
+                Cells[ACol, ARow] := Cells[ACol, ARow];
+        end;
+end;
+
 procedure TFormChart.StringGrid1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 var
@@ -415,7 +487,7 @@ end;
 procedure TFormChart.TimerRepaintTimer(Sender: TObject);
 begin
     Chart1.Repaint;
-    TimerRepaint.Enabled := false;
+    TimerRepaint.Enabled := False;
 end;
 
 procedure TFormChart.ToolButton1Click(Sender: TObject);

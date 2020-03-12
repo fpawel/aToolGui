@@ -7,7 +7,7 @@ uses
 	System.Classes, Vcl.Graphics,
 	Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.ToolWin,
 	Vcl.ExtCtrls,
-	Vcl.StdCtrls, System.ImageList, Vcl.ImgList;
+	Vcl.StdCtrls, System.ImageList, Vcl.ImgList, Vcl.Imaging.pngimage;
 
 type
 	TDelayInfo = record
@@ -18,14 +18,18 @@ type
 
 	TFormDelay = class(TForm)
 		ImageList4: TImageList;
-		LabelDelayElepsedTime: TLabel;
-		LabelProgress: TLabel;
-		Panel2: TPanel;
-		ProgressBar1: TProgressBar;
-		ToolBar6: TToolBar;
-		ToolButtonStop: TToolButton;
-		Label1: TLabel;
 		TimerDelay: TTimer;
+    ImageInfo: TImage;
+    Panel1: TPanel;
+    Panel2: TPanel;
+    LabelDelayElepsedTime: TLabel;
+    LabelProgress: TLabel;
+    Label1: TLabel;
+    ProgressBar1: TProgressBar;
+    Panel3: TPanel;
+    Panel4: TPanel;
+    ToolBar6: TToolBar;
+    ToolButtonStop: TToolButton;
     procedure TimerDelayTimer(Sender: TObject);
     procedure ToolButtonStopClick(Sender: TObject);
 	private
@@ -56,6 +60,7 @@ begin
     LabelDelayElepsedTime.Caption := '00:00:00';
     LabelProgress.Caption := '';
     FStart :=  GetTickCount64;
+    Top := 100500;
 
 end;
 

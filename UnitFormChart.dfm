@@ -75,6 +75,7 @@ object FormChart: TFormChart
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing]
     TabOrder = 1
     OnDrawCell = StringGrid1DrawCell
+    OnKeyDown = StringGrid1KeyDown
     OnMouseDown = StringGrid1MouseDown
     RowHeights = (
       22)
