@@ -52,13 +52,13 @@ type
         N9: TMenuItem;
         TabSheetParties: TTabSheet;
         Splitter2: TSplitter;
-    TabSheetJournal: TTabSheet;
-    Panel1: TPanel;
-    LabelGas: TLabel;
-    LabelTemerature: TLabel;
-    LabelTemeratureSetup: TLabel;
-    N3: TMenuItem;
-    N6: TMenuItem;
+        TabSheetJournal: TTabSheet;
+        Panel1: TPanel;
+        LabelGas: TLabel;
+        LabelTemerature: TLabel;
+        LabelTemeratureSetup: TLabel;
+        N3: TMenuItem;
+        N6: TMenuItem;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -77,7 +77,7 @@ type
         procedure MenuStopWorkClick(Sender: TObject);
         procedure N10Click(Sender: TObject);
         procedure N9Click(Sender: TObject);
-    procedure N6Click(Sender: TObject);
+        procedure N6Click(Sender: TObject);
     private
         { Private declarations }
         FEnableCopyData: boolean;
@@ -290,8 +290,6 @@ begin
     m := Sender as TMenuItem;
     ScriptClient.runFile(luaWorkScripts[m.Caption]);
 end;
-
-
 
 procedure TAToolMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
@@ -543,10 +541,10 @@ end;
 
 procedure TAToolMainForm.PageControl1Change(Sender: TObject);
 begin
-    // if PageControl1.ActivePage = TabSheet3 then
-    // begin
-    // FormCoefficients.setup;
-    // end
+    if PageControl1.ActivePage = TabSheet3 then
+    begin
+        FormCoefficients.SetupValues;
+    end;
     // else if PageControl1.ActivePage = TabSheet2 then
     // begin
     // FormCurrentParty.FParty := FilesClient.getCurrentParty;

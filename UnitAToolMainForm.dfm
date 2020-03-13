@@ -37,7 +37,6 @@ object AToolMainForm: TAToolMainForm
     object TabSheetHardware: TTabSheet
       Caption = #1055#1088#1080#1073#1086#1088#1099
       ImageIndex = 4
-      ExplicitHeight = 520
       object PageControl1: TPageControl
         Left = 0
         Top = 0
@@ -47,20 +46,16 @@ object AToolMainForm: TAToolMainForm
         Align = alClient
         TabOrder = 0
         OnChange = PageControl1Change
-        ExplicitHeight = 262
         object TabSheet2: TTabSheet
           Caption = #1055#1072#1088#1090#1080#1103
-          ExplicitHeight = 231
         end
         object TabSheet3: TTabSheet
           Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099
           ImageIndex = 1
-          ExplicitHeight = 231
         end
         object TabSheet4: TTabSheet
           Caption = #1059#1087#1088#1072#1074#1083#1077#1085#1080#1077
           ImageIndex = 2
-          ExplicitHeight = 231
           object Panel1: TPanel
             Left = 0
             Top = 489
@@ -71,8 +66,6 @@ object AToolMainForm: TAToolMainForm
             Caption = 'Panel1'
             ShowCaption = False
             TabOrder = 0
-            ExplicitTop = 530
-            ExplicitWidth = 1048
             object LabelGas: TLabel
               AlignWithMargins = True
               Left = 3
@@ -133,13 +126,10 @@ object AToolMainForm: TAToolMainForm
     object TabSheetJournal: TTabSheet
       Caption = #1046#1091#1088#1085#1072#1083' '#1085#1072#1089#1090#1088#1086#1081#1082#1080
       ImageIndex = 2
-      ExplicitHeight = 520
     end
     object TabSheetParties: TTabSheet
       Caption = #1040#1088#1093#1080#1074
       ImageIndex = 1
-      ExplicitLeft = 88
-      ExplicitTop = 0
       object Splitter2: TSplitter
         Left = 0
         Top = 0
@@ -154,7 +144,7 @@ object AToolMainForm: TAToolMainForm
     Left = 894
     Top = 38
     object N1: TMenuItem
-      Caption = #1058#1077#1082#1091#1097#1072#1103' '#1079#1072#1075#1088#1091#1079#1082#1072
+      Caption = #1047#1072#1075#1088#1091#1079#1082#1072
       object N4: TMenuItem
         Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1087#1088#1080#1073#1086#1088#1099
         OnClick = N4Click
@@ -203,7 +193,7 @@ object AToolMainForm: TAToolMainForm
       end
     end
     object MenuStopWork: TMenuItem
-      Caption = #1055#1088#1077#1088#1074#1072#1090#1100' '#1074#1099#1087#1086#1083#1085#1077#1085#1080#1077
+      Caption = #1055#1088#1077#1088#1074#1072#1090#1100
       Visible = False
       OnClick = MenuStopWorkClick
     end

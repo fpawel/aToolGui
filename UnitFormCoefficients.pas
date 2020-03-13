@@ -63,6 +63,8 @@ type
         procedure setup;
         procedure HandleReadCoef(X: TCoefVal);
         procedure WriteCoefs;
+
+        procedure SetupValues;
     end;
 
 var
@@ -234,6 +236,37 @@ begin
 
 end;
 
+procedure TFormCoefficients.SetupValues;
+var
+    ACol, ARow: integer;
+    p: IProduct;
+    cv:IProductCoefficientValue;
+    c: ICoefficient;
+    xs:IThriftList<IProductCoefficientValue>;
+begin
+    xs := CoefsClient.GetCurrentPartyCoefficients;
+    with StringGrid1 do
+    begin
+        for ARow := 1 to RowCount - 1 do
+        begin
+            c := FCoefs[ARow - 1];
+            for ACol := 1 to ColCount - 1 do
+            begin
+                p := FormCurrentParty.FParty.Products[ACol - 1];
+                Cells[ACol,ARow] := '';
+                for cv  in xs do
+                begin
+                    if (cv.ProductID = p.ProductID) AND (cv.Coefficient = c.N) then
+                    begin
+                        Cells[ACol,ARow] := FormatFloat('#0.######',cv.Value);
+                    end;
+                end;
+            end;
+        end;
+    end;
+
+end;
+
 procedure TFormCoefficients.setup;
 var
     c: ICoefficient;
@@ -275,7 +308,6 @@ begin
         begin
             c := FCoefs[ARow - 1];
             Cells[0, ARow] := Format('%d', [c.N]);
-
             for ACol := 1 to ColCount - 1 do
             begin
                 p := FormCurrentParty.FParty.Products[ACol - 1];
