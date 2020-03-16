@@ -26,7 +26,8 @@ procedure StringGrid_DrawCellBmp(grd: TStringGrid; Rect: TRect;
 
 procedure StringGrid_RedrawCol(grd: TStringGrid; acol: integer);
 
-procedure StringGrid_CopytoClipboard(StringGrid1: TStringGrid);
+procedure StringGrid_copy_selection_to_clipboard(StringGrid1: TStringGrid);
+procedure StringGrid_copy_to_clipboard(StringGrid1: TStringGrid);
 
 procedure StringGrid_DrawMeregedCell(grd: TStringGrid; AText: string;
   arow: integer; Rect: TRect);
@@ -69,7 +70,29 @@ begin
     end;
 end;
 
-procedure StringGrid_CopytoClipboard(StringGrid1: TStringGrid);
+procedure StringGrid_copy_to_clipboard(StringGrid1: TStringGrid);
+var
+    c, r: integer;
+    s: string;
+begin
+    s := '';
+    with StringGrid1 do
+        for r := 0 to RowCount-1 do
+            for c := 0 to ColCount-1 do
+            begin
+                s := s + cells[c, r];
+                if c < ColCount-1 then
+                    s := s + #9
+                else
+                begin
+                    if r < RowCount-1 then
+                        s := s + #13;
+                end;
+            end;
+    Clipboard.AsText := s;
+end;
+
+procedure StringGrid_copy_selection_to_clipboard(StringGrid1: TStringGrid);
 var
     c, r: integer;
     s: string;

@@ -4,7 +4,7 @@ object FormSelectWorksDialog: TFormSelectWorksDialog
   BorderStyle = bsSizeToolWin
   Caption = #1042#1099#1073#1086#1088' '#1074#1099#1087#1086#1083#1085#1103#1077#1084#1099#1093' '#1080#1085#1089#1090#1088#1091#1082#1094#1080#1081
   ClientHeight = 368
-  ClientWidth = 311
+  ClientWidth = 515
   Color = clWindow
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,20 +17,20 @@ object FormSelectWorksDialog: TFormSelectWorksDialog
   TextHeight = 19
   object Panel14: TPanel
     Left = 0
-    Top = 0
-    Width = 311
-    Height = 368
+    Top = 23
+    Width = 515
+    Height = 345
     Align = alClient
     BevelKind = bkFlat
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitWidth = 382
-    ExplicitHeight = 378
+    ExplicitTop = 0
+    ExplicitHeight = 368
     object CheckListBox1: TCheckListBox
       Left = 0
       Top = 0
-      Width = 272
-      Height = 364
+      Width = 368
+      Height = 341
       Align = alClient
       BevelOuter = bvNone
       BorderStyle = bsNone
@@ -43,40 +43,62 @@ object FormSelectWorksDialog: TFormSelectWorksDialog
         '+50 '#8304'C')
       Style = lbOwnerDrawFixed
       TabOrder = 0
-      ExplicitWidth = 346
-      ExplicitHeight = 374
+      ExplicitLeft = 2
+      ExplicitTop = 26
+      ExplicitWidth = 376
     end
-    object ToolBarStop: TToolBar
-      Left = 272
+    object Panel1: TPanel
+      Left = 368
       Top = 0
-      Width = 35
-      Height = 364
+      Width = 143
+      Height = 341
       Align = alRight
-      ButtonHeight = 31
-      ButtonWidth = 32
-      Caption = 'ToolBarStop'
-      EdgeInner = esNone
-      EdgeOuter = esNone
-      Images = ImageList3
+      BevelOuter = bvNone
+      Caption = 'Panel1'
+      ShowCaption = False
       TabOrder = 1
-      object ToolButton2: TToolButton
-        Left = 0
-        Top = 0
-        Caption = 'ToolButtonStop'
-        ImageIndex = 0
-        ParentShowHint = False
-        Wrap = True
-        ShowHint = False
-        OnClick = ToolButton2Click
+      ExplicitHeight = 364
+      object Button1: TButton
+        AlignWithMargins = True
+        Left = 3
+        Top = 3
+        Width = 137
+        Height = 30
+        Align = alTop
+        Caption = #1042#1099#1087#1086#1083#1085#1080#1090#1100
+        ModalResult = 1
+        TabOrder = 0
       end
-      object ToolButton1: TToolButton
-        Left = 0
-        Top = 31
-        Caption = 'ToolButton1'
-        ImageIndex = 1
-        OnClick = ToolButton1Click
+      object Button2: TButton
+        AlignWithMargins = True
+        Left = 3
+        Top = 39
+        Width = 137
+        Height = 30
+        Align = alTop
+        Caption = #1054#1090#1084#1077#1085#1072
+        ModalResult = 2
+        TabOrder = 1
       end
     end
+  end
+  object CheckBox1: TCheckBox
+    AlignWithMargins = True
+    Left = 3
+    Top = 3
+    Width = 509
+    Height = 17
+    Align = alTop
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clNavy
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 1
+    OnClick = CheckBox1Click
+    ExplicitTop = 75
+    ExplicitWidth = 137
   end
   object ImageList3: TImageList
     ColorDepth = cd32Bit

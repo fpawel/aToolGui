@@ -5,7 +5,7 @@ interface
 uses
     Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
     System.Classes, Vcl.Graphics, thrift.collections, apitypes,
-    Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, UnitFormPopup2;
+    Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, UnitFormPopup2, Vcl.Menus;
 
 type
     TMouseWheel = reference to procedure(delta: boolean);
@@ -41,7 +41,8 @@ implementation
 
 {$R *.dfm}
 
-uses stringgridutils, stringutils, UnitApiClient;
+uses stringgridutils, stringutils, UnitApiClient,
+  UnitFormStringGridCopyClipboard;
 
 procedure TFormProductsDataTable.doSetup;
 var

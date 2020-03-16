@@ -34,6 +34,7 @@ object FormProductsCalcTable: TFormProductsCalcTable
     FixedRows = 0
     GradientEndColor = clBlack
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goTabs]
+    PopupMenu = FormStringGridCopyClipboard.PopupMenu1
     TabOrder = 0
     OnDblClick = StringGrid1DblClick
     OnDrawCell = StringGrid1DrawCell

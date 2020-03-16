@@ -714,13 +714,21 @@ begin
 
     f := TFormSelectWorksDialog.create(nil);
     f.CheckListBox1.Items.Clear;
+
+    f.CheckBox1.OnClick := nil;
+    f.CheckBox1.Checked := false;
+
     for I := 0 to length(xs) - 1 do
     begin
         f.CheckListBox1.Items.Add(xs[I]);
         f.CheckListBox1.Checked[I] := AppIni.ReadBool('select_works',
           xs[I], true);
-        // works.Add(true);
+        if f.CheckListBox1.Checked[I] then
+        begin
+            f.CheckBox1.Checked := true;
+        end;
     end;
+    f.CheckBox1.OnClick := f.CheckBox1Click;
 
     f.ShowModal;
 

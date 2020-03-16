@@ -227,6 +227,10 @@
             <Form>FormProductsDataTable</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="UnitFormStringGridCopyClipboard.pas">
+            <Form>FormStringGridCopyClipboard</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

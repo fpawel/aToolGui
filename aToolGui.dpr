@@ -61,7 +61,8 @@ uses
   UnitFormSelectWorksDialog in 'UnitFormSelectWorksDialog.pas' {FormSelectWorksDialog},
   UnitFormNewPartyDialog in 'UnitFormNewPartyDialog.pas' {FormNewPartyDialog},
   UnitFormParties in 'UnitFormParties.pas' {FormParties},
-  UnitFormProductsDataTable in 'UnitFormProductsDataTable.pas' {FormProductsDataTable};
+  UnitFormProductsDataTable in 'UnitFormProductsDataTable.pas' {FormProductsDataTable},
+  UnitFormStringGridCopyClipboard in 'UnitFormStringGridCopyClipboard.pas' {FormStringGridCopyClipboard};
 
 {$R *.res}
 
@@ -86,6 +87,7 @@ begin
   Application.CreateForm(TFormProductsDataTable, FormProductsDataTable);
   Application.CreateForm(TFormProductsCalcTable, FormProductsCalcTable);
   Application.CreateForm(TFormProductsData, FormProductsData);
+  Application.CreateForm(TFormStringGridCopyClipboard, FormStringGridCopyClipboard);
   Application.Run;
 
 end.

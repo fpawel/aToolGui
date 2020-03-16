@@ -13,11 +13,11 @@ type
         ImageList3: TImageList;
         Panel14: TPanel;
         CheckListBox1: TCheckListBox;
-        ToolBarStop: TToolBar;
-        ToolButton2: TToolButton;
-    ToolButton1: TToolButton;
-    procedure ToolButton2Click(Sender: TObject);
-    procedure ToolButton1Click(Sender: TObject);
+        Panel1: TPanel;
+        Button1: TButton;
+        Button2: TButton;
+        CheckBox1: TCheckBox;
+        procedure CheckBox1Click(Sender: TObject);
     private
         { Private declarations }
     public
@@ -31,15 +31,14 @@ implementation
 
 {$R *.dfm}
 
-
-procedure TFormSelectWorksDialog.ToolButton1Click(Sender: TObject);
+procedure TFormSelectWorksDialog.CheckBox1Click(Sender: TObject);
 begin
-    ModalResult := mrCancel;
-end;
-
-procedure TFormSelectWorksDialog.ToolButton2Click(Sender: TObject);
-begin
-    ModalResult := mrOk;
+    if CheckBox1.Checked then
+    begin
+        CheckListBox1.CheckAll(cbChecked);
+        Exit;
+    end;
+    CheckListBox1.CheckAll(cbUnchecked);
 end;
 
 end.

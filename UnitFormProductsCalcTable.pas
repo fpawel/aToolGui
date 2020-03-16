@@ -31,7 +31,8 @@ implementation
 
 {$R *.dfm}
 
-uses stringgridutils, stringutils, UnitApiClient, UnitFormPopup;
+uses stringgridutils, stringutils, UnitApiClient, UnitFormPopup,
+  UnitFormStringGridCopyClipboard;
 
 procedure TFormProductsCalcTable.doSetup;
 var
