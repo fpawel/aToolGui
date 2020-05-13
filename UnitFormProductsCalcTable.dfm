@@ -12,6 +12,7 @@ object FormProductsCalcTable: TFormProductsCalcTable
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  PopupMenu = FormStringGridCopyClipboard.PopupMenu1
   PixelsPerInch = 96
   TextHeight = 16
   object StringGrid1: TStringGrid

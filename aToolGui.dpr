@@ -51,7 +51,7 @@ uses
   UnitFormGas in 'UnitFormGas.pas' {FormGas},
   UnitFormCoefficients in 'UnitFormCoefficients.pas' {FormCoefficients},
   UnitFormInterrogate in 'UnitFormInterrogate.pas' {FormInterrogate},
-  UnitFormDelay in 'UnitFormDelay.pas' {FormDelay},
+  UnitFormProgress in 'UnitFormProgress.pas' {FormProgress},
   UnitFormAppConfig in 'UnitFormAppConfig.pas' {FormAppConfig},
   UnitFormExpander in 'UnitFormExpander.pas' {FormExpander},
   UnitFormProductsData in 'UnitFormProductsData.pas' {FormProductsData},
@@ -62,7 +62,9 @@ uses
   UnitFormNewPartyDialog in 'UnitFormNewPartyDialog.pas' {FormNewPartyDialog},
   UnitFormParties in 'UnitFormParties.pas' {FormParties},
   UnitFormProductsDataTable in 'UnitFormProductsDataTable.pas' {FormProductsDataTable},
-  UnitFormStringGridCopyClipboard in 'UnitFormStringGridCopyClipboard.pas' {FormStringGridCopyClipboard};
+  UnitFormStringGridCopyClipboard in 'UnitFormStringGridCopyClipboard.pas' {FormStringGridCopyClipboard},
+  UnitFormSearchProductsNetDialog in 'UnitFormSearchProductsNetDialog.pas' {FormSearchProductsNetDialog},
+  UnitFormDelay in 'UnitFormDelay.pas' {FormDelay};
 
 {$R *.res}
 
@@ -81,13 +83,14 @@ begin
   Application.CreateForm(TFormGas, FormGas);
   Application.CreateForm(TFormCoefficients, FormCoefficients);
   Application.CreateForm(TFormInterrogate, FormInterrogate);
-  Application.CreateForm(TFormDelay, FormDelay);
+  Application.CreateForm(TFormProgress, FormProgress);
   Application.CreateForm(TFormSelectWorksDialog, FormSelectWorksDialog);
   Application.CreateForm(TFormParties, FormParties);
   Application.CreateForm(TFormProductsDataTable, FormProductsDataTable);
   Application.CreateForm(TFormProductsCalcTable, FormProductsCalcTable);
   Application.CreateForm(TFormProductsData, FormProductsData);
   Application.CreateForm(TFormStringGridCopyClipboard, FormStringGridCopyClipboard);
+  Application.CreateForm(TFormDelay, FormDelay);
   Application.Run;
 
 end.

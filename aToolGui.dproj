@@ -189,8 +189,8 @@
             <Form>FormInterrogate</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="UnitFormDelay.pas">
-            <Form>FormDelay</Form>
+        <DCCReference Include="UnitFormProgress.pas">
+            <Form>FormProgress</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="UnitFormAppConfig.pas">
@@ -229,6 +229,14 @@
         </DCCReference>
         <DCCReference Include="UnitFormStringGridCopyClipboard.pas">
             <Form>FormStringGridCopyClipboard</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="UnitFormSearchProductsNetDialog.pas">
+            <Form>FormSearchProductsNetDialog</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="UnitFormDelay.pas">
+            <Form>FormDelay</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Release">

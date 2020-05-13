@@ -49,6 +49,7 @@ type
         N8: TMenuItem;
         MenuDeleteChart: TMenuItem;
         MenuSetNetAddr: TMenuItem;
+        N2: TMenuItem;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: integer;
           Rect: TRect; State: TGridDrawState);
         procedure StringGrid1SelectCell(Sender: TObject; ACol, ARow: integer;
@@ -68,6 +69,7 @@ type
         procedure StringGrid1MouseUp(Sender: TObject; Button: TMouseButton;
           Shift: TShiftState; X, Y: integer);
         procedure MenuSetNetAddrClick(Sender: TObject);
+        procedure N2Click(Sender: TObject);
     private
         { Private declarations }
         FSeries: TDictionary<TProductVar, TFastLineSeries>;
@@ -78,6 +80,8 @@ type
         FProductConnection: TDictionary<int64, boolean>;
 
         procedure SetProductsComport(Sender: TObject);
+
+        procedure _deleteAllCharts;
 
         procedure setMainFormCaption;
         function GetSelectedProductsIDs: Thrift.Collections.IThriftList<int64>;
@@ -149,6 +153,55 @@ begin
 
     CurrFileClient.deleteProducts(GetSelectedProductsIDs);
     upload;
+end;
+
+procedure TFormCurrentParty._deleteAllCharts;
+var
+    xx: TPair<TFastLineSeries, TProductVar>;
+begin
+    for xx in FSeriesInfo do
+        xx.Key.ParentChart := nil;
+    with AToolMainForm.PageControlMain do
+        while PageCount > PageIndexChart do
+            Pages[PageCount - 1].Free;
+end;
+
+procedure TFormCurrentParty.N2Click(Sender: TObject);
+var
+    AVar: integer;
+    p: IProduct;
+    pv: TProductVar;
+    prod_param: IProductParamSeries;
+    ser: TFastLineSeries;
+    chartName: string;
+
+    NProduct, NParam: integer;
+
+begin
+
+    for NParam := 0 to FParams.Count - 1 do
+    begin
+        AVar := FParams[NParam].ParamAddr;
+        chartName := FParams[NParam].Name;
+        for NProduct := 0 to FParty.Products.Count - 1 do
+        begin
+            p := FParty.Products[NProduct];
+
+            pv := TProductVar.Create(p.ProductID, AVar);
+            ser := FSeries[pv];
+            ser.ParentChart := AToolMainForm.GetChartByName(chartName);
+            (ser.ParentChart.Parent AS TFormChart).setupStringGrid;
+            ser.Active := true;
+
+            prod_param := ProductsClient.getProductParamSeries
+              (p.ProductID, AVar);
+            prod_param.Chart := chartName;
+            prod_param.SeriesActive := true;
+            ProductsClient.setProductParamSeries(prod_param);
+
+        end;
+    end;
+    AToolMainForm.DeleteEmptyCharts;
 end;
 
 procedure TFormCurrentParty.N7Click(Sender: TObject);
@@ -547,10 +600,7 @@ var
     pageIndex: integer;
 
 begin
-    for xx in FSeriesInfo do
-        xx.Key.ParentChart := nil;
-
-    AToolMainForm.DeleteAllCharts;
+    _deleteAllCharts;
 
     for xx in FSeriesInfo do
         xx.Key.Free;
@@ -651,7 +701,6 @@ begin
         for ACol := Left to Right do
             result.Add(FParty.Products[ACol - 1].ProductID);
 end;
-
 
 procedure TFormCurrentParty.SetProductsComport(Sender: TObject);
 var

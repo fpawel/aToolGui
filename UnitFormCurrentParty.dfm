@@ -520,6 +520,10 @@ object FormCurrentParty: TFormCurrentParty
         Caption = #1053#1077' '#1074#1099#1074#1086#1076#1080#1090#1100' '#1085#1072' '#1075#1088#1072#1092#1080#1082
         OnClick = MenuDeleteChartClick
       end
+      object N2: TMenuItem
+        Caption = #1044#1083#1103' '#1074#1089#1077#1093' '#1082#1072#1085#1072#1083#1086#1074' '#1080#1079#1084#1077#1088#1077#1085#1080#1103
+        OnClick = N2Click
+      end
       object N8: TMenuItem
         Caption = '-'
       end

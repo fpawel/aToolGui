@@ -22,7 +22,10 @@ type
 
     TCopyDataCmd = (cdcNewCommTransaction, cdcNewProductParamValue, cdcChart,
       cdcStatus, cdcCoef, cdcProductConn, cdcDelay, cdcLuaSuspended,
-      cdcLuaSelectWorks, cdcGas, cdcTemperature, cdcTemperatureSetpoint);
+      cdcLuaSelectWorks, cdcGas, cdcTemperature,
+      cdcTemperatureSetpoint,
+      cdcProgress
+      );
 
     TStatusMessage = record
         Text: string;
@@ -59,6 +62,7 @@ type
         LabelTemeratureSetup: TLabel;
         N3: TMenuItem;
         N6: TMenuItem;
+    MenuSearchProductsNet: TMenuItem;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -78,6 +82,7 @@ type
         procedure N10Click(Sender: TObject);
         procedure N9Click(Sender: TObject);
         procedure N6Click(Sender: TObject);
+    procedure MenuSearchProductsNetClick(Sender: TObject);
     private
         { Private declarations }
         FEnableCopyData: boolean;
@@ -110,7 +115,6 @@ type
     public
         { Public declarations }
         function GetChartByName(AName: string): TChart;
-        procedure DeleteAllCharts;
         procedure DeleteEmptyCharts;
         procedure SetupSeriesStringGrids;
     end;
@@ -138,7 +142,8 @@ uses System.Types, dateutils, myutils, api, UnitApiClient,
     UnitFormChart, UnitFormRawModbus, UnitFormTemperatureHardware, UnitFormGas,
     UnitFormCoefficients, UnitFormJournal, UnitFormDelay, UnitFormAppConfig,
     UnitFormProductsData, luahelp, UnitFormSelectWorksDialog,
-    UnitFormNewPartyDialog, UnitFormParties;
+    UnitFormNewPartyDialog, UnitFormParties, UnitFormSearchProductsNetDialog,
+  UnitFormProgress;
 
 procedure TAToolMainForm.FormCreate(Sender: TObject);
 begin
@@ -223,6 +228,13 @@ begin
     end;
 
     with FormDelay do
+    begin
+        BorderStyle := bsNone;
+        parent := self;
+        Align := alBottom;
+    end;
+
+    with FormProgress do
     begin
         BorderStyle := bsNone;
         parent := self;
@@ -392,6 +404,16 @@ end;
 procedure TAToolMainForm.MenuRunInterrogateClick(Sender: TObject);
 begin
     RunWorkClient.Connect;
+end;
+
+procedure TAToolMainForm.MenuSearchProductsNetClick(Sender: TObject);
+begin
+    with FormSearchProductsNetDialog.Create(nil) do
+    begin
+        ExecuteDialog;
+        Free;
+    end;
+
 end;
 
 procedure TAToolMainForm.MenuStopWorkClick(Sender: TObject);
@@ -687,13 +709,6 @@ begin
         AFormChart.Caption := AName;
         Show;
     end;
-end;
-
-procedure TAToolMainForm.DeleteAllCharts;
-begin
-    with PageControlMain do
-        while PageCount > PageIndexChart do
-            Pages[PageCount - 1].Free;
 end;
 
 procedure TAToolMainForm.SetupSeriesStringGrids;
