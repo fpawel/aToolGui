@@ -22,10 +22,8 @@ type
 
     TCopyDataCmd = (cdcNewCommTransaction, cdcNewProductParamValue, cdcChart,
       cdcStatus, cdcCoef, cdcProductConn, cdcDelay, cdcLuaSuspended,
-      cdcLuaSelectWorks, cdcGas, cdcTemperature,
-      cdcTemperatureSetpoint,
-      cdcProgress
-      );
+      cdcLuaSelectWorks, cdcGas, cdcTemperature, cdcTemperatureSetpoint,
+      cdcProgress);
 
     TStatusMessage = record
         Text: string;
@@ -62,7 +60,7 @@ type
         LabelTemeratureSetup: TLabel;
         N3: TMenuItem;
         N6: TMenuItem;
-    MenuSearchProductsNet: TMenuItem;
+        MenuSearchProductsNet: TMenuItem;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -82,7 +80,7 @@ type
         procedure N10Click(Sender: TObject);
         procedure N9Click(Sender: TObject);
         procedure N6Click(Sender: TObject);
-    procedure MenuSearchProductsNetClick(Sender: TObject);
+        procedure MenuSearchProductsNetClick(Sender: TObject);
     private
         { Private declarations }
         FEnableCopyData: boolean;
@@ -143,7 +141,7 @@ uses System.Types, dateutils, myutils, api, UnitApiClient,
     UnitFormCoefficients, UnitFormJournal, UnitFormDelay, UnitFormAppConfig,
     UnitFormProductsData, luahelp, UnitFormSelectWorksDialog,
     UnitFormNewPartyDialog, UnitFormParties, UnitFormSearchProductsNetDialog,
-  UnitFormProgress;
+    UnitFormProgress;
 
 procedure TAToolMainForm.FormCreate(Sender: TObject);
 begin
@@ -408,7 +406,7 @@ end;
 
 procedure TAToolMainForm.MenuSearchProductsNetClick(Sender: TObject);
 begin
-    with FormSearchProductsNetDialog.Create(nil) do
+    with TFormSearchProductsNetDialog.create(nil) do
     begin
         ExecuteDialog;
         Free;
@@ -549,6 +547,8 @@ begin
             HandleTemperature(getCopyDataString(Message));
         cdcTemperatureSetpoint:
             HandleTemperatureSetpoint(getCopyDataString(Message));
+        cdcProgress:
+            FormProgress.Progress(TJsonCD.unmarshal<TProgressInfo>(Message));
 
     else
         raise Exception.create('wrong message: ' + IntToStr(Message.WParam));

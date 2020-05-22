@@ -169,8 +169,8 @@ object FormProgress: TFormProgress
           AlignWithMargins = True
           Left = 5
           Top = 2
-          Width = 714
-          Height = 28
+          Width = 71
+          Height = 19
           Margins.Left = 5
           Margins.Top = 2
           Margins.Right = 5
@@ -183,9 +183,6 @@ object FormProgress: TFormProgress
           Font.Style = []
           ParentFont = False
           Layout = tlCenter
-          ExplicitLeft = 81
-          ExplicitWidth = 71
-          ExplicitHeight = 19
         end
       end
       object ProgressBar1: TProgressBar

@@ -10,7 +10,6 @@ uses
 type
     TFormSearchProductsNetDialog = class(TForm)
         Button1: TButton;
-        Button2: TButton;
         ComboBox1: TComboBox;
     procedure Button1Click(Sender: TObject);
     private
