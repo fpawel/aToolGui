@@ -9,7 +9,8 @@ uses
     Vcl.Controls, Vcl.Forms, Vcl.Dialogs, System.ImageList, Vcl.ImgList,
     Vcl.Menus, UnitFormSelectCurrentParty, VclTee.Chart, Vcl.ComCtrls,
     Vcl.ExtCtrls, UnitFormInterrogate, Vcl.StdCtrls, Vcl.Buttons,
-    UnitMeasurement, Thrift, UnitFormPopup2;
+    UnitMeasurement, Thrift, UnitFormPopup2, UnitFormProductsData,
+    Vcl.Imaging.pngimage;
 
 const
     wmuCurrentPartyChanged = WM_USER + 1;
@@ -61,6 +62,10 @@ type
         N3: TMenuItem;
         N6: TMenuItem;
         MenuSearchProductsNet: TMenuItem;
+        TabSheet1: TTabSheet;
+        ImageList4: TImageList;
+        PanelMessageBox: TPanel;
+        ImageInfo: TImage;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -86,6 +91,8 @@ type
         FEnableCopyData: boolean;
 
         FFormPopupScripSuspended: TFormPopup2;
+
+        FFormProductsData: TFormProductsData;
 
         procedure AppException(Sender: TObject; e: Exception);
         function ExceptionDialog(e: Exception): boolean;
@@ -115,13 +122,14 @@ type
         function GetChartByName(AName: string): TChart;
         procedure DeleteEmptyCharts;
         procedure SetupSeriesStringGrids;
+        procedure SetupCurrentPartyData;
     end;
 
 var
     AToolMainForm: TAToolMainForm;
 
 const
-    PageIndexChart = 3;
+    PageIndexChart = 4;
 
 implementation
 
@@ -139,13 +147,14 @@ uses System.Types, dateutils, myutils, api, UnitApiClient,
     logfile, apitypes, vclutils, UnitFormCharts,
     UnitFormChart, UnitFormRawModbus, UnitFormTemperatureHardware, UnitFormGas,
     UnitFormCoefficients, UnitFormJournal, UnitFormDelay, UnitFormAppConfig,
-    UnitFormProductsData, luahelp, UnitFormSelectWorksDialog,
+    luahelp, UnitFormSelectWorksDialog,
     UnitFormNewPartyDialog, UnitFormParties, UnitFormSearchProductsNetDialog,
     UnitFormProgress;
 
 procedure TAToolMainForm.FormCreate(Sender: TObject);
 begin
     Application.OnException := AppException;
+    FFormProductsData := TFormProductsData.Create(self);
 
 end;
 
@@ -160,7 +169,7 @@ begin
     begin
         c2 := GetVCLControlParentN(c, 4);
         if not Assigned(c2) or not(c2 is TFormChart) then
-            raise Exception.create('FormMouseWheel: TFormChart not found');
+            raise Exception.Create('FormMouseWheel: TFormChart not found');
         (c2 as TFormChart).ChangeAxisOrder(c, WheelDelta);
 
     end;
@@ -175,7 +184,7 @@ begin
     OnShow := nil;
     OpenApiClient;
 
-    AppIni := TIniFile.create(ChangeFileExt(ParamStr(0), '.ini'));
+    AppIni := TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini'));
 
     with FormCurrentParty do
     begin
@@ -250,7 +259,7 @@ begin
         Show;
     end;
 
-    FFormPopupScripSuspended := TFormPopup2.create(self);
+    FFormPopupScripSuspended := TFormPopup2.Create(self);
     with FFormPopupScripSuspended do
     begin
         BorderStyle := bsNone;
@@ -258,6 +267,20 @@ begin
         Align := alBottom;
         ToolButton1.Visible := true;
         ToolButton3.Visible := false;
+    end;
+
+    with FFormProductsData do
+    begin
+        BorderStyle := bsNone;
+        parent := TabSheet1;
+        Align := alClient;
+        AlignWithMargins := true;
+        Margins.Left := 10;
+        Margins.Right := 5;
+        Margins.Top := 5;
+        Margins.Bottom := 5;
+        Init;
+        Show;
     end;
 
     MenuStopWork.Visible := RunWorkClient.Connected;
@@ -286,7 +309,7 @@ begin
 
     for s in sort_keys(luaWorkScripts) do
     begin
-        m := TMenuItem.create(nil);
+        m := TMenuItem.Create(nil);
         m.Caption := s;
         m.OnClick := LuaScriptMenuClick;
         MenuRun.Add(m);
@@ -322,6 +345,8 @@ end;
 
 procedure TAToolMainForm.FormResize(Sender: TObject);
 begin
+    PanelMessageBox.Left := ClientWidth div 2 - PanelMessageBox.Width div 2;
+    PanelMessageBox.Top := ClientHeight div 2 - PanelMessageBox.Height div 2;
     FormInterrogate.setupColsWidths;
     FormJournal.setupColsWidths;
 end;
@@ -347,7 +372,7 @@ var
 begin
     try
         xs := ScriptClient.getConfigParamValues;
-        f := TFormAppConfig.create(nil);
+        f := TFormAppConfig.Create(nil);
         f.Values := xs;
         f.FUpdateAppConfig := false;
         f.Caption := 'Ввыедите значения параметров';
@@ -387,7 +412,7 @@ var
 begin
     // FormSelectScriptWorks.ExecuteDialog;
 
-    dlg := TOpenDialog.create(nil);
+    dlg := TOpenDialog.Create(nil);
     try
         dlg.InitialDir := ExtractFilePath(ParamStr(0));
         dlg.Filter := 'Файл скрипта (*.lua)|*.lua';
@@ -406,7 +431,7 @@ end;
 
 procedure TAToolMainForm.MenuSearchProductsNetClick(Sender: TObject);
 begin
-    with TFormSearchProductsNetDialog.create(nil) do
+    with TFormSearchProductsNetDialog.Create(nil) do
     begin
         ExecuteDialog;
         Free;
@@ -423,7 +448,7 @@ procedure TAToolMainForm.N10Click(Sender: TObject);
 var
     f: TFormAppConfig;
 begin
-    f := TFormAppConfig.create(nil);
+    f := TFormAppConfig.Create(nil);
     f.FUpdateAppConfig := true;
     try
         f.Values := AppCfgClient.getParamValues;
@@ -442,7 +467,7 @@ var
     f: TFormNewPartyDialog;
 
 begin
-    f := TFormNewPartyDialog.create(nil);
+    f := TFormNewPartyDialog.Create(nil);
     try
         f.ShowModal;
         if f.ModalResult = mrOk then
@@ -484,7 +509,7 @@ procedure TAToolMainForm.N9Click(Sender: TObject);
 var
     dlg: TOpenDialog;
 begin
-    dlg := TOpenDialog.create(nil);
+    dlg := TOpenDialog.Create(nil);
     dlg.Filter := 'Файлы json (*.json)|*.json';
     dlg.InitialDir := AppIni.ReadString('AToolMainForm',
       'external_files_dialog_idir', '');
@@ -551,7 +576,7 @@ begin
             FormProgress.Progress(TJsonCD.unmarshal<TProgressInfo>(Message));
 
     else
-        raise Exception.create('wrong message: ' + IntToStr(Message.WParam));
+        raise Exception.Create('wrong message: ' + IntToStr(Message.WParam));
     end;
 
 end;
@@ -566,6 +591,10 @@ begin
     if PageControl1.ActivePage = TabSheet3 then
     begin
         FormCoefficients.SetupValues;
+    end
+    else if PageControl1.ActivePage = TabSheet1 then
+    begin
+        SetupCurrentPartyData;
     end;
     // else if PageControl1.ActivePage = TabSheet2 then
     // begin
@@ -695,11 +724,11 @@ begin
     for I := PageIndexChart to PageControlMain.PageCount - 1 do
         if PageControlMain.Pages[I].Caption = AName then
             exit((PageControlMain.Pages[I].Controls[0] AS TFormChart).Chart1);
-    tbs := TTabSheet.create(nil);
+    tbs := TTabSheet.Create(nil);
     tbs.Caption := AName;
     tbs.PageControl := PageControlMain;
 
-    AFormChart := TFormChart.create(tbs);
+    AFormChart := TFormChart.Create(tbs);
     with AFormChart do
     begin
         BorderStyle := bsNone;
@@ -709,6 +738,12 @@ begin
         AFormChart.Caption := AName;
         Show;
     end;
+end;
+
+procedure TAToolMainForm.SetupCurrentPartyData;
+begin
+    FFormProductsData.setup(fileClient.getProductsValues
+      (FormCurrentParty.FParty.PartyID));
 end;
 
 procedure TAToolMainForm.SetupSeriesStringGrids;
@@ -727,7 +762,7 @@ var
     f: TFormSelectWorksDialog;
 begin
 
-    f := TFormSelectWorksDialog.create(nil);
+    f := TFormSelectWorksDialog.Create(nil);
     f.CheckListBox1.Items.Clear;
 
     f.CheckBox1.OnClick := nil;
@@ -749,7 +784,7 @@ begin
 
     if f.ModalResult = mrOk then
     begin
-        works := TThriftListImpl<boolean>.create;
+        works := TThriftListImpl<boolean>.Create;
         for I := 0 to length(xs) - 1 do
         begin
             AppIni.WriteBool('select_works', xs[I], f.CheckListBox1.Checked[I]);
@@ -797,7 +832,7 @@ var
     f: TFormPopup2;
 begin
     if X.PopupLevel = 2 then
-        f := TFormPopup2.create(nil)
+        f := TFormPopup2.Create(nil)
     else
         f := FormPopup2;
     with f do
@@ -819,7 +854,7 @@ var
     xs: TList<TTabSheet>;
     I: integer;
 begin
-    xs := TList<TTabSheet>.create;
+    xs := TList<TTabSheet>.Create;
     with PageControlMain do
         for I := PageIndexChart to PageCount - 1 do
             if (Pages[I].Controls[0] AS TFormChart).Chart1.SeriesCount = 0 then

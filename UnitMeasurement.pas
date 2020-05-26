@@ -27,6 +27,10 @@ begin
     Inc(PByte(p), 8);
 
     SetLength(Result, measurementsCount);
+
+    if measurementsCount = 0 then
+        exit;
+
     for I := 0 to measurementsCount - 1 do
     begin
         Result[i].Time := unixMillisToDateTime(PInt64(p)^);

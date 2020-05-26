@@ -123,7 +123,7 @@ begin
     if (ARow = 0) then
         cnv.Font.Style := [fsBold];
 
-    if (ARow > 1) and (ACol > 1) then
+    if (ARow > 0) and (ACol > 0) then
     begin
         v := FSect.Params[ARow - 1].Values[ACol - 1];
         if v.Validated then

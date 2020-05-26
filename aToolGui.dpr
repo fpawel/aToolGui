@@ -86,9 +86,6 @@ begin
   Application.CreateForm(TFormProgress, FormProgress);
   Application.CreateForm(TFormSelectWorksDialog, FormSelectWorksDialog);
   Application.CreateForm(TFormParties, FormParties);
-  Application.CreateForm(TFormProductsDataTable, FormProductsDataTable);
-  Application.CreateForm(TFormProductsCalcTable, FormProductsCalcTable);
-  Application.CreateForm(TFormProductsData, FormProductsData);
   Application.CreateForm(TFormStringGridCopyClipboard, FormStringGridCopyClipboard);
   Application.CreateForm(TFormDelay, FormDelay);
   Application.Run;

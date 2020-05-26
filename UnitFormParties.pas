@@ -26,8 +26,10 @@ type
         procedure N3Click(Sender: TObject);
         procedure N4Click(Sender: TObject);
         procedure N2Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
     private
         { Private declarations }
+        FFormProductsData : TFormProductsData;
     public
         { Public declarations }
         FParties: IThriftList<IPartyInfo>;
@@ -52,9 +54,15 @@ begin
     setup;
 end;
 
+procedure TFormParties.FormCreate(Sender: TObject);
+begin
+    FFormProductsData := TFormProductsData.Create(self);
+end;
+
 procedure TFormParties.init;
 begin
-    with FormProductsData do
+
+    with FFormProductsData do
     begin
         BorderStyle := bsNone;
         parent := self.parent;
@@ -257,13 +265,13 @@ var
 begin
     if (ARow < 1) or (ARow - 1 >= FParties.Count) then
     begin
-        FormProductsData.Hide;
+        FFormProductsData.Hide;
         exit;
     end;
 
-    FormProductsData.setup(fileClient.getProductsValues(FParties[ARow - 1]
+    FFormProductsData.setup(fileClient.getProductsValues(FParties[ARow - 1]
       .PartyID));
-    FormProductsData.Show;
+    FFormProductsData.Show;
 
     // thr := TThread.CreateAnonymousThread(
     // procedure

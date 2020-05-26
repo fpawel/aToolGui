@@ -11,6 +11,7 @@ object FormParties: TFormParties
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 18
   object StringGrid1: TStringGrid

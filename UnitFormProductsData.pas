@@ -22,6 +22,9 @@ type
         FFormPopup2: TFormPopup2;
         FPartyProductsValues: IPartyProductsValues;
 
+        FFormProductsCalcTable: TFormProductsCalcTable;
+        FFormProductsDataTable: TFormProductsDataTable;
+
         procedure FFormPopup2ToolButton3Click(Sender: TObject);
         procedure setupDataTable;
         procedure setupCalcTable;
@@ -50,18 +53,21 @@ begin
     FFormPopup2.Align := alBottom;
     FFormPopup2.ToolButton3.OnClick := FFormPopup2ToolButton3Click;
 
+    FFormProductsCalcTable := TFormProductsCalcTable.create(self);
+    FFormProductsDataTable := TFormProductsDataTable.create(self);;
+
 end;
 
 procedure TFormProductsData.init;
 begin
-    with FormProductsCalcTable do
+    with FFormProductsCalcTable do
     begin
         BorderStyle := bsNone;
         Parent := self;
         Align := alClient;
     end;
 
-    with FormProductsDataTable do
+    with FFormProductsDataTable do
     begin
         BorderStyle := bsNone;
         Parent := self;
@@ -77,8 +83,8 @@ var
 begin
 
     sect := FPartyProductsValues.Sections[ComboBox1.ItemIndex];
-    FormProductsDataTable.setup(FPartyProductsValues.Products,  sect);
-    FormProductsDataTable.Show;
+    FFormProductsDataTable.setup(FPartyProductsValues.Products, sect);
+    FFormProductsDataTable.Show;
 
 end;
 
@@ -91,8 +97,8 @@ begin
     sect := FPartyProductsValues.Calc
       [ComboBox1.ItemIndex - FPartyProductsValues.Sections.Count];
 
-    FormProductsCalcTable.setup(FPartyProductsValues.Products, sect);
-    FormProductsCalcTable.Show;
+    FFormProductsCalcTable.setup(FPartyProductsValues.Products, sect);
+    FFormProductsCalcTable.Show;
 
 end;
 
@@ -102,22 +108,23 @@ var
     ACol, ARow: integer;
 begin
 
-    if ComboBox1.ItemIndex < 0 then
+    if (ComboBox1.ItemIndex < 0) or not Assigned(FPartyProductsValues) or
+      not Assigned(FPartyProductsValues.Sections) then
     begin
-        FormProductsDataTable.hide;
-        FormProductsCalcTable.hide;
+        FFormProductsDataTable.hide;
+        FFormProductsCalcTable.hide;
         exit;
     end;
+
     if ComboBox1.ItemIndex < FPartyProductsValues.Sections.Count then
     begin
-        FormProductsCalcTable.hide;
+        FFormProductsCalcTable.hide;
         setupDataTable;
-    end
-    else
-    begin
-        FormProductsDataTable.hide;
-        setupCalcTable;
+        exit;
     end;
+
+    FFormProductsDataTable.hide;
+    setupCalcTable;
 end;
 
 procedure TFormProductsData.FFormPopup2ToolButton3Click(Sender: TObject);
