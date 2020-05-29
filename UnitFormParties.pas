@@ -6,16 +6,25 @@ uses
     Thrift.Collections, apitypes, Winapi.Windows, Winapi.Messages,
     System.SysUtils, System.Variants,
     System.Classes, Vcl.Graphics, UnitFormProductsData,
-    Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, Vcl.Menus;
+    Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, Vcl.Menus, Vcl.ExtCtrls,
+    Vcl.WinXCtrls, Vcl.StdCtrls;
 
 type
     TFormParties = class(TForm)
-        StringGrid1: TStringGrid;
         PopupMenu1: TPopupMenu;
         N1: TMenuItem;
         N2: TMenuItem;
         N3: TMenuItem;
         N4: TMenuItem;
+        Splitter1: TSplitter;
+        Panel1: TPanel;
+        Label1: TLabel;
+    Panel2: TPanel;
+    StringGrid1: TStringGrid;
+    Panel3: TPanel;
+    Label2: TLabel;
+    EditFilterSerial: TEdit;
+    Timer1: TTimer;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
           Rect: TRect; State: TGridDrawState);
         procedure StringGrid1MouseUp(Sender: TObject; Button: TMouseButton;
@@ -26,10 +35,17 @@ type
         procedure N3Click(Sender: TObject);
         procedure N4Click(Sender: TObject);
         procedure N2Click(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
+        procedure FormCreate(Sender: TObject);
+        procedure Splitter1CanResize(Sender: TObject; var NewSize: Integer;
+          var Accept: Boolean);
+        procedure FormShow(Sender: TObject);
+    procedure N5Click(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+    procedure EditFilterSerialChange(Sender: TObject);
     private
         { Private declarations }
-        FFormProductsData : TFormProductsData;
+        FFormProductsData: TFormProductsData;
+        function GetFilterSerial:integer;
     public
         { Public declarations }
         FParties: IThriftList<IPartyInfo>;
@@ -45,18 +61,58 @@ implementation
 
 {$R *.dfm}
 
-uses stringgridutils, api, UnitApiClient, dateutils, myutils, UnitAppIni,
+uses SyncObjs, stringgridutils, api, UnitApiClient, dateutils, myutils,
+    UnitAppIni,
     UnitFormCurrentParty;
 
+var
+    _cs: TCriticalSection;
+
 procedure TFormParties.upload;
+var
+    thr: TThread;
+    AParties: IThriftList<IPartyInfo>;
+    filterSerial: integer;
 begin
-    FParties := FilesClient.listParties;
-    setup;
+    filterSerial := GetFilterSerial;
+
+    thr := TThread.CreateAnonymousThread(
+        procedure
+        begin
+            _cs.Enter;
+            AParties := FilesClient.listParties(filterSerial);
+            _cs.Leave;
+            TThread.Synchronize(thr,
+                procedure
+                begin
+                    FParties := AParties;
+                    setup;
+                end);
+        end);
+    thr.Start;
+
+
+end;
+
+procedure TFormParties.EditFilterSerialChange(Sender: TObject);
+begin
+    Timer1.Enabled := true;
 end;
 
 procedure TFormParties.FormCreate(Sender: TObject);
 begin
     FFormProductsData := TFormProductsData.Create(self);
+end;
+
+procedure TFormParties.FormShow(Sender: TObject);
+begin
+    //
+end;
+
+function TFormParties.GetFilterSerial:integer;
+begin
+    if not TryStrToInt(EditFilterSerial.Text, Result) then
+        Result := -1;
 end;
 
 procedure TFormParties.init;
@@ -65,14 +121,15 @@ begin
     with FFormProductsData do
     begin
         BorderStyle := bsNone;
-        parent := self.parent;
         Align := alClient;
         AlignWithMargins := true;
         Margins.Left := 10;
         Margins.Right := 5;
         Margins.Top := 5;
         Margins.Bottom := 5;
+        parent := self.Panel1;
         init;
+        Show;
     end;
 end;
 
@@ -101,7 +158,7 @@ begin
     if StringGrid1.Row < 1 then
         exit;
 
-    dlg := TSaveDialog.create(nil);
+    dlg := TSaveDialog.Create(nil);
     dlg.Filter := 'Файлы json (*.json)|*.json';
     dlg.InitialDir := AppIni.ReadString('AToolMainForm',
       'external_files_dialog_idir', '');
@@ -147,6 +204,16 @@ begin
     end;
     FormCurrentParty.upload;
     self.upload;
+end;
+
+procedure TFormParties.N5Click(Sender: TObject);
+var
+    s: string;
+
+begin
+    if not InputQuery('Фильтр', 'Серийный номер:', s) then
+        exit;
+    
 end;
 
 procedure TFormParties.setup;
@@ -198,6 +265,13 @@ begin
         OnSelectCell := StringGrid1SelectCell;
         StringGrid1SelectCell(StringGrid1, Col, Row, CanSelect);
     end;
+
+end;
+
+procedure TFormParties.Splitter1CanResize(Sender: TObject; var NewSize: Integer;
+  var Accept: Boolean);
+begin
+    Accept := NewSize > 125;
 
 end;
 
@@ -263,32 +337,53 @@ var
     thr: TThread;
 
 begin
+    //Panel1.Hide;
+
     if (ARow < 1) or (ARow - 1 >= FParties.Count) then
     begin
-        FFormProductsData.Hide;
+        Panel1.Hide;
         exit;
     end;
 
-    FFormProductsData.setup(fileClient.getProductsValues(FParties[ARow - 1]
-      .PartyID));
-    FFormProductsData.Show;
+    thr := TThread.CreateAnonymousThread(
+        procedure
+        var
+            values: IPartyProductsValues;
+            party: IPartyInfo;
+        begin
 
-    // thr := TThread.CreateAnonymousThread(
-    // procedure
-    // var
-    // values: IPartyProductsValues;
-    // begin
-    // values := fileClient.getProductsValues(FParties[ARow - 1].PartyID);
-    // TThread.Synchronize(thr,
-    // procedure
-    // begin
-    // FFormProductsData.setup(values);
-    // FFormProductsData.Show;
-    //
-    // end);
-    // end);
-    // thr.Start;
+            _cs.Enter;
+            party := FParties[ARow - 1];
+            values := fileClient.getProductsValues(party.PartyID, GetFilterSerial);
+            _cs.Leave;
+            TThread.Synchronize(thr,
+                procedure
+
+                begin
+                    if StringGrid1.Row <> ARow then
+                        exit;
+
+                    FFormProductsData.setup(values);
+                    Label1.Caption := format('Партия приборов №%d %s %s %s', [party.PartyID,
+                      party.DeviceType, party.ProductType,
+                      FormatDateTime('dd.MM.yy hh:nn',
+                      IncHour(unixMillisToDateTime(party.CreatedAt), -3))]);
+                    Panel1.Show;
+
+                end);
+        end);
+    thr.Start;
 
 end;
+
+procedure TFormParties.Timer1Timer(Sender: TObject);
+begin
+    upload;
+    Timer1.Enabled := false;
+end;
+
+initialization
+
+_cs := TCriticalSection.Create;
 
 end.
