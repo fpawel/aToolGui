@@ -84,7 +84,7 @@
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
         <Debugger_IncludeSystemVars>true</Debugger_IncludeSystemVars>
-        <Debugger_EnvVars>ATOOL_API_PORT=60002;ATOOL_WEB_PORT=60004;ATOOL_DEV_MODE=true;ATOOL_AUTO_SKIP_DELAY=false;ATOOL_AUTO_SKIP_SCRIPT_ERRORS=false;$(Debugger_EnvVars)</Debugger_EnvVars>
+        <Debugger_EnvVars>ATOOL_API_PORT=60002;ATOOL_WEB_PORT=60004;ATOOL_DEV_MODE=true;ATOOL_AUTO_SKIP_DELAY=true;ATOOL_AUTO_SKIP_SCRIPT_ERRORS=true;$(Debugger_EnvVars)</Debugger_EnvVars>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <DCC_ExeOutput>$(GOPATH)\src\github.com\fpawel\atool\build</DCC_ExeOutput>

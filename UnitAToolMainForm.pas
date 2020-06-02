@@ -22,7 +22,7 @@ const
 type
 
     TCopyDataCmd = (cdcNewCommTransaction, cdcNewProductParamValue, cdcChart,
-      cdcStatus, cdcCoef, cdcProductConn, cdcDelay, cdcLuaSuspended,
+      cdcStatus, cdcCoef, cdcProductConn, cdcDelay, cdcWorkSuspended,
       cdcLuaSelectWorks, cdcGas, cdcTemperature, cdcTemperatureSetpoint,
       cdcProgress, cdcJournal);
 
@@ -329,7 +329,7 @@ begin
         cdcDelay:
             FormDelay.Delay(TJsonCD.unmarshal<TDelayInfo>(Message));
 
-        cdcLuaSuspended:
+        cdcWorkSuspended:
             HandleLuaSuspended(getCopyDataString(Message));
 
         cdcLuaSelectWorks:
