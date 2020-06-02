@@ -30,8 +30,8 @@ type
 
     end;
 
-function UnixMillisToDateTime(T: int64): TDateTime;
-function DateTimeToUnixMillis(T: TDateTime): int64;
+function UnixMillisToDateTime(T: UInt64): TDateTime;
+function DateTimeToUnixMillis(T: TDateTime): UInt64;
 
 procedure EnumComports(const Ports: TStrings);
 
@@ -124,12 +124,12 @@ begin
         end
 end;
 
-function UnixMillisToDateTime(T: int64): TDateTime;
+function UnixMillisToDateTime(T: UInt64): TDateTime;
 begin
     result := IncHour(IncMilliSecond(unixTime, T), 3);
 end;
 
-function DateTimeToUnixMillis(T: TDateTime): int64;
+function DateTimeToUnixMillis(T: TDateTime): UInt64;
 begin
     result := MilliSecondsBetween(unixTime, IncHour(T, -3));
 end;

@@ -31,7 +31,6 @@ object FormDelay: TFormDelay
     Caption = 'Panel3'
     ShowCaption = False
     TabOrder = 0
-    ExplicitWidth = 786
     object ImageInfo: TImage
       Left = 0
       Top = 0
@@ -154,9 +153,6 @@ object FormDelay: TFormDelay
       Caption = 'Panel1'
       ShowCaption = False
       TabOrder = 0
-      ExplicitLeft = 0
-      ExplicitWidth = 792
-      ExplicitHeight = 94
       object Panel2: TPanel
         Left = 0
         Top = 0
@@ -167,7 +163,6 @@ object FormDelay: TFormDelay
         Caption = 'Panel1'
         ShowCaption = False
         TabOrder = 0
-        ExplicitWidth = 792
         object LabelDelayElepsedTime: TLabel
           AlignWithMargins = True
           Left = 5
@@ -240,7 +235,6 @@ object FormDelay: TFormDelay
         Margins.Right = 10
         Align = alTop
         TabOrder = 1
-        ExplicitWidth = 772
       end
     end
     object Panel4: TPanel
@@ -266,8 +260,6 @@ object FormDelay: TFormDelay
         EdgeOuter = esNone
         Images = ImageList4
         TabOrder = 0
-        ExplicitWidth = 185
-        ExplicitHeight = 94
         object ToolButtonStop: TToolButton
           Left = 0
           Top = 0

@@ -24,7 +24,7 @@ object AToolMainForm: TAToolMainForm
     Top = 0
     Width = 1048
     Height = 552
-    ActivePage = TabSheetHardware
+    ActivePage = TabSheetCurrentParty
     Align = alClient
     MultiLine = True
     OwnerDraw = True
@@ -34,7 +34,7 @@ object AToolMainForm: TAToolMainForm
     TabWidth = 50
     OnChange = PageControlMainChange
     OnDrawTab = PageControlMainDrawTab
-    object TabSheetHardware: TTabSheet
+    object TabSheetCurrentParty: TTabSheet
       Caption = #1055#1088#1080#1073#1086#1088#1099
       ImageIndex = 4
       object PageControl1: TPageControl
@@ -53,28 +53,35 @@ object AToolMainForm: TAToolMainForm
           Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099
           ImageIndex = 1
           ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
         end
         object TabSheet1: TTabSheet
           Caption = #1044#1072#1085#1085#1099#1077
           ImageIndex = 2
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
         end
       end
     end
     object TabSheetParties: TTabSheet
       Caption = #1040#1088#1093#1080#1074
       ImageIndex = 1
-      object Splitter2: TSplitter
-        Left = 0
-        Top = 0
-        Width = 5
-        Height = 544
-        Color = 16118769
-        ParentColor = False
-      end
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
     end
     object TabSheet4: TTabSheet
       Caption = #1059#1087#1088#1072#1074#1083#1077#1085#1080#1077
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel1: TPanel
         Left = 0
         Top = 520
@@ -143,6 +150,10 @@ object AToolMainForm: TAToolMainForm
     object TabSheetJournal: TTabSheet
       Caption = #1046#1091#1088#1085#1072#1083
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
     end
   end
   object PanelMessageBox: TPanel

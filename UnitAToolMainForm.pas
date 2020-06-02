@@ -24,7 +24,7 @@ type
     TCopyDataCmd = (cdcNewCommTransaction, cdcNewProductParamValue, cdcChart,
       cdcStatus, cdcCoef, cdcProductConn, cdcDelay, cdcLuaSuspended,
       cdcLuaSelectWorks, cdcGas, cdcTemperature, cdcTemperatureSetpoint,
-      cdcProgress);
+      cdcProgress, cdcJournal);
 
     TStatusMessage = record
         Text: string;
@@ -34,7 +34,7 @@ type
 
     TAToolMainForm = class(TForm)
         PageControlMain: TPageControl;
-        TabSheetHardware: TTabSheet;
+        TabSheetCurrentParty: TTabSheet;
         MainMenu1: TMainMenu;
         N1: TMenuItem;
         N2: TMenuItem;
@@ -53,7 +53,6 @@ type
         N12: TMenuItem;
         N9: TMenuItem;
         TabSheetParties: TTabSheet;
-        Splitter2: TSplitter;
         TabSheetJournal: TTabSheet;
         Panel1: TPanel;
         LabelGas: TLabel;
@@ -116,6 +115,7 @@ type
         procedure LuaScriptMenuClick(Sender: TObject);
 
         procedure HandleLuaSelectWorks(xs: TArray<string>);
+        procedure OnSkipTimer(Sender: TObject);
 
     public
         { Public declarations }
@@ -252,7 +252,7 @@ begin
     begin
         BorderStyle := bsNone;
         parent := TabSheetParties;
-        Align := alLeft;
+        Align := alClient;
         Width := 400;
         Left := 0;
         Init;
@@ -289,7 +289,66 @@ begin
 
     FEnableCopyData := true;
     FormCurrentParty.upload;
-    FormParties.upload;
+    //FormParties.upload;
+end;
+
+procedure TAToolMainForm.HandleCopydata(var Message: TMessage);
+var
+    cd: PCOPYDATASTRUCT;
+begin
+    if FEnableCopyData = false then
+        exit;
+    cd := PCOPYDATASTRUCT(Message.LParam);
+    Message.result := 1;
+
+    Message.result := 1;
+    case TCopyDataCmd(Message.WParam) of
+        cdcNewCommTransaction:
+            FormInterrogate.AddCommTransaction
+              (TJsonCD.unmarshal<TCommTransaction>(Message));
+        cdcNewProductParamValue:
+            FormCurrentParty.AddNewProductParamValue
+              (TJsonCD.unmarshal<TProductParamValue>(Message));
+        cdcChart:
+            FormCurrentParty.AddMeasurements
+              (TMeasurement.deserialize(cd.lpData));
+
+        cdcJournal:
+            FormJournal.HandleJournal(cd.lpData);
+
+        cdcStatus:
+            HandleStatusMessage(TJsonCD.unmarshal<TStatusMessage>(Message));
+        cdcCoef:
+            FormCoefficients.HandleReadCoef
+              (TJsonCD.unmarshal<TCoefVal>(Message));
+
+        cdcProductConn:
+            FormCurrentParty.SetProductConnection
+              (TJsonCD.unmarshal<TProductConnection>(Message));
+
+        cdcDelay:
+            FormDelay.Delay(TJsonCD.unmarshal<TDelayInfo>(Message));
+
+        cdcLuaSuspended:
+            HandleLuaSuspended(getCopyDataString(Message));
+
+        cdcLuaSelectWorks:
+            HandleLuaSelectWorks(TJsonCD.unmarshal < TArray < string >>
+              (Message));
+
+        cdcGas:
+            HandleGas(getCopyDataString(Message));
+        cdcTemperature:
+            HandleTemperature(getCopyDataString(Message));
+        cdcTemperatureSetpoint:
+            HandleTemperatureSetpoint(getCopyDataString(Message));
+        cdcProgress:
+            FormProgress.Progress(TJsonCD.unmarshal<TProgressInfo>(Message));
+
+    else
+        raise Exception.Create('wrong message: ' + IntToStr(Message.WParam));
+    end;
+
 end;
 
 procedure TAToolMainForm.CreateLuaScriptsMenu;
@@ -394,7 +453,19 @@ begin
 
 end;
 
+procedure TAToolMainForm.OnSkipTimer(Sender: TObject);
+    var tmr:TTimer;
+begin
+    tmr := Sender As TTimer;
+    tmr.Enabled := false;
+    tmr.Free;
+    FFormPopupScripSuspended.ToolButton1.Click;
+
+
+end;
+
 procedure TAToolMainForm.HandleLuaSuspended(AText: String);
+var tmr:TTimer;
 begin
     FormPopup2.Hide;
     FormJournal.AddLine(AText, false);
@@ -403,6 +474,14 @@ begin
         Top := 100500;
         SetText(AText, false);
         Show;
+
+        if GetEnvironmentVariable('ATOOL_AUTO_SKIP_SCRIPT_ERRORS') = 'true' then
+        begin
+            tmr := TTimer.Create(nil);
+            tmr.Interval := 1000;
+            tmr.OnTimer := OnSkipTimer;
+            tmr.Enabled := true;
+        end;
     end;
 end;
 
@@ -526,61 +605,6 @@ begin
     end;
 end;
 
-procedure TAToolMainForm.HandleCopydata(var Message: TMessage);
-var
-    cd: PCOPYDATASTRUCT;
-begin
-    if FEnableCopyData = false then
-        exit;
-    cd := PCOPYDATASTRUCT(Message.LParam);
-    Message.result := 1;
-
-    Message.result := 1;
-    case TCopyDataCmd(Message.WParam) of
-        cdcNewCommTransaction:
-            FormInterrogate.AddCommTransaction
-              (TJsonCD.unmarshal<TCommTransaction>(Message));
-        cdcNewProductParamValue:
-            FormCurrentParty.AddNewProductParamValue
-              (TJsonCD.unmarshal<TProductParamValue>(Message));
-        cdcChart:
-            FormCurrentParty.AddMeasurements
-              (TMeasurement.deserialize(cd.lpData));
-        cdcStatus:
-            HandleStatusMessage(TJsonCD.unmarshal<TStatusMessage>(Message));
-        cdcCoef:
-            FormCoefficients.HandleReadCoef
-              (TJsonCD.unmarshal<TCoefVal>(Message));
-
-        cdcProductConn:
-            FormCurrentParty.SetProductConnection
-              (TJsonCD.unmarshal<TProductConnection>(Message));
-
-        cdcDelay:
-            FormDelay.Delay(TJsonCD.unmarshal<TDelayInfo>(Message));
-
-        cdcLuaSuspended:
-            HandleLuaSuspended(getCopyDataString(Message));
-
-        cdcLuaSelectWorks:
-            HandleLuaSelectWorks(TJsonCD.unmarshal < TArray < string >>
-              (Message));
-
-        cdcGas:
-            HandleGas(getCopyDataString(Message));
-        cdcTemperature:
-            HandleTemperature(getCopyDataString(Message));
-        cdcTemperatureSetpoint:
-            HandleTemperatureSetpoint(getCopyDataString(Message));
-        cdcProgress:
-            FormProgress.Progress(TJsonCD.unmarshal<TProgressInfo>(Message));
-
-    else
-        raise Exception.Create('wrong message: ' + IntToStr(Message.WParam));
-    end;
-
-end;
-
 procedure TAToolMainForm.HandleCurrentPartyChanged(var Message: TMessage);
 begin
     FormCurrentParty.upload;
@@ -609,7 +633,7 @@ var
 begin
     PageControl := Sender as TPageControl;
     PageControl.Repaint;
-    if PageControl.ActivePage = TabSheetHardware then
+    if PageControl.ActivePage = TabSheetCurrentParty then
     begin
         PageControl1.OnChange(PageControl1);
     end
@@ -743,7 +767,7 @@ end;
 procedure TAToolMainForm.SetupCurrentPartyData;
 begin
     FFormProductsData.setup(fileClient.getProductsValues
-      (FormCurrentParty.FParty.PartyID));
+      (FormCurrentParty.FParty.PartyID, -1));
 end;
 
 procedure TAToolMainForm.SetupSeriesStringGrids;

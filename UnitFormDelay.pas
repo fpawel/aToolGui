@@ -72,6 +72,10 @@ begin
     if ProgressBar1.Max <> 0 then
         LabelProgress.Caption :=
           inttostr(ceil(ProgressBar1.Position * 100 / ProgressBar1.Max)) + '%';
+
+    if GetEnvironmentVariable('ATOOL_AUTO_SKIP_DELAY') = 'true' then
+        ToolButtonStop.Click;
+
 end;
 
 procedure TFormDelay.ToolButtonStopClick(Sender: TObject);
