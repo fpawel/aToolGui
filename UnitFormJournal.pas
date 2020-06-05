@@ -25,7 +25,6 @@ type
         procedure setupColsWidths;
         procedure AddLineDateTime(ADateTime, AText: string; Ok: boolean);
         procedure AddLine(AText: string; Ok: boolean);
-        procedure RemoveLastLine;
         procedure HandleJournal(var p: Pointer);
 
     end;
@@ -160,24 +159,6 @@ begin
     StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
 end;
 
-procedure TFormJournal.RemoveLastLine;
-begin
-    with StringGrid1 do
-    begin
-        if FOk.Count > 1 then
-        begin
-            StringGrid_DeleteRow(StringGrid1, 0);
-            FOk.Delete(FOk.Count - 1);
-        end
-        else
-        begin
-            FOk[0] := true;
-            Cells[0, 0] := '';
-            Cells[1, 0] := '';
-        end;
-
-    end;
-end;
 
 procedure TFormJournal.AddLineDateTime(ADateTime, AText: string; Ok: boolean);
 var
@@ -185,12 +166,6 @@ var
 begin
     with StringGrid1 do
     begin
-        // if RowCount > 100 then
-        // begin
-        // StringGrid_DeleteRow(StringGrid1, 0);
-        // FOk.Delete(0);
-        // end;
-
         if Cells[0, 0] <> '' then
         begin
             RowCount := RowCount + 1;
