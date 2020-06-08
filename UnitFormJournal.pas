@@ -56,11 +56,11 @@ end;
 function _PtrToStr(APtr: Pointer; ALen: int64): string;
 var
     AAddr, i: Integer;
-    _bytes:TBytes;
+    _bytes: TBytes;
 begin
     AAddr := Integer(APtr);
     SetLength(_bytes, ALen);
-    for i := 0 to ALen-1 do
+    for i := 0 to ALen - 1 do
         _bytes[i] := PByte(Ptr(AAddr + i))^;
     result := TEncoding.UTF8.GetString(_bytes);
 end;
@@ -82,7 +82,13 @@ begin
     Inc(PByte(p), 8);
 
     if recsCount = 0 then
+    begin
+        With StringGrid1 do
+        begin
+            TopRow := RowCount - VisibleRowCount - 1;
+        end;
         exit;
+    end;
 
     for i := 0 to recsCount - 1 do
     begin
@@ -106,10 +112,6 @@ begin
 
     end;
 
-    With StringGrid1 do
-    begin
-        TopRow := RowCount - VisibleRowCount - 1;
-    end;
 end;
 
 procedure TFormJournal.StringGrid1DblClick(Sender: TObject);
@@ -158,7 +160,6 @@ begin
 
     StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
 end;
-
 
 procedure TFormJournal.AddLineDateTime(ADateTime, AText: string; Ok: boolean);
 var

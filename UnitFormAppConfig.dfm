@@ -42,7 +42,6 @@ object FormAppConfig: TFormAppConfig
     OnMouseDown = StringGrid1MouseDown
     OnSelectCell = StringGrid1SelectCell
     OnSetEditText = StringGrid1SetEditText
-    ExplicitWidth = 335
   end
   object ToolBar1: TToolBar
     Left = 345
@@ -57,8 +56,6 @@ object FormAppConfig: TFormAppConfig
     EdgeOuter = esNone
     Images = ImageList3
     TabOrder = 1
-    ExplicitLeft = 272
-    ExplicitHeight = 364
     object ToolButton2: TToolButton
       Left = 0
       Top = 0

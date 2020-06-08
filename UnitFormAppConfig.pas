@@ -7,17 +7,17 @@ uses
     System.Classes, Vcl.Graphics,
     Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, apitypes,
     UnitFormPopup2, Thrift.Collections, Vcl.Menus, Vcl.ComCtrls, Vcl.ToolWin,
-  System.ImageList, Vcl.ImgList;
+    System.ImageList, Vcl.ImgList;
 
 type
 
     TFormAppConfig = class(TForm)
         StringGrid1: TStringGrid;
         PopupMenu1: TPopupMenu;
-    ImageList3: TImageList;
-    ToolBar1: TToolBar;
-    ToolButton2: TToolButton;
-    ToolButton1: TToolButton;
+        ImageList3: TImageList;
+        ToolBar1: TToolBar;
+        ToolButton2: TToolButton;
+        ToolButton1: TToolButton;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
           Rect: TRect; State: TGridDrawState);
         procedure FormCreate(Sender: TObject);
@@ -28,8 +28,8 @@ type
           const Value: string);
         procedure StringGrid1MouseDown(Sender: TObject; Button: TMouseButton;
           Shift: TShiftState; X, Y: Integer);
-    procedure ToolButton2Click(Sender: TObject);
-    procedure ToolButton1Click(Sender: TObject);
+        procedure ToolButton2Click(Sender: TObject);
+        procedure ToolButton1Click(Sender: TObject);
     private
         { Private declarations }
 
@@ -213,8 +213,8 @@ end;
 procedure TFormAppConfig.OnPopupMenuItemClick(Sender: TObject);
 var
     ACol, ARow: Integer;
-    Value: string;
-    var CanSelect: Boolean;
+    AKey, Value: string;
+    CanSelect: Boolean;
 begin
     with StringGrid1 do
     begin
@@ -238,11 +238,13 @@ begin
         end;
     end;
 
-    if FUpdateAppConfig and (FConfigParamValues[ARow - 1].Key = 'device_type')
+    AKey := FConfigParamValues[ARow - 1].Key;
+
+    if FUpdateAppConfig and (AKey = 'device_type') or (AKey = 'product_type')
     then
     begin
         Values := AppCfgClient.getParamValues;
-        StringGrid1SelectCell(StringGrid1, ACol, ARow,CanSelect);
+        StringGrid1SelectCell(StringGrid1, ACol, ARow, CanSelect);
     end;
 
 end;
@@ -278,9 +280,8 @@ begin
         exit;
 
     PopupMenu1.Items.Clear;
-    if (ARow < 1) or (ARow - 1 >= FConfigParamValues.Count ) then
+    if (ARow < 1) or (ARow - 1 >= FConfigParamValues.Count) then
         exit;
-
 
     c := FConfigParamValues[ARow - 1];
 

@@ -79,8 +79,6 @@ type
 
         FProductConnection: TDictionary<int64, boolean>;
 
-
-
         procedure SetProductsComport(Sender: TObject);
 
         procedure _deleteAllCharts;
@@ -116,7 +114,7 @@ implementation
 uses stringgridutils, stringutils, dateutils,
     vclutils, UnitFormPopup, UnitApiClient, myutils, UnitAToolMainForm,
     UnitAppIni, UnitFormInterrogate, teechartutils, UnitFormCoefficients,
-  UnitFormPopup2;
+    UnitFormPopup2;
 
 {$R *.dfm}
 
@@ -672,17 +670,12 @@ begin
     setupStringGrid;
     setupSeries;
 
-    FormPopup2.hide;
+    FormPopup2.Hide;
     with AToolMainForm do
     begin
         SetupSeriesStringGrids;
         SetupCurrentPartyData;
-        Menu := nil;
-        PageControlMain.Hide;
-        PanelMessageBox.Caption := Format('Открывается график %d', [FParty.PartyID]);
-        PanelMessageBox.Show;
-        PanelMessageBox.BringToFront;
-        OnResize(AToolMainForm);
+        ShowModalMessage(Format('Открывается график %d', [FParty.PartyID]));
     end;
     FormCoefficients.setup;
     CurrFileClient.requestChart;
@@ -696,14 +689,11 @@ var
     kv: TPair<TFastLineSeries, TProductVar>;
 begin
 
-    if Length(xs) = 0 then with AToolMainForm do
+    if Length(xs) = 0 then
     begin
-        Menu := MainMenu1;
-        PageControlMain.Show;
-        PanelMessageBox.Hide;
+        AToolMainForm.HideModalMessage;
         exit;
     end;
-
 
     for X in xs do
     begin

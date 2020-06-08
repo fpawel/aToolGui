@@ -123,6 +123,9 @@ type
         procedure DeleteEmptyCharts;
         procedure SetupSeriesStringGrids;
         procedure SetupCurrentPartyData;
+
+        procedure ShowModalMessage(AText: String);
+        procedure HideModalMessage;
     end;
 
 var
@@ -289,7 +292,7 @@ begin
 
     FEnableCopyData := true;
     FormCurrentParty.upload;
-    //FormParties.upload;
+    // FormParties.upload;
 end;
 
 procedure TAToolMainForm.HandleCopydata(var Message: TMessage);
@@ -349,6 +352,23 @@ begin
         raise Exception.Create('wrong message: ' + IntToStr(Message.WParam));
     end;
 
+end;
+
+procedure TAToolMainForm.ShowModalMessage(AText: String);
+begin
+    Menu := nil;
+    PageControlMain.Hide;
+    PanelMessageBox.Caption := AText;
+    PanelMessageBox.Show;
+    PanelMessageBox.BringToFront;
+    OnResize(AToolMainForm);
+end;
+
+procedure TAToolMainForm.HideModalMessage;
+begin
+    Menu := MainMenu1;
+    PageControlMain.Show;
+    PanelMessageBox.Hide;
 end;
 
 procedure TAToolMainForm.CreateLuaScriptsMenu;
@@ -454,18 +474,19 @@ begin
 end;
 
 procedure TAToolMainForm.OnSkipTimer(Sender: TObject);
-    var tmr:TTimer;
+var
+    tmr: TTimer;
 begin
     tmr := Sender As TTimer;
     tmr.Enabled := false;
     tmr.Free;
     FFormPopupScripSuspended.ToolButton1.Click;
 
-
 end;
 
 procedure TAToolMainForm.HandleLuaSuspended(AText: String);
-var tmr:TTimer;
+var
+    tmr: TTimer;
 begin
     FormPopup2.Hide;
     FormJournal.AddLine(AText, false);
