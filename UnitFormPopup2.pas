@@ -79,7 +79,7 @@ end;
 procedure TFormPopup2.ToolButton1Click(Sender: TObject);
 begin
     Hide;
-    ScriptClient.IgnoreError;
+    WorkDialogClient.IgnoreError;
 end;
 
 procedure TFormPopup2.ToolButton3Click(Sender: TObject);

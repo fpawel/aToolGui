@@ -19,6 +19,7 @@ var
     CoefsClient: TCoefficientsService.Iface;
     ScriptClient: TScriptService.Iface;
     ProdPrmClient: TProductParamService.Iface;
+    WorkDialogClient: TWorkDialogService.Iface;
 
 implementation
 
@@ -72,6 +73,10 @@ begin
 
     ProdPrmClient := TProductParamService.TClient.Create
         (prot('ProductParamService'));
+
+    WorkDialogClient := TWorkDialogService.TClient.Create
+        (prot('WorkDialogService'));
+
 end;
 
 

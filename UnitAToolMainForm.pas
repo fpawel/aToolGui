@@ -16,7 +16,7 @@ const
     wmuCurrentPartyChanged = WM_USER + 1;
     wmuStartWork = WM_USER + 2;
     wmuStopWork = WM_USER + 3;
-    wmuRequestConfigParams = WM_USER + 4;
+    wmuRequestConfigParamValues = WM_USER + 4;
     wmuLuaSuspended = WM_USER + 5;
 
 type
@@ -99,8 +99,8 @@ type
           message wmuCurrentPartyChanged;
         procedure HandleStartWork(var Message: TMessage); message wmuStartWork;
         procedure HandleStopWork(var Message: TMessage); message wmuStopWork;
-        procedure HandleRequestLuaConfigParams(var Message: TMessage);
-          message wmuRequestConfigParams;
+        procedure HandleRequestConfigParamValues(var Message: TMessage);
+          message wmuRequestConfigParamValues;
 
         procedure HandleLuaSuspended(AText: String);
 
@@ -443,21 +443,21 @@ begin
     FFormPopupScripSuspended.Hide;
 end;
 
-procedure TAToolMainForm.HandleRequestLuaConfigParams(var Message: TMessage);
+procedure TAToolMainForm.HandleRequestConfigParamValues(var Message: TMessage);
 var
     f: TFormAppConfig;
     I: integer;
     xs: IThriftList<IConfigParamValue>;
 begin
     try
-        xs := ScriptClient.getConfigParamValues;
+        xs := WorkDialogClient.getConfigParamValues;
         f := TFormAppConfig.Create(nil);
         f.Values := xs;
         f.FUpdateAppConfig := false;
-        f.Caption := '¬выедите значени€ параметров';
+        f.Caption := '¬ведите значени€ параметров';
         f.ShowModal;
         if f.ModalResult = mrOk then
-            ScriptClient.setConfigParamValues(f.Values)
+            WorkDialogClient.setConfigParamValues(f.Values)
         else
         begin
             TThread.CreateAnonymousThread(
@@ -835,7 +835,7 @@ begin
             AppIni.WriteBool('select_works', xs[I], f.CheckListBox1.Checked[I]);
             works.Add(f.CheckListBox1.Checked[I]);
         end;
-        ScriptClient.selectWorks(works);
+        WorkDialogClient.selectWorks(works);
     end
     else
     begin
