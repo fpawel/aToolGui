@@ -14,6 +14,7 @@ object FormInterrogate: TFormInterrogate
   OldCreateOrder = False
   Position = poScreenCenter
   OnCreate = FormCreate
+  OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 18
   object StringGrid1: TStringGrid
@@ -35,7 +36,5 @@ object FormInterrogate: TFormInterrogate
     TabOrder = 0
     OnDblClick = StringGrid1DblClick
     OnDrawCell = StringGrid1DrawCell
-    ExplicitWidth = 629
-    ExplicitHeight = 293
   end
 end

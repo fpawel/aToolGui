@@ -24,6 +24,7 @@ type
           Rect: TRect; State: TGridDrawState);
         procedure FormCreate(Sender: TObject);
     procedure StringGrid1DblClick(Sender: TObject);
+    procedure FormResize(Sender: TObject);
     private
         { Private declarations }
         FOk: TList<boolean>;
@@ -57,6 +58,11 @@ begin
     end;
     FOk := TList<boolean>.create;
     FOk.Add(true);
+end;
+
+procedure TFormInterrogate.FormResize(Sender: TObject);
+begin
+    setupColsWidths;
 end;
 
 procedure TFormInterrogate.StringGrid1DblClick(Sender: TObject);
@@ -140,7 +146,7 @@ begin
     begin
         ColWidths[0] := 100;
         ColWidths[1] := 60;
-        w := StringGrid1.Width - 50 - ColWidths[0] - ColWidths[1];
+        w := Self.Width - 50 - ColWidths[0] - ColWidths[1];
         ColWidths[2] := w div 3;
         ColWidths[3] := w - ColWidths[2];
     end;

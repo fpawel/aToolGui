@@ -18,6 +18,7 @@ type
         ToolBar1: TToolBar;
         ToolButton2: TToolButton;
         ToolButton1: TToolButton;
+        ImageList1: TImageList;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
           Rect: TRect; State: TGridDrawState);
         procedure FormCreate(Sender: TObject);
@@ -30,12 +31,17 @@ type
           Shift: TShiftState; X, Y: Integer);
         procedure ToolButton2Click(Sender: TObject);
         procedure ToolButton1Click(Sender: TObject);
+    procedure StringGrid1DblClick(Sender: TObject);
     private
         { Private declarations }
 
         Last_Edited_Col, Last_Edited_Row: Integer;
         FConfigParamValues: IThriftList<IConfigParamValue>;
         FFormPopup2: TFormPopup2;
+
+        FBmpShevron: TBitmap;
+        FBmpShevron2: TBitmap;
+
         procedure FFormPopup2ToolButton3Click(Sender: TObject);
 
         procedure setParamValue(ARow: Integer; Value: string);
@@ -72,6 +78,11 @@ begin
     FFormPopup2.Parent := self;
     FFormPopup2.Align := alBottom;
     FFormPopup2.ToolButton3.OnClick := FFormPopup2ToolButton3Click;
+
+    FBmpShevron := TBitmap.Create;
+    ImageList1.GetBitmap(0, FBmpShevron);
+    FBmpShevron2 := TBitmap.Create;
+    ImageList1.GetBitmap(1, FBmpShevron2);
 
 end;
 
@@ -123,6 +134,25 @@ begin
     setup;
 end;
 
+procedure TFormAppConfig.StringGrid1DblClick(Sender: TObject);
+var
+    ACol, ARow: Integer;
+    cv: IConfigParamValue;
+    Value: string;
+    pt,pt2 : tPoint;
+begin
+    if (GetAsyncKeyState(VK_LBUTTON) >= 0) then
+        exit;
+    pt := Mouse.CursorPos;
+    pt2 := StringGrid1.ScreenToClient(pt);
+    StringGrid1.MouseToCell(pt2.X, pt2.Y, ACol, ARow);
+    if not((ARow > 0) and (ACol = 1)) then
+        exit;
+    cv := FConfigParamValues[ARow - 1];
+    if Assigned(cv.ValuesList) and (cv.ValuesList.Count > 0) then
+        StringGrid1.PopupMenu.Popup(pt.X, pt.Y);
+end;
+
 procedure TFormAppConfig.StringGrid1DrawCell(Sender: TObject;
   ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
 var
@@ -134,6 +164,7 @@ var
     cv: IConfigParamValue;
     r2: TRect;
 begin
+    cv := nil;
     grd := StringGrid1;
     cnv := grd.Canvas;
     cnv.Brush.Color := clWhite;
@@ -172,7 +203,18 @@ begin
     if (ARow = 0) then
         cnv.Font.Style := [fsBold];
 
-    StringGrid_DrawCellText(StringGrid1, ACol, ARow, Rect, ta, AText);
+    if Assigned(cv) and Assigned(cv.ValuesList) and (cv.ValuesList.Count > 0)
+    then
+    begin
+        if gdSelected in State then
+            StringGrid_DrawCellBmp(StringGrid1, Rect, FBmpShevron2, AText)
+        else
+            StringGrid_DrawCellBmp(StringGrid1, Rect, FBmpShevron, AText)
+    end
+    else
+    begin
+        StringGrid_DrawCellText(StringGrid1, ACol, ARow, Rect, ta, AText);
+    end;
     StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
 end;
 

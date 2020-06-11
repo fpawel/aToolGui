@@ -10,7 +10,7 @@ uses
     Vcl.Menus, UnitFormSelectCurrentParty, VclTee.Chart, Vcl.ComCtrls,
     Vcl.ExtCtrls, UnitFormInterrogate, Vcl.StdCtrls, Vcl.Buttons,
     UnitMeasurement, Thrift, UnitFormPopup2, UnitFormProductsData,
-    Vcl.Imaging.pngimage;
+    Vcl.Imaging.pngimage, UnitFormAppConfig;
 
 const
     wmuCurrentPartyChanged = WM_USER + 1;
@@ -65,6 +65,7 @@ type
         ImageList4: TImageList;
         PanelMessageBox: TPanel;
         ImageInfo: TImage;
+        TabSheetAppConfig: TTabSheet;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -92,6 +93,7 @@ type
         FFormPopupScripSuspended: TFormPopup2;
 
         FFormProductsData: TFormProductsData;
+        FFormAppConfig: TFormAppConfig;
 
         procedure AppException(Sender: TObject; e: Exception);
         function ExceptionDialog(e: Exception): boolean;
@@ -149,7 +151,7 @@ uses System.Types, dateutils, myutils, api, UnitApiClient,
     Thrift.Collections, math,
     logfile, apitypes, vclutils, UnitFormCharts,
     UnitFormChart, UnitFormRawModbus, UnitFormTemperatureHardware, UnitFormGas,
-    UnitFormCoefficients, UnitFormJournal, UnitFormDelay, UnitFormAppConfig,
+    UnitFormCoefficients, UnitFormJournal, UnitFormDelay,
     luahelp, UnitFormSelectWorksDialog,
     UnitFormNewPartyDialog, UnitFormParties, UnitFormSearchProductsNetDialog,
     UnitFormProgress;
@@ -283,6 +285,23 @@ begin
         Margins.Top := 5;
         Margins.Bottom := 5;
         Init;
+        Show;
+    end;
+
+    FFormAppConfig := TFormAppConfig.Create(self);
+    with FFormAppConfig do
+    begin
+        parent := TabSheetAppConfig;
+        BorderStyle := bsNone;
+        Align := alClient;
+        FUpdateAppConfig := true;
+        ToolBar1.Hide;
+        OnResize := nil;
+        with StringGrid1 do
+        begin
+            ColWidths[0] := 300;
+            ColWidths[1] := 150;
+        end;
         Show;
     end;
 
@@ -558,7 +577,7 @@ begin
     end;
     f.ToolBar1.Hide;
     f.ShowModal;
-    FormCurrentParty.upload;
+    // FormCurrentParty.upload;
 
 end;
 
@@ -597,6 +616,7 @@ end;
 
 procedure TAToolMainForm.N5Click(Sender: TObject);
 begin
+    Hide;
     AppCfgClient.EditConfig;
 end;
 
@@ -628,10 +648,13 @@ end;
 
 procedure TAToolMainForm.HandleCurrentPartyChanged(var Message: TMessage);
 begin
+    Show;
     FormCurrentParty.upload;
 end;
 
 procedure TAToolMainForm.PageControl1Change(Sender: TObject);
+var
+    ACanSelect: boolean;
 begin
     if PageControl1.ActivePage = TabSheet3 then
     begin
@@ -640,7 +663,17 @@ begin
     else if PageControl1.ActivePage = TabSheet1 then
     begin
         SetupCurrentPartyData;
-    end;
+    end
+    else if PageControl1.ActivePage = TabSheetAppConfig then
+        with FFormAppConfig do
+        begin
+
+            Values := AppCfgClient.getParamValues;
+            ACanSelect := true;
+            with StringGrid1 do
+                StringGrid1SelectCell(StringGrid1, Col, Row, ACanSelect);
+
+        end;
     // else if PageControl1.ActivePage = TabSheet2 then
     // begin
     // FormCurrentParty.FParty := FilesClient.getCurrentParty;

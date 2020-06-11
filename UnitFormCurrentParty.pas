@@ -352,6 +352,8 @@ begin
                 begin
                     ProductsClient.setProductSerial(p.ProductID, new_value);
                     p.Serial := new_value;
+                    FormCoefficients.StringGrid1.Cells[ACol, 0] :=
+                      Format('%d', [p.Serial]);
                 end;
 
             except
@@ -675,6 +677,7 @@ begin
     begin
         SetupSeriesStringGrids;
         SetupCurrentPartyData;
+        PageControl1Change(PageControl1);
         ShowModalMessage(Format('Открывается график %d', [FParty.PartyID]));
     end;
     FormCoefficients.setup;
