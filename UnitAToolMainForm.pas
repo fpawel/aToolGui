@@ -17,14 +17,14 @@ const
     wmuStartWork = WM_USER + 2;
     wmuStopWork = WM_USER + 3;
     wmuRequestConfigParamValues = WM_USER + 4;
-    wmuLuaSuspended = WM_USER + 5;
+    wmuPartiesArchiveChanged = WM_USER + 5;
 
 type
 
     TCopyDataCmd = (cdcNewCommTransaction, cdcNewProductParamValue, cdcChart,
       cdcStatus, cdcCoef, cdcProductConn, cdcDelay, cdcWorkSuspended,
-      cdcLuaSelectWorks, cdcGas, cdcTemperature, cdcTemperatureSetpoint,
-      cdcProgress, cdcJournal);
+      cdcExecuteSelectWorksDialog, cdcGas, cdcTemperature,
+      cdcTemperatureSetpoint, cdcProgress, cdcModalMessage);
 
     TStatusMessage = record
         Text: string;
@@ -96,13 +96,16 @@ type
         FFormAppConfig: TFormAppConfig;
 
         procedure AppException(Sender: TObject; e: Exception);
-        function ExceptionDialog(e: Exception): boolean;
+
         procedure HandleCurrentPartyChanged(var Message: TMessage);
           message wmuCurrentPartyChanged;
         procedure HandleStartWork(var Message: TMessage); message wmuStartWork;
         procedure HandleStopWork(var Message: TMessage); message wmuStopWork;
         procedure HandleRequestConfigParamValues(var Message: TMessage);
           message wmuRequestConfigParamValues;
+
+        procedure HandlePartiesArchiveChanged(var Message: TMessage);
+          message wmuPartiesArchiveChanged;
 
         procedure HandleLuaSuspended(AText: String);
 
@@ -121,6 +124,7 @@ type
 
     public
         { Public declarations }
+        function ExceptionDialog(e: Exception): boolean;
         function GetChartByName(AName: string): TChart;
         procedure DeleteEmptyCharts;
         procedure SetupSeriesStringGrids;
@@ -335,9 +339,6 @@ begin
             FormCurrentParty.AddMeasurements
               (TMeasurement.deserialize(cd.lpData));
 
-        cdcJournal:
-            FormJournal.HandleJournal(cd.lpData);
-
         cdcStatus:
             HandleStatusMessage(TJsonCD.unmarshal<TStatusMessage>(Message));
         cdcCoef:
@@ -354,7 +355,7 @@ begin
         cdcWorkSuspended:
             HandleLuaSuspended(getCopyDataString(Message));
 
-        cdcLuaSelectWorks:
+        cdcExecuteSelectWorksDialog:
             HandleLuaSelectWorks(TJsonCD.unmarshal < TArray < string >>
               (Message));
 
@@ -367,10 +368,18 @@ begin
         cdcProgress:
             FormProgress.Progress(TJsonCD.unmarshal<TProgressInfo>(Message));
 
+        cdcModalMessage:
+            ShowModalMessage(getCopyDataString(Message));
+
     else
         raise Exception.Create('wrong message: ' + IntToStr(Message.WParam));
     end;
+end;
 
+procedure TAToolMainForm.HandlePartiesArchiveChanged(var Message: TMessage);
+begin
+    if PageControlMain.ActivePage = TabSheetParties then
+        FormParties.upload;
 end;
 
 procedure TAToolMainForm.ShowModalMessage(AText: String);
@@ -460,6 +469,7 @@ begin
     MenuStopWork.Visible := false;
     MenuRun.Visible := not MenuStopWork.Visible;
     FFormPopupScripSuspended.Hide;
+    HideModalMessage;
 end;
 
 procedure TAToolMainForm.HandleRequestConfigParamValues(var Message: TMessage);
@@ -592,8 +602,6 @@ begin
         if f.ModalResult = mrOk then
         begin
             FilesClient.CreateNewParty(StrToInt(f.Edit1.Text));
-            FormCurrentParty.upload;
-
         end;
     finally
         f.Free;
@@ -610,7 +618,7 @@ begin
       strProductsCount) or not TryStrToInt(strProductsCount, ProductsCount) then
         exit;
     CurrFileClient.AddNewProducts(ProductsCount);
-    FormCurrentParty.upload;
+    ShowModalMessage('Добавление приборов');
 
 end;
 
@@ -695,6 +703,10 @@ begin
     begin
         FormParties.upload;
     end
+    else if PageControl.ActivePage = TabSheetJournal then
+    begin
+        FormJournal.upload;
+    end
 
 end;
 
@@ -770,8 +782,6 @@ begin
         X.Ok := false;
         X.PopupLevel := 2;
         HandleStatusMessage(X);
-        // MessageBox(Handle, PChar(e.Message),
-        // PChar(ExtractFileName(Application.ExeName)), MB_ICONERROR);
         exit;
     end;
 
@@ -782,7 +792,9 @@ begin
         OnResize := nil;
         FEnableCopyData := false;
         close;
+        exit;
     end;
+    OpenApiClient;
 end;
 
 function TAToolMainForm.ExceptionDialog(e: Exception): boolean;

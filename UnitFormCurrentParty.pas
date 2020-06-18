@@ -152,7 +152,7 @@ begin
         exit;
 
     CurrFileClient.deleteProducts(GetSelectedProductsIDs);
-    upload;
+    AToolMainForm.ShowModalMessage('Удаление приборов');
 end;
 
 procedure TFormCurrentParty._deleteAllCharts;
@@ -512,7 +512,7 @@ begin
     if (GetAsyncKeyState(VK_LBUTTON) >= 0) then
         exit;
     StringGrid1.MouseToCell(X, Y, ACol, ARow);
-    if (ARow > 0) or (ACol = 0) then
+    if (ARow <> 0) or (ACol = 0) or (ACol >= StringGrid1.ColCount) then
         exit;
     p := FParty.Products[ACol - 1];
     p.Active := not p.Active;

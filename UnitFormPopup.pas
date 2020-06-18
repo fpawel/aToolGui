@@ -54,7 +54,8 @@ end;
 
 procedure TFormPopup.SetText(s:string);
 begin
-    RichEdit1.Text := stringreplace(s, ': ', #13#10#9' - ', [rfReplaceAll, rfIgnoreCase]);
+    //RichEdit1.Text := stringreplace(s, ': ', #13#10#9' - ', [rfReplaceAll, rfIgnoreCase]);
+    RichEdit1.Text := s;
 end;
 
 

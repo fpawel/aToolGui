@@ -185,9 +185,6 @@ begin
             exit;
         FilesClient.copyFile(FParties[Row - 1].PartyID);
     end;
-    FormCurrentParty.upload;
-    self.upload;
-
 end;
 
 procedure TFormParties.N4Click(Sender: TObject);
@@ -202,8 +199,6 @@ begin
             exit;
         FilesClient.deleteFile(FParties[Row - 1].PartyID);
     end;
-    FormCurrentParty.upload;
-    self.upload;
 end;
 
 procedure TFormParties.N5Click(Sender: TObject);

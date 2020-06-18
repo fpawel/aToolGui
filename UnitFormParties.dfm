@@ -36,8 +36,6 @@ object FormParties: TFormParties
     ShowCaption = False
     TabOrder = 0
     Visible = False
-    ExplicitLeft = 431
-    ExplicitWidth = 508
     object Label1: TLabel
       AlignWithMargins = True
       Left = 10
@@ -92,8 +90,6 @@ object FormParties: TFormParties
       OnMouseUp = StringGrid1MouseUp
       OnSelectCell = StringGrid1SelectCell
       ExplicitLeft = 5
-      ExplicitTop = 118
-      ExplicitHeight = 178
     end
     object Panel3: TPanel
       Left = 0
@@ -105,7 +101,6 @@ object FormParties: TFormParties
       Caption = 'Panel3'
       ShowCaption = False
       TabOrder = 1
-      ExplicitTop = 115
       object Label2: TLabel
         AlignWithMargins = True
         Left = 5
@@ -116,8 +111,6 @@ object FormParties: TFormParties
         Margins.Top = 10
         Align = alLeft
         Caption = #1060#1080#1083#1100#1090#1088': '#1089#1077#1088#1080#1081#1085#1099#1081' '#1085#1086#1084#1077#1088
-        ExplicitLeft = 3
-        ExplicitTop = 3
         ExplicitHeight = 18
       end
       object EditFilterSerial: TEdit
@@ -133,9 +126,6 @@ object FormParties: TFormParties
         NumbersOnly = True
         TabOrder = 0
         OnChange = EditFilterSerialChange
-        ExplicitLeft = 48
-        ExplicitTop = 9
-        ExplicitWidth = 121
         ExplicitHeight = 26
       end
     end

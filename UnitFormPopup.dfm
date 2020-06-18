@@ -245,8 +245,9 @@ object FormPopup: TFormPopup
     Font.Name = 'Tahoma'
     Font.Style = []
     Lines.Strings = (
-      'RichEdit1')
+      #55357#57056)
     ParentFont = False
+    PlainText = True
     ReadOnly = True
     ScrollBars = ssVertical
     TabOrder = 0

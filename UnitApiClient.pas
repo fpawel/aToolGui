@@ -20,6 +20,7 @@ var
     ScriptClient: TScriptService.Iface;
     ProdPrmClient: TProductParamService.Iface;
     WorkDialogClient: TWorkDialogService.Iface;
+    JournalClient: TJournalService.Iface;
 
 implementation
 
@@ -37,17 +38,15 @@ var
 
 begin
     Transport := TSocketImpl.create('127.0.0.1',
-      StrToInt(GetEnvironmentVariable('ATOOL_API_PORT')), 60 *  1000);
+      StrToInt(GetEnvironmentVariable('ATOOL_API_PORT')), 60 * 1000);
     Protocol := TBinaryProtocolImpl.create(Transport, true, true);
     Transport.Open;
 
-
-    FileClient:= TFileService.TClient.create(prot('FileService'));
+    FileClient := TFileService.TClient.create(prot('FileService'));
 
     FilesClient := TFilesService.TClient.create(prot('FilesService'));
 
-    RunWorkClient := TRunWorkService.TClient.create
-      (prot('RunWorkService'));
+    RunWorkClient := TRunWorkService.TClient.create(prot('RunWorkService'));
 
     ProductsClient := TProductService.TClient.create(prot('ProductService'));
 
@@ -57,27 +56,26 @@ begin
     AppCfgClient := TAppConfigService.TClient.create(prot('AppConfigService'));
 
     NotifyGuiClient := TNotifyGuiService.TClient.create
-          (prot('NotifyGuiService'));
+      (prot('NotifyGuiService'));
 
-    HelperClient := THelperService.TClient.create
-          (prot('HelperService'));
+    HelperClient := THelperService.TClient.create(prot('HelperService'));
 
-    TempDeviceClient:= TTemperatureDeviceService.TClient.create
-          (prot('TemperatureDeviceService'));
+    TempDeviceClient := TTemperatureDeviceService.TClient.create
+      (prot('TemperatureDeviceService'));
 
     CoefsClient := TCoefficientsService.TClient.create
-          (prot('CoefficientsService'));
+      (prot('CoefficientsService'));
 
-    ScriptClient := TScriptService.TClient.create
-          (prot('ScriptService'));
+    ScriptClient := TScriptService.TClient.create(prot('ScriptService'));
 
-    ProdPrmClient := TProductParamService.TClient.Create
-        (prot('ProductParamService'));
+    ProdPrmClient := TProductParamService.TClient.create
+      (prot('ProductParamService'));
 
-    WorkDialogClient := TWorkDialogService.TClient.Create
-        (prot('WorkDialogService'));
+    WorkDialogClient := TWorkDialogService.TClient.create
+      (prot('WorkDialogService'));
+
+    JournalClient := TJournalService.TClient.create(prot('JournalService'));
 
 end;
-
 
 end.
