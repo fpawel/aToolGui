@@ -33,9 +33,6 @@ object FormJournal: TFormJournal
     TabOrder = 0
     OnDblClick = StringGrid1DblClick
     OnDrawCell = StringGrid1DrawCell
-    ExplicitLeft = 3
-    ExplicitWidth = 629
-    ExplicitHeight = 293
   end
   object StringGrid2: TStringGrid
     AlignWithMargins = True
@@ -53,8 +50,21 @@ object FormJournal: TFormJournal
     RowCount = 1
     FixedRows = 0
     GradientEndColor = clBlack
+    PopupMenu = PopupMenu1
     TabOrder = 1
     OnDrawCell = StringGrid2DrawCell
     OnSelectCell = StringGrid2SelectCell
+  end
+  object PopupMenu1: TPopupMenu
+    Left = 352
+    Top = 176
+    object N1: TMenuItem
+      Caption = #1059#1076#1072#1083#1080#1090#1100' '#1089#1077#1075#1075#1086#1076#1085#1103
+      OnClick = N1Click
+    end
+    object N2: TMenuItem
+      Caption = #1059#1076#1072#1083#1080#1090#1100' '#1076#1085#1080'...'
+      OnClick = N2Click
+    end
   end
 end

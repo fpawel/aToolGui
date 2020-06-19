@@ -24,8 +24,6 @@ object FormSelectWorksDialog: TFormSelectWorksDialog
     BevelKind = bkFlat
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitTop = 0
-    ExplicitHeight = 368
     object CheckListBox1: TCheckListBox
       Left = 0
       Top = 0
@@ -43,9 +41,6 @@ object FormSelectWorksDialog: TFormSelectWorksDialog
         '+50 '#8304'C')
       Style = lbOwnerDrawFixed
       TabOrder = 0
-      ExplicitLeft = 2
-      ExplicitTop = 26
-      ExplicitWidth = 376
     end
     object Panel1: TPanel
       Left = 368
@@ -57,7 +52,6 @@ object FormSelectWorksDialog: TFormSelectWorksDialog
       Caption = 'Panel1'
       ShowCaption = False
       TabOrder = 1
-      ExplicitHeight = 364
       object Button1: TButton
         AlignWithMargins = True
         Left = 3
@@ -97,8 +91,6 @@ object FormSelectWorksDialog: TFormSelectWorksDialog
     ParentFont = False
     TabOrder = 1
     OnClick = CheckBox1Click
-    ExplicitTop = 75
-    ExplicitWidth = 137
   end
   object ImageList3: TImageList
     ColorDepth = cd32Bit

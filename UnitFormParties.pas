@@ -19,12 +19,12 @@ type
         Splitter1: TSplitter;
         Panel1: TPanel;
         Label1: TLabel;
-    Panel2: TPanel;
-    StringGrid1: TStringGrid;
-    Panel3: TPanel;
-    Label2: TLabel;
-    EditFilterSerial: TEdit;
-    Timer1: TTimer;
+        Panel2: TPanel;
+        StringGrid1: TStringGrid;
+        Panel3: TPanel;
+        Label2: TLabel;
+        EditFilterSerial: TEdit;
+        Timer1: TTimer;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
           Rect: TRect; State: TGridDrawState);
         procedure StringGrid1MouseUp(Sender: TObject; Button: TMouseButton;
@@ -39,13 +39,13 @@ type
         procedure Splitter1CanResize(Sender: TObject; var NewSize: Integer;
           var Accept: Boolean);
         procedure FormShow(Sender: TObject);
-    procedure N5Click(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
-    procedure EditFilterSerialChange(Sender: TObject);
+        procedure N5Click(Sender: TObject);
+        procedure Timer1Timer(Sender: TObject);
+        procedure EditFilterSerialChange(Sender: TObject);
     private
         { Private declarations }
         FFormProductsData: TFormProductsData;
-        function GetFilterSerial:integer;
+        function GetFilterSerial: Integer;
     public
         { Public declarations }
         FParties: IThriftList<IPartyInfo>;
@@ -72,7 +72,7 @@ procedure TFormParties.upload;
 var
     thr: TThread;
     AParties: IThriftList<IPartyInfo>;
-    filterSerial: integer;
+    filterSerial: Integer;
 begin
     filterSerial := GetFilterSerial;
 
@@ -91,7 +91,6 @@ begin
         end);
     thr.Start;
 
-
 end;
 
 procedure TFormParties.EditFilterSerialChange(Sender: TObject);
@@ -109,7 +108,7 @@ begin
     //
 end;
 
-function TFormParties.GetFilterSerial:integer;
+function TFormParties.GetFilterSerial: Integer;
 begin
     if not TryStrToInt(EditFilterSerial.Text, Result) then
         Result := -1;
@@ -208,7 +207,7 @@ var
 begin
     if not InputQuery('Фильтр', 'Серийный номер:', s) then
         exit;
-    
+
 end;
 
 procedure TFormParties.setup;
@@ -264,14 +263,14 @@ begin
 end;
 
 procedure TFormParties.Splitter1CanResize(Sender: TObject; var NewSize: Integer;
-  var Accept: Boolean);
+var Accept: Boolean);
 begin
     Accept := NewSize > 125;
 
 end;
 
 procedure TFormParties.StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
-  Rect: TRect; State: TGridDrawState);
+Rect: TRect; State: TGridDrawState);
 var
     grd: TStringGrid;
     cnv: TCanvas;
@@ -305,7 +304,7 @@ begin
 end;
 
 procedure TFormParties.StringGrid1MouseUp(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
+Shift: TShiftState; X, Y: Integer);
 var
     ACol: Integer;
 begin
@@ -326,13 +325,13 @@ begin
 end;
 
 procedure TFormParties.StringGrid1SelectCell(Sender: TObject;
-  ACol, ARow: Integer; var CanSelect: Boolean);
+ACol, ARow: Integer; var CanSelect: Boolean);
 
 var
     thr: TThread;
 
 begin
-    //Panel1.Hide;
+    // Panel1.Hide;
 
     if (ARow < 1) or (ARow - 1 >= FParties.Count) then
     begin
@@ -349,7 +348,8 @@ begin
 
             _cs.Enter;
             party := FParties[ARow - 1];
-            values := fileClient.getProductsValues(party.PartyID, GetFilterSerial);
+            values := fileClient.getProductsValues(party.PartyID,
+              GetFilterSerial);
             _cs.Leave;
             TThread.Synchronize(thr,
                 procedure
@@ -359,8 +359,8 @@ begin
                         exit;
 
                     FFormProductsData.setup(values);
-                    Label1.Caption := format('Партия приборов №%d %s %s %s', [party.PartyID,
-                      party.DeviceType, party.ProductType,
+                    Label1.Caption := format('Партия приборов №%d %s %s %s',
+                      [party.PartyID, party.DeviceType, party.ProductType,
                       FormatDateTime('dd.MM.yy hh:nn',
                       IncHour(unixMillisToDateTime(party.CreatedAt), -3))]);
                     Panel1.Show;

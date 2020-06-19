@@ -240,6 +240,7 @@ begin
         BorderStyle := bsNone;
         parent := TabSheetJournal;
         Align := alClient;
+        Upload;
         Show;
     end;
 

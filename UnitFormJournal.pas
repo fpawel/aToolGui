@@ -7,13 +7,16 @@ uses
     System.Classes, Vcl.Graphics, System.Generics.Collections,
     Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, stringgridutils,
     apitypes, Thrift.Collections, stringutils, System.ImageList, Vcl.ImgList,
-    Vcl.ExtCtrls, UnitApiClient;
+    Vcl.ExtCtrls, UnitApiClient, Vcl.StdCtrls, Vcl.CheckLst, Vcl.Menus;
 
 type
 
     TFormJournal = class(TForm)
         StringGrid1: TStringGrid;
         StringGrid2: TStringGrid;
+        PopupMenu1: TPopupMenu;
+        N1: TMenuItem;
+        N2: TMenuItem;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
           Rect: TRect; State: TGridDrawState);
         procedure FormCreate(Sender: TObject);
@@ -22,9 +25,12 @@ type
           Rect: TRect; State: TGridDrawState);
         procedure StringGrid2SelectCell(Sender: TObject; ACol, ARow: Integer;
           var CanSelect: Boolean);
+        procedure N2Click(Sender: TObject);
+        procedure N1Click(Sender: TObject);
     private
         { Private declarations }
         FEntries: IThriftList<IJournalEntry>;
+        procedure uploadEntriesOfDay(ARow: Integer);
 
     public
         { Public declarations }
@@ -40,7 +46,8 @@ var
 
 implementation
 
-uses myutils, dateutils, UnitFormPopup, math, UnitAToolMainForm;
+uses SyncObjs, myutils, dateutils, UnitFormPopup, math, UnitAToolMainForm,
+    UnitFormSelectWorksDialog;
 
 {$R *.dfm}
 
@@ -57,47 +64,90 @@ begin
     end;
 end;
 
-function _PtrToStr(APtr: Pointer; ALen: int64): string;
+procedure TFormJournal.N1Click(Sender: TObject);
 var
-    AAddr, i: Integer;
-    _bytes: TBytes;
+    days: IThriftList<System.string>;
 begin
-    AAddr := Integer(APtr);
-    SetLength(_bytes, ALen);
-    for i := 0 to ALen - 1 do
-        _bytes[i] := PByte(Ptr(AAddr + i))^;
+    days := TThriftListImpl<string>.create;
+    days.Add(FormatDateTime('yyyy.mm.dd', now));
+    JournalClient.deleteDays(days);
+    with StringGrid2 do
+    begin
+        OnSelectCell := nil;
+        Row := 0;
+        OnSelectCell := StringGrid2SelectCell;
+        uploadEntriesOfDay(0);
+    end;
+end;
 
-    try
-        result := TEncoding.UTF8.GetString(_bytes);
-    except
-        result := '';
+procedure TFormJournal.N2Click(Sender: TObject);
+var
+    dlg: TFormSelectWorksDialog;
+    i: Integer;
+var
+    days: IThriftList<System.string>;
+begin
+    dlg := TFormSelectWorksDialog.create(nil);
+    dlg.Caption := 'Выбор удаляемых дней';
+    dlg.Button1.Caption := 'Удалить';
+    dlg.CheckListBox1.Items.Clear;
+    dlg.CheckListBox1.Columns := 2;
+    for i := 0 to StringGrid2.RowCount - 1 do
+        dlg.CheckListBox1.Items.Add(StringGrid2.Cells[0, i]);
+    dlg.ShowModal;
+
+    if dlg.ModalResult <> mrOk then
+    begin
+        dlg.Free;
+        Exit;
     end;
 
+    days := TThriftListImpl<string>.create;
+    for i := 0 to StringGrid2.RowCount - 1 do
+        if dlg.CheckListBox1.Checked[i] then
+            days.Add(dlg.CheckListBox1.Items[i]);
+
+    dlg.Free;
+    JournalClient.deleteDays(days);
+    Upload;
 end;
 
 procedure TFormJournal.Upload;
 var
     i: Integer;
-    xs: IThriftList<System.string>;
     ACanSelect: Boolean;
+    xs: IThriftList<System.string>;
+    TheSame: Boolean;
 begin
     ACanSelect := true;
-
     xs := JournalClient.listDays;
     if xs.Count = 0 then
     begin
         StringGrid2.RowCount := 1;
-        StringGrid2.Cells[0, 0] := FormatDateTime('yyyy:mm:dd', now);
+        StringGrid2.Cells[0, 0] := FormatDateTime('yyyy.mm.dd', now);
         StringGrid2SelectCell(StringGrid2, 0, 0, ACanSelect);
-        exit;
+        Exit;
     end;
 
-    StringGrid2.RowCount := xs.Count;
-    for i := 0 to xs.Count - 1 do
+    TheSame := true;
+    if xs.Count <> StringGrid2.RowCount then
     begin
-        StringGrid2.Cells[0, i] := xs[i];
+        TheSame := false;
     end;
-    StringGrid2SelectCell(StringGrid2, 0, StringGrid2.Row, ACanSelect);
+    begin
+        for i := 0 to xs.Count-1 do
+        begin
+            if StringGrid2.Cells[0, i] <> xs[i] then
+                TheSame := false;
+        end;
+    end;
+    if not TheSame then
+    begin
+        StringGrid2.RowCount := xs.Count;
+        for i := 0 to xs.Count - 1 do
+            StringGrid2.Cells[0, i] := xs[i];
+    end;
+    StringGrid2SelectCell(StringGrid2, 0, 0, ACanSelect);
 end;
 
 procedure TFormJournal.StringGrid1DblClick(Sender: TObject);
@@ -176,90 +226,48 @@ begin
     StringGrid_DrawCellBounds(cnv, ACol, ARow, Rect);
 end;
 
-procedure TFormJournal.StringGrid2SelectCell(Sender: TObject;
-  ACol, ARow: Integer; var CanSelect: Boolean);
+procedure TFormJournal.uploadEntriesOfDay(ARow: Integer);
 var
     x: IJournalEntry;
-
-    thr: TThread;
     FStrDay: string;
+    i: Integer;
 begin
     With StringGrid2 do
     begin
         if (ARow < 0) or (ARow >= RowCount) then
         begin
-            StringGrid1.Hide;
-            exit;
+            StringGrid1.RowCount := 1;
+            StringGrid_Clear(StringGrid1);
+            Exit;
         end;
         FStrDay := Cells[0, ARow];
     end;
-    StringGrid1.Hide;
+    FEntries := JournalClient.listEntriesOfDay(FStrDay);
 
-    thr := TThread.CreateAnonymousThread(
-        procedure
-        var
-            AEntries: IThriftList<IJournalEntry>;
-            AEntriesIDs: IThriftList<int64>;
-            exn: Exception;
-            i: Integer;
-            AEnt: IJournalEntry;
+    if FEntries.Count = 0 then
+    begin
+        StringGrid1.RowCount := 1;
+        StringGrid_Clear(StringGrid1);
+        Exit;
+    end;
+
+    With StringGrid1 do
+    begin
+        RowCount := FEntries.Count;
+        for i := 0 to FEntries.Count - 1 do
         begin
-            exn := nil;
-            try
-                AEntriesIDs := JournalClient.listEntriesIdsOfDay(FStrDay);
-                AEntries := TThriftListImpl<IJournalEntry>.create;
-                for i := 0 to AEntriesIDs.Count - 1 do
-                begin
-                    try
-                        AEnt := JournalClient.getEntryByID(AEntriesIDs[i]);
-                    except
-                        AEnt := TJournalEntryImpl.create;
-                        AEnt.EntryID := AEntriesIDs[i];
-                        AEnt.Text := '?';
-                        OpenApiClient;
-                    end;
-                    AEntries.Add(AEnt);
-                end;
-            except
-                on e: Exception do
-                    exn := e;
-            end;
+            x := FEntries[i];
+            Cells[0, i] := x.StoredAt;
+            Cells[1, i] := StringOfChar(' ', x.Indent * 4) + x.Text;
+        end;
+        Row := RowCount - 1;
+    end;
+end;
 
-            TThread.Synchronize(thr,
-                procedure
-                var
-                    i: Integer;
-                begin
-                    if Assigned(exn) then
-                    begin
-                        Application.OnException(nil,
-                          Exception.create('listEntriesOfDay: ' + FStrDay));
-                        exit;
-                    end;
-
-                    FEntries := AEntries;
-                    if FEntries.Count = 0 then
-                    begin
-                        StringGrid1.Hide;
-                        exit;
-                    end;
-
-                    With StringGrid1 do
-                    begin
-                        RowCount := FEntries.Count;
-                        for i := 0 to FEntries.Count - 1 do
-                        begin
-                            x := FEntries[i];
-                            Cells[0, i] := x.StoredAt;
-                            Cells[1, i] := StringOfChar(' ',
-                              x.Indent * 4) + x.Text;
-                        end;
-                        Row := RowCount - 1;
-                        Show;
-                    end;
-                end);
-        end);
-    thr.Start;
+procedure TFormJournal.StringGrid2SelectCell(Sender: TObject;
+  ACol, ARow: Integer; var CanSelect: Boolean);
+begin
+    uploadEntriesOfDay(ARow);
 end;
 
 procedure TFormJournal.AddLineDateTime(ADateTime, AText: string; Ok: Boolean);
@@ -284,18 +292,41 @@ begin
 end;
 
 procedure TFormJournal.AddLine(AText: string; Ok: Boolean);
+var
+    ent: IJournalEntry;
+    ARow: Integer;
 begin
-    AddLineDateTime(FormatDateTime('hh:nn:ss', now), AText, Ok);
+    if StringGrid2.Row <> 0 then
+        Exit;
+    ent := TJournalEntryImpl.create;
+    ent.Text := AText;
+    ent.StoredAt := FormatDateTime('hh:nn:ss', now);
+    ent.Ok := Ok;
+    if not Assigned(FEntries) then
+        FEntries := TThriftListImpl<IJournalEntry>.create;
+
+    FEntries.Add(ent);
+    with StringGrid1 do
+    begin
+        RowCount := RowCount + 1;
+        Cells[0, RowCount - 1] := ent.StoredAt;
+        Cells[1, RowCount - 1] := ent.Text;
+        Row := RowCount - 1;
+    end;
+
 end;
 
 procedure TFormJournal.setupColsWidths;
+
 begin
     With StringGrid1 do
     begin
-        ColWidths[0] := 135;
+        ColWidths[0] := 70;
         ColWidths[1] := StringGrid1.Width - 50 - ColWidths[0];
     end;
 
 end;
+
+initialization
 
 end.

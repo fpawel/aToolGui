@@ -47,6 +47,16 @@ implementation
 
 uses Clipbrd, winapi.windows, system.math, winapi.uxtheme, stringutils;
 
+procedure StringGrid_InsertRow(Grid: TStringGrid; ARow: Integer);
+var
+    i: Integer;
+begin
+    Grid.RowCount := Grid.RowCount + 1;
+    for i := Grid.RowCount - 1 downto ARow do
+        Grid.Rows[i].Assign(Grid.Rows[i - 1]);
+    Grid.RowCount := Grid.RowCount - 1;
+end;
+
 procedure StringGrid_DeleteRow(Grid: TStringGrid; ARow: Integer);
 var
     i: Integer;

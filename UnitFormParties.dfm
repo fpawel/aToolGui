@@ -89,7 +89,6 @@ object FormParties: TFormParties
       OnDrawCell = StringGrid1DrawCell
       OnMouseUp = StringGrid1MouseUp
       OnSelectCell = StringGrid1SelectCell
-      ExplicitLeft = 5
     end
     object Panel3: TPanel
       Left = 0
