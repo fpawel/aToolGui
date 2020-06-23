@@ -52,44 +52,24 @@ object AToolMainForm: TAToolMainForm
         object TabSheetAppConfig: TTabSheet
           Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
           ImageIndex = 3
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
         end
         object TabSheet3: TTabSheet
           Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099
           ImageIndex = 1
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
         end
         object TabSheet1: TTabSheet
           Caption = #1044#1072#1085#1085#1099#1077
           ImageIndex = 2
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
         end
       end
     end
     object TabSheetParties: TTabSheet
       Caption = #1040#1088#1093#1080#1074
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
     end
     object TabSheet4: TTabSheet
       Caption = #1059#1087#1088#1072#1074#1083#1077#1085#1080#1077
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel1: TPanel
         Left = 0
         Top = 520
@@ -158,10 +138,6 @@ object AToolMainForm: TAToolMainForm
     object TabSheetJournal: TTabSheet
       Caption = #1046#1091#1088#1085#1072#1083
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
     end
   end
   object PanelMessageBox: TPanel
@@ -344,13 +320,17 @@ object AToolMainForm: TAToolMainForm
         Caption = #1054#1087#1088#1086#1089
         OnClick = MenuRunInterrogateClick
       end
-      object MenuRunScript: TMenuItem
-        Caption = #1057#1094#1077#1085#1072#1088#1080#1081'...'
-        OnClick = MenuRunScriptClick
+      object N7: TMenuItem
+        Caption = #1040#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1072#1103' '#1085#1072#1089#1090#1088#1086#1081#1082#1072
+        OnClick = N7Click
       end
       object MenuSearchProductsNet: TMenuItem
         Caption = #1055#1086#1080#1089#1082' '#1087#1088#1080#1073#1086#1088#1086#1074' '#1089#1077#1090#1080
         OnClick = MenuSearchProductsNetClick
+      end
+      object MenuRunScript: TMenuItem
+        Caption = #1057#1094#1077#1085#1072#1088#1080#1081'...'
+        OnClick = MenuRunScriptClick
       end
       object N12: TMenuItem
         Caption = '-'

@@ -58,13 +58,14 @@ uses
   UnitFormProductsCalcTable in 'UnitFormProductsCalcTable.pas' {FormProductsCalcTable},
   teechartutils in 'utils\teechartutils.pas',
   luahelp in 'luahelp.pas',
-  UnitFormSelectWorksDialog in 'UnitFormSelectWorksDialog.pas' {FormSelectWorksDialog},
+  UnitFormSelectWorkDialog in 'UnitFormSelectWorkDialog.pas' {FormSelectWorkDialog},
   UnitFormNewPartyDialog in 'UnitFormNewPartyDialog.pas' {FormNewPartyDialog},
   UnitFormParties in 'UnitFormParties.pas' {FormParties},
   UnitFormProductsDataTable in 'UnitFormProductsDataTable.pas' {FormProductsDataTable},
   UnitFormStringGridCopyClipboard in 'UnitFormStringGridCopyClipboard.pas' {FormStringGridCopyClipboard},
   UnitFormSearchProductsNetDialog in 'UnitFormSearchProductsNetDialog.pas' {FormSearchProductsNetDialog},
-  UnitFormDelay in 'UnitFormDelay.pas' {FormDelay};
+  UnitFormDelay in 'UnitFormDelay.pas' {FormDelay},
+  UnitFormSelectWorksDialog in 'UnitFormSelectWorksDialog.pas' {FormSelectWorksDialog};
 
 {$R *.res}
 
@@ -84,10 +85,11 @@ begin
   Application.CreateForm(TFormCoefficients, FormCoefficients);
   Application.CreateForm(TFormInterrogate, FormInterrogate);
   Application.CreateForm(TFormProgress, FormProgress);
-  Application.CreateForm(TFormSelectWorksDialog, FormSelectWorksDialog);
+  Application.CreateForm(TFormSelectWorkDialog, FormSelectWorkDialog);
   Application.CreateForm(TFormParties, FormParties);
   Application.CreateForm(TFormStringGridCopyClipboard, FormStringGridCopyClipboard);
   Application.CreateForm(TFormDelay, FormDelay);
+  Application.CreateForm(TFormSelectWorksDialog, FormSelectWorksDialog);
   Application.Run;
 
 end.

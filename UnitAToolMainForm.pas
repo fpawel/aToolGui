@@ -24,7 +24,8 @@ type
     TCopyDataCmd = (cdcNewCommTransaction, cdcNewProductParamValue, cdcChart,
       cdcStatus, cdcCoef, cdcProductConn, cdcDelay, cdcWorkSuspended,
       cdcExecuteSelectWorksDialog, cdcGas, cdcTemperature,
-      cdcTemperatureSetpoint, cdcProgress, cdcModalMessage);
+      cdcTemperatureSetpoint, cdcProgress, cdcModalMessage,
+      cdcExecuteSelectWorkDialog);
 
     TStatusMessage = record
         Text: string;
@@ -66,6 +67,7 @@ type
         PanelMessageBox: TPanel;
         ImageInfo: TImage;
         TabSheetAppConfig: TTabSheet;
+    N7: TMenuItem;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -86,6 +88,7 @@ type
         procedure N9Click(Sender: TObject);
         procedure N6Click(Sender: TObject);
         procedure MenuSearchProductsNetClick(Sender: TObject);
+    procedure N7Click(Sender: TObject);
     private
         { Private declarations }
         FEnableCopyData: boolean;
@@ -119,7 +122,8 @@ type
         procedure CreateLuaScriptsMenu;
         procedure LuaScriptMenuClick(Sender: TObject);
 
-        procedure HandleLuaSelectWorks(xs: TArray<string>);
+        procedure HandleSelectWorks(xs: TArray<string>);
+        procedure HandleSelectWork(xs: TArray<string>);
         procedure OnSkipTimer(Sender: TObject);
 
     public
@@ -158,7 +162,7 @@ uses System.Types, dateutils, myutils, api, UnitApiClient,
     UnitFormCoefficients, UnitFormJournal, UnitFormDelay,
     luahelp, UnitFormSelectWorksDialog,
     UnitFormNewPartyDialog, UnitFormParties, UnitFormSearchProductsNetDialog,
-    UnitFormProgress;
+    UnitFormProgress, UnitFormSelectWorkDialog;
 
 procedure TAToolMainForm.FormCreate(Sender: TObject);
 begin
@@ -357,7 +361,7 @@ begin
             HandleLuaSuspended(getCopyDataString(Message));
 
         cdcExecuteSelectWorksDialog:
-            HandleLuaSelectWorks(TJsonCD.unmarshal < TArray < string >>
+            HandleSelectWorks(TJsonCD.unmarshal < TArray < string >>
               (Message));
 
         cdcGas:
@@ -371,6 +375,10 @@ begin
 
         cdcModalMessage:
             ShowModalMessage(getCopyDataString(Message));
+
+        cdcExecuteSelectWorkDialog:
+            HandleSelectWork(TJsonCD.unmarshal < TArray < string >>
+              (Message));
 
     else
         raise Exception.Create('wrong message: ' + IntToStr(Message.WParam));
@@ -429,7 +437,7 @@ var
     m: TMenuItem;
 begin
     m := Sender as TMenuItem;
-    ScriptClient.runFile(luaWorkScripts[m.Caption]);
+    RunWorkClient.runLuaScript(luaWorkScripts[m.Caption]);
 end;
 
 procedure TAToolMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -547,7 +555,7 @@ begin
         dlg.InitialDir := ExtractFilePath(ParamStr(0));
         dlg.Filter := 'Файл скрипта (*.lua)|*.lua';
         if dlg.Execute(Handle) then
-            ScriptClient.runFile(dlg.FileName);
+            RunWorkClient.runLuaScript(dlg.FileName);
     finally
         dlg.Free;
     end;
@@ -632,6 +640,11 @@ end;
 procedure TAToolMainForm.N6Click(Sender: TObject);
 begin
     FormInterrogate.Show;
+end;
+
+procedure TAToolMainForm.N7Click(Sender: TObject);
+begin
+    RunWorkClient.runDeviceWork();
 end;
 
 procedure TAToolMainForm.N9Click(Sender: TObject);
@@ -846,7 +859,40 @@ begin
             (Pages[I].Controls[0] AS TFormChart).setupStringGrid;
 end;
 
-procedure TAToolMainForm.HandleLuaSelectWorks(xs: TArray<string>);
+procedure TAToolMainForm.HandleSelectWork(xs: TArray<string>);
+var
+    I: integer;
+    f: TFormSelectWorkDialog;
+begin
+
+    f := TFormSelectWorkDialog.Create(nil);
+    f.RadioGroup1.Items.Clear;
+
+
+    for I := 0 to length(xs) - 1 do
+    begin
+        f.RadioGroup1.Items.Add(xs[I]);
+    end;
+    f.RadioGroup1.ItemIndex := 0;
+    f.ShowModal;
+    if f.ModalResult = mrOk then
+    begin
+        WorkDialogClient.selectWork(f.RadioGroup1.ItemIndex);
+    end
+    else
+    begin
+        TThread.CreateAnonymousThread(
+            procedure
+            begin
+                RunWorkClient.interrupt;
+            end).Start;
+    end;
+
+    f.Free;
+
+end;
+
+procedure TAToolMainForm.HandleSelectWorks(xs: TArray<string>);
 var
     works: IThriftList<boolean>;
     I: integer;

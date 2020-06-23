@@ -17,7 +17,6 @@ var
     HelperClient: THelperService.Iface;
     TempDeviceClient: TTemperatureDeviceService.Iface;
     CoefsClient: TCoefficientsService.Iface;
-    ScriptClient: TScriptService.Iface;
     ProdPrmClient: TProductParamService.Iface;
     WorkDialogClient: TWorkDialogService.Iface;
     JournalClient: TJournalService.Iface;
@@ -65,8 +64,6 @@ begin
 
     CoefsClient := TCoefficientsService.TClient.create
       (prot('CoefficientsService'));
-
-    ScriptClient := TScriptService.TClient.create(prot('ScriptService'));
 
     ProdPrmClient := TProductParamService.TClient.create
       (prot('ProductParamService'));

@@ -211,8 +211,8 @@
         </DCCReference>
         <DCCReference Include="utils\teechartutils.pas"/>
         <DCCReference Include="luahelp.pas"/>
-        <DCCReference Include="UnitFormSelectWorksDialog.pas">
-            <Form>FormSelectWorksDialog</Form>
+        <DCCReference Include="UnitFormSelectWorkDialog.pas">
+            <Form>FormSelectWorkDialog</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="UnitFormNewPartyDialog.pas">
@@ -237,6 +237,10 @@
         </DCCReference>
         <DCCReference Include="UnitFormDelay.pas">
             <Form>FormDelay</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="UnitFormSelectWorksDialog.pas">
+            <Form>FormSelectWorksDialog</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Release">
