@@ -878,7 +878,6 @@ end;
 
 procedure TFormCurrentParty.MenuSetNetAddrClick(Sender: TObject);
 begin
-
     ProductsClient.setNetAddr(FParty.Products[StringGrid1.Col - 1].ProductID);
 end;
 
