@@ -345,6 +345,7 @@ begin
                 mn := TMenuItem.Create(self);
                 mn.Caption := c.ValuesList[I];
                 mn.OnClick := OnPopupMenuItemClick;
+                mn.Checked := c.Value = c.ValuesList[I];
                 PopupMenu1.Items.Add(mn);
             end;
         end;

@@ -309,7 +309,7 @@ begin
         with StringGrid1 do
         begin
             ColWidths[0] := 300;
-            ColWidths[1] := 150;
+            ColWidths[1] := 300;
         end;
         Show;
     end;

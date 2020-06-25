@@ -495,9 +495,9 @@ object FormCurrentParty: TFormCurrentParty
     OnPopup = PopupMenu1Popup
     Left = 464
     Top = 232
-    object N1: TMenuItem
+    object MenuDeleteProducts: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100' '#1087#1088#1080#1073#1086#1088#1099
-      OnClick = N1Click
+      OnClick = MenuDeleteProductsClick
     end
     object MenuProductsComport: TMenuItem
       AutoHotkeys = maManual

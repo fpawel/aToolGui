@@ -41,7 +41,7 @@ type
         Panel1: TPanel;
         StringGrid1: TStringGrid;
         PopupMenu1: TPopupMenu;
-        N1: TMenuItem;
+    MenuDeleteProducts: TMenuItem;
         MenuProductsComport: TMenuItem;
         MenuSetChartSeparator: TMenuItem;
         MenuSetChart: TMenuItem;
@@ -57,7 +57,7 @@ type
         procedure StringGrid1SetEditText(Sender: TObject; ACol, ARow: integer;
           const Value: string);
         procedure FormShow(Sender: TObject);
-        procedure N1Click(Sender: TObject);
+        procedure MenuDeleteProductsClick(Sender: TObject);
         procedure StringGrid1KeyPress(Sender: TObject; var Key: Char);
         procedure PopupMenu1Popup(Sender: TObject);
         procedure StringGrid1DblClick(Sender: TObject);
@@ -141,7 +141,7 @@ begin
     //
 end;
 
-procedure TFormCurrentParty.N1Click(Sender: TObject);
+procedure TFormCurrentParty.MenuDeleteProductsClick(Sender: TObject);
 const
     s = 'Подтвердите необходимость удаления данных приборов,' +
       ' соответствующих выбранным колонкам таблицы.' + #13#10#13#10 +
@@ -240,6 +240,9 @@ begin
     begin
         MenuSetChart.Visible := (Col > 0) AND (Row >= FirstParamRow);
         MenuSetChartSeparator.Visible := MenuSetChart.Visible;
+        MenuProductsComport.Visible := Col > 0;
+        MenuSetNetAddr.Visible := MenuProductsComport.Visible;
+        MenuDeleteProducts.Visible := MenuProductsComport.Visible;
     end;
     if MenuSetChart.Visible then
     begin
@@ -533,8 +536,8 @@ begin
         begin
             if ColWidths[ACol] < 30 then
                 ColWidths[ACol] := 30;
-            if ColWidths[ACol] > 300 then
-                ColWidths[ACol] := 300;
+            if ColWidths[ACol] > 600 then
+                ColWidths[ACol] := 600;
             AppIni.WriteInteger('StringGrid1.ColWidth', IntToStr(ACol),
               ColWidths[ACol]);
         end;
@@ -558,12 +561,14 @@ begin
             exit;
 
         FixedRows := 1;
-        FixedCols := 1;
-        ColWidths[0] := 100;
+        //ColWidths[0] := 100;
 
         Cells[0, 0] := 'СОМ порт';
         Cells[0, 1] := 'Адрес';
         Cells[0, 2] := 'Номер';
+
+        ColWidths[0] := AppIni.ReadInteger('StringGrid1.ColWidth',
+              IntToStr(0), ColWidths[0]);
 
         for ACol := 1 to ColCount - 1 do
         begin
@@ -577,8 +582,8 @@ begin
 
             if ColWidths[ACol] < 30 then
                 ColWidths[ACol] := 30;
-            if ColWidths[ACol] > 300 then
-                ColWidths[ACol] := 300;
+            if ColWidths[ACol] > 600 then
+                ColWidths[ACol] := 600;
 
         end;
 

@@ -43,8 +43,6 @@ object FormAppConfig: TFormAppConfig
     OnMouseDown = StringGrid1MouseDown
     OnSelectCell = StringGrid1SelectCell
     OnSetEditText = StringGrid1SetEditText
-    ExplicitLeft = 7
-    ExplicitTop = 5
   end
   object ToolBar1: TToolBar
     Left = 345
