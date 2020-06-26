@@ -206,26 +206,26 @@ var
     ACol, ARow: integer;
     p: IProduct;
 begin
-    //setup;
+    // setup;
 
     with StringGrid1 do
     begin
-//        for ACol := 1 to ColCount - 1 do
-//            for ARow := 1 to RowCount - 1 do
-//                Cells[ACol, ARow] := '';
+        // for ACol := 1 to ColCount - 1 do
+        // for ARow := 1 to RowCount - 1 do
+        // Cells[ACol, ARow] := '';
         for ACol := 1 to ColCount - 1 do
         begin
             p := FormCurrentParty.FParty.Products[ACol - 1];
-            if p.ProductID <> x.ProductID then
+            if p.ProductID <> X.ProductID then
                 continue;
             for ARow := 1 to RowCount - 1 do
             begin
-                if FCoefs[ARow - 1].N <> x.Coefficient then
+                if FCoefs[ARow - 1].N <> X.Coefficient then
                     continue;
-                if x.Read  then
+                if X.Read then
                 begin
-                    if x.Ok then
-                        Cells[ACol, ARow] := x.Result
+                    if X.Ok then
+                        Cells[ACol, ARow] := X.Result
                     else
                         Cells[ACol, ARow] := '';
                 end;
@@ -240,9 +240,9 @@ procedure TFormCoefficients.SetupValues;
 var
     ACol, ARow: integer;
     p: IProduct;
-    cv:IProductCoefficientValue;
+    cv: IProductCoefficientValue;
     c: ICoefficient;
-    xs:IThriftList<IProductCoefficientValue>;
+    xs: IThriftList<IProductCoefficientValue>;
 begin
     xs := CoefsClient.GetCurrentPartyCoefficients;
     with StringGrid1 do
@@ -253,12 +253,13 @@ begin
             for ACol := 1 to ColCount - 1 do
             begin
                 p := FormCurrentParty.FParty.Products[ACol - 1];
-                Cells[ACol,ARow] := '';
-                for cv  in xs do
+                Cells[ACol, ARow] := '';
+                for cv in xs do
                 begin
-                    if (cv.ProductID = p.ProductID) AND (cv.Coefficient = c.N) then
+                    if (cv.ProductID = p.ProductID) AND (cv.Coefficient = c.N)
+                    then
                     begin
-                        Cells[ACol,ARow] := FormatFloat('#0.######',cv.Value);
+                        Cells[ACol, ARow] := FormatFloat('#0.######', cv.Value);
                     end;
                 end;
             end;
@@ -284,15 +285,17 @@ begin
         if FCoefs.Count > 0 then
             FixedRows := 1;
 
-        FixedCols := 1;
+        FixedCols := 0;
 
         Cells[0, 0] := '¹';
-        ColWidths[0] := 60;
+
+        ColWidths[0] := AppIni.ReadInteger('Coefficients.StringGrid1.ColWidth',
+          '0', ColWidths[0]);
+
         for ACol := 1 to ColCount - 1 do
         begin
             p := FormCurrentParty.FParty.Products[ACol - 1];
-            Cells[ACol, 0] := Format('%d',
-              [p.Serial]);
+            Cells[ACol, 0] := Format('%d', [p.Serial]);
 
             ColWidths[ACol] := AppIni.ReadInteger
               ('Coefficients.StringGrid1.ColWidth', IntToStr(ACol),
@@ -307,7 +310,7 @@ begin
         for ARow := 1 to RowCount - 1 do
         begin
             c := FCoefs[ARow - 1];
-            Cells[0, ARow] := Format('%d', [c.N]);
+            Cells[0, ARow] := Format('%s', [c.Name]);
             for ACol := 1 to ColCount - 1 do
             begin
                 p := FormCurrentParty.FParty.Products[ACol - 1];
@@ -417,8 +420,8 @@ begin
         begin
             if ColWidths[ACol] < 30 then
                 ColWidths[ACol] := 30;
-            if ColWidths[ACol] > 300 then
-                ColWidths[ACol] := 300;
+            if ColWidths[ACol] > 600 then
+                ColWidths[ACol] := 600;
             AppIni.WriteInteger('Coefficients.StringGrid1.ColWidth',
               IntToStr(ACol), ColWidths[ACol]);
         end;
@@ -446,6 +449,14 @@ begin
     // Do whatever else wanted
     StringGrid_RedrawRow(StringGrid1, 0);
     StringGrid_RedrawCol(StringGrid1, 0);
+    with StringGrid1 do
+    begin
+        if (ACol > 0) and (ARow > 0) then
+            Options := Options + [goEditing]
+        else
+            Options := Options - [goEditing];
+    end;
+
 end;
 
 procedure TFormCoefficients.StringGrid1SetEditText(Sender: TObject;

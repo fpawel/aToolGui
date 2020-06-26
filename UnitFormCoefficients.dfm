@@ -30,7 +30,7 @@ object FormCoefficients: TFormCoefficients
     RowCount = 1
     FixedRows = 0
     GradientEndColor = clBlack
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goEditing]
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing]
     PopupMenu = PopupMenu1
     TabOrder = 0
     OnDrawCell = StringGrid1DrawCell
