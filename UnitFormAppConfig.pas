@@ -32,6 +32,8 @@ type
         procedure ToolButton2Click(Sender: TObject);
         procedure ToolButton1Click(Sender: TObject);
     procedure StringGrid1DblClick(Sender: TObject);
+    procedure StringGrid1MouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     private
         { Private declarations }
 
@@ -63,7 +65,7 @@ implementation
 
 {$R *.dfm}
 
-uses stringutils, stringgridutils, UnitApiClient;
+uses stringutils, stringgridutils, UnitApiClient, UnitAppIni;
 
 procedure TFormAppConfig.FormCreate(Sender: TObject);
 begin
@@ -102,7 +104,7 @@ end;
 
 procedure TFormAppConfig.setup;
 var
-    I: Integer;
+    ACol, I: Integer;
     CanSelect: Boolean;
 begin
     FFormPopup2.Hide;
@@ -113,7 +115,16 @@ begin
         begin
             Cells[0, I + 1] := FConfigParamValues[I].Name;
             Cells[1, I + 1] := FConfigParamValues[I].Value;
+        end;
 
+        for ACol := 1 to ColCount - 1 do
+        begin
+            ColWidths[ACol] := AppIni.ReadInteger
+              ('AppConfig.StringGrid1.ColWidth', IntToStr(ACol), ColWidths[ACol]);
+            if ColWidths[ACol] < 30 then
+                ColWidths[ACol] := 30;
+            if ColWidths[ACol] > 600 then
+                ColWidths[ACol] := 600;
         end;
     end;
 
@@ -252,6 +263,27 @@ begin
 
 end;
 
+procedure TFormAppConfig.StringGrid1MouseUp(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+    ACol: Integer;
+begin
+    with StringGrid1 do
+    begin
+        for ACol := 0 to ColCount - 1 do
+        begin
+            if ColWidths[ACol] < 30 then
+                ColWidths[ACol] := 30;
+            if ColWidths[ACol] > 600 then
+                ColWidths[ACol] := 600;
+            AppIni.WriteInteger('AppConfig.StringGrid1.ColWidth', IntToStr(ACol),
+              ColWidths[ACol]);
+        end;
+
+    end;
+
+end;
+
 procedure TFormAppConfig.OnPopupMenuItemClick(Sender: TObject);
 var
     ACol, ARow: Integer;
@@ -317,6 +349,16 @@ begin
         // Just make the call
     end;
     // Do whatever else wanted
+
+    with grd do
+    begin
+        if ACol = 1 then
+            Options := Options + [goEditing]
+        else
+            Options := Options - [goEditing];
+    end;
+
+
 
     if ARow < 1 then
         exit;

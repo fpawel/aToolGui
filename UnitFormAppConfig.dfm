@@ -33,14 +33,16 @@ object FormAppConfig: TFormAppConfig
     DefaultColWidth = 100
     DefaultDrawing = False
     FixedColor = clBackground
+    FixedCols = 0
     RowCount = 2
     GradientEndColor = clBlack
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goEditing]
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goEditing]
     PopupMenu = PopupMenu1
     TabOrder = 0
     OnDblClick = StringGrid1DblClick
     OnDrawCell = StringGrid1DrawCell
     OnMouseDown = StringGrid1MouseDown
+    OnMouseUp = StringGrid1MouseUp
     OnSelectCell = StringGrid1SelectCell
     OnSetEditText = StringGrid1SetEditText
   end
