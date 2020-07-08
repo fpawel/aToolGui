@@ -20,7 +20,7 @@ type
         { Private declarations }
         FExpanders: TList<TFormExpander>;
         FFormPopup2: TFormPopup2;
-        FPartyProductsValues: IPartyProductsValues;
+
 
         FFormProductsCalcTable: TFormProductsCalcTable;
         FFormProductsDataTable: TFormProductsDataTable;
@@ -30,9 +30,9 @@ type
         procedure setupCalcTable;
     public
         { Public declarations }
+        FPartyProductsValues: IPartyProductsValues;
         procedure setup(x: IPartyProductsValues);
         procedure init;
-
     end;
 
 var

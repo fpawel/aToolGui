@@ -42,7 +42,7 @@ implementation
 {$R *.dfm}
 
 uses stringgridutils, stringutils, UnitApiClient,
-  UnitFormStringGridCopyClipboard;
+  UnitFormStringGridCopyClipboard, UnitFormProductsData;
 
 procedure TFormProductsDataTable.doSetup;
 var
@@ -141,7 +141,6 @@ procedure TFormProductsDataTable.StringGrid1SetEditText(Sender: TObject;
 var
     productID: int64;
     key: string;
-    Sect: ISectionProductParamsValues;
 begin
     With StringGrid1 do
     begin
@@ -157,6 +156,7 @@ begin
             key := FSect.Keys[ARow - 1];
             try
                 ProdPrmClient.setValue(key, productID, Value);
+                FSect.Values[ARow - 1][ACol] := Value;
                 FFormPopup2.Hide;
             except
                 on e: Exception do

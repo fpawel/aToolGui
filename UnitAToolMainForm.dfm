@@ -52,10 +52,6 @@ object AToolMainForm: TAToolMainForm
         object TabSheetAppConfig: TTabSheet
           Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
           ImageIndex = 3
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
         end
         object TabSheet3: TTabSheet
           Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099
@@ -64,10 +60,6 @@ object AToolMainForm: TAToolMainForm
         object TabSheet1: TTabSheet
           Caption = #1044#1072#1085#1085#1099#1077
           ImageIndex = 2
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
         end
       end
     end
@@ -348,6 +340,13 @@ object AToolMainForm: TAToolMainForm
       Caption = #1055#1088#1077#1088#1074#1072#1090#1100
       Visible = False
       OnClick = MenuStopWorkClick
+    end
+    object N8: TMenuItem
+      Caption = #1055#1086#1084#1086#1097#1100
+      object N13: TMenuItem
+        Caption = #1057#1073#1086#1088#1082#1072
+        OnClick = N13Click
+      end
     end
   end
   object ImageList4: TImageList

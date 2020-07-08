@@ -67,7 +67,9 @@ type
         PanelMessageBox: TPanel;
         ImageInfo: TImage;
         TabSheetAppConfig: TTabSheet;
-    N7: TMenuItem;
+        N7: TMenuItem;
+        N8: TMenuItem;
+        N13: TMenuItem;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -88,7 +90,8 @@ type
         procedure N9Click(Sender: TObject);
         procedure N6Click(Sender: TObject);
         procedure MenuSearchProductsNetClick(Sender: TObject);
-    procedure N7Click(Sender: TObject);
+        procedure N7Click(Sender: TObject);
+        procedure N13Click(Sender: TObject);
     private
         { Private declarations }
         FEnableCopyData: boolean;
@@ -319,7 +322,7 @@ begin
     NotifyGuiClient.open(Handle);
 
     FEnableCopyData := true;
-    FormCurrentParty.upload;
+    FormCurrentParty.Upload;
     // FormParties.upload;
 end;
 
@@ -361,8 +364,7 @@ begin
             HandleLuaSuspended(getCopyDataString(Message));
 
         cdcExecuteSelectWorksDialog:
-            HandleSelectWorks(TJsonCD.unmarshal < TArray < string >>
-              (Message));
+            HandleSelectWorks(TJsonCD.unmarshal < TArray < string >> (Message));
 
         cdcGas:
             HandleGas(getCopyDataString(Message));
@@ -377,8 +379,7 @@ begin
             ShowModalMessage(getCopyDataString(Message));
 
         cdcExecuteSelectWorkDialog:
-            HandleSelectWork(TJsonCD.unmarshal < TArray < string >>
-              (Message));
+            HandleSelectWork(TJsonCD.unmarshal < TArray < string >> (Message));
 
     else
         raise Exception.Create('wrong message: ' + IntToStr(Message.WParam));
@@ -388,7 +389,7 @@ end;
 procedure TAToolMainForm.HandlePartiesArchiveChanged(var Message: TMessage);
 begin
     if PageControlMain.ActivePage = TabSheetParties then
-        FormParties.upload;
+        FormParties.Upload;
 end;
 
 procedure TAToolMainForm.ShowModalMessage(AText: String);
@@ -600,6 +601,37 @@ begin
 
 end;
 
+procedure TAToolMainForm.N13Click(Sender: TObject);
+var
+    AForm: TForm;
+    bi: IBuildInfo;
+begin
+    bi := AppInfoClient.buildInfo;
+
+    AForm := TForm.Create(nil);
+    AForm.Font.Assign(Font);
+    AForm.Width := 600;
+    AForm.Height := 300;
+    AForm.BorderStyle := bsSizeToolWin;
+    AForm.Caption := 'Сборка atool';
+    AForm.Position := poScreenCenter;
+    with TMemo.Create(AForm) do
+    begin
+        parent := AForm;
+        ReadOnly := true;
+        BorderStyle := bsNone;
+        Align := alClient;
+        Font.Assign(self.Font);
+        Font.Size := 12;
+        Lines.Text := '';
+        Lines.Add(Format('Дата: %s %s', [bi.Date, bi.Time]));
+        Lines.Add(Format('Сборка: %s', [bi.Uuid]));
+        Lines.Add(Format('Commit: %s', [bi.Commit]));
+    end;
+    AForm.ShowModal;
+    AForm.Free;
+end;
+
 procedure TAToolMainForm.N2Click(Sender: TObject);
 var
     f: TFormNewPartyDialog;
@@ -671,7 +703,7 @@ end;
 procedure TAToolMainForm.HandleCurrentPartyChanged(var Message: TMessage);
 begin
     Show;
-    FormCurrentParty.upload;
+    FormCurrentParty.Upload;
 end;
 
 procedure TAToolMainForm.PageControl1Change(Sender: TObject);
@@ -715,11 +747,11 @@ begin
     end
     else if PageControl.ActivePage = TabSheetParties then
     begin
-        FormParties.upload;
+        FormParties.Upload;
     end
     else if PageControl.ActivePage = TabSheetJournal then
     begin
-        FormJournal.upload;
+        FormJournal.Upload;
     end
 
 end;
@@ -867,7 +899,6 @@ begin
 
     f := TFormSelectWorkDialog.Create(nil);
     f.RadioGroup1.Items.Clear;
-
 
     for I := 0 to length(xs) - 1 do
     begin

@@ -20,6 +20,7 @@ var
     ProdPrmClient: TProductParamService.Iface;
     WorkDialogClient: TWorkDialogService.Iface;
     JournalClient: TJournalService.Iface;
+    AppInfoClient: TAppInfoService.Iface;
 
 implementation
 
@@ -72,6 +73,8 @@ begin
       (prot('WorkDialogService'));
 
     JournalClient := TJournalService.TClient.create(prot('JournalService'));
+
+    AppInfoClient:= TAppInfoService.TClient.create(prot('AppInfoService'));
 
 end;
 
