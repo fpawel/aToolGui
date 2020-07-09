@@ -171,15 +171,8 @@
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="UnitAppIni.pas"/>
-        <DCCReference Include="UnitFormRawModbus.pas">
-            <Form>FormRawModbus</Form>
-            <FormType>dfm</FormType>
-        </DCCReference>
-        <DCCReference Include="UnitFormTemperatureHardware.pas">
-            <Form>FormTemperatureHardware</Form>
-        </DCCReference>
-        <DCCReference Include="UnitFormGas.pas">
-            <Form>FormGas</Form>
+        <DCCReference Include="UnitFormTools.pas">
+            <Form>FormTool</Form>
         </DCCReference>
         <DCCReference Include="UnitFormCoefficients.pas">
             <Form>FormCoefficients</Form>
@@ -241,6 +234,10 @@
         </DCCReference>
         <DCCReference Include="UnitFormSelectWorksDialog.pas">
             <Form>FormSelectWorksDialog</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="UnitFormWorkLogRecords.pas">
+            <Form>FormWorkLogRecords</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Release">

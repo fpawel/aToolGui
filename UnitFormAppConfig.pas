@@ -31,9 +31,9 @@ type
           Shift: TShiftState; X, Y: Integer);
         procedure ToolButton2Click(Sender: TObject);
         procedure ToolButton1Click(Sender: TObject);
-    procedure StringGrid1DblClick(Sender: TObject);
-    procedure StringGrid1MouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+        procedure StringGrid1DblClick(Sender: TObject);
+        procedure StringGrid1MouseUp(Sender: TObject; Button: TMouseButton;
+          Shift: TShiftState; X, Y: Integer);
     private
         { Private declarations }
 
@@ -120,7 +120,8 @@ begin
         for ACol := 1 to ColCount - 1 do
         begin
             ColWidths[ACol] := AppIni.ReadInteger
-              ('AppConfig.StringGrid1.ColWidth', IntToStr(ACol), ColWidths[ACol]);
+              ('AppConfig.StringGrid1.ColWidth', IntToStr(ACol),
+              ColWidths[ACol]);
             if ColWidths[ACol] < 30 then
                 ColWidths[ACol] := 30;
             if ColWidths[ACol] > 600 then
@@ -150,7 +151,7 @@ var
     ACol, ARow: Integer;
     cv: IConfigParamValue;
     Value: string;
-    pt,pt2 : tPoint;
+    pt, pt2: tPoint;
 begin
     if (GetAsyncKeyState(VK_LBUTTON) >= 0) then
         exit;
@@ -195,20 +196,24 @@ begin
         ta := taLeftJustify
     else if (ARow > 0) AND (ACol = 1) then
     begin
-        cv := FConfigParamValues[ARow - 1];
-        if (cv.Type_ = 'float') or (cv.Type_ = 'int') then
+        if Assigned(FConfigParamValues) then
         begin
+            cv := FConfigParamValues[ARow - 1];
+            if (cv.Type_ = 'float') or (cv.Type_ = 'int') then
+            begin
 
-        end
-        else if cv.Type_ = 'bool' then
-        begin
-            grd.Canvas.FillRect(Rect);
-            r2 := Rect;
-            r2.Left := r2.Left + (r2.Width div 2) - 10;
-            DrawCheckbox(StringGrid1, cnv, r2, AText = 'true', '');
-            StringGrid_DrawCellBounds(StringGrid1.Canvas, ACol, ARow, Rect);
-            exit;
+            end
+            else if cv.Type_ = 'bool' then
+            begin
+                grd.Canvas.FillRect(Rect);
+                r2 := Rect;
+                r2.Left := r2.Left + (r2.Width div 2) - 10;
+                DrawCheckbox(StringGrid1, cnv, r2, AText = 'true', '');
+                StringGrid_DrawCellBounds(StringGrid1.Canvas, ACol, ARow, Rect);
+                exit;
+            end;
         end;
+
     end;
 
     if (ARow = 0) then
@@ -276,8 +281,8 @@ begin
                 ColWidths[ACol] := 30;
             if ColWidths[ACol] > 600 then
                 ColWidths[ACol] := 600;
-            AppIni.WriteInteger('AppConfig.StringGrid1.ColWidth', IntToStr(ACol),
-              ColWidths[ACol]);
+            AppIni.WriteInteger('AppConfig.StringGrid1.ColWidth',
+              IntToStr(ACol), ColWidths[ACol]);
         end;
 
     end;
@@ -357,8 +362,6 @@ begin
         else
             Options := Options - [goEditing];
     end;
-
-
 
     if ARow < 1 then
         exit;

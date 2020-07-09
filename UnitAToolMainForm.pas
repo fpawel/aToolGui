@@ -45,7 +45,6 @@ type
         PageControl1: TPageControl;
         TabSheet2: TTabSheet;
         TabSheet3: TTabSheet;
-        TabSheet4: TTabSheet;
         MenuRunScript: TMenuItem;
         MenuRun: TMenuItem;
         MenuStopWork: TMenuItem;
@@ -54,11 +53,6 @@ type
         N12: TMenuItem;
         N9: TMenuItem;
         TabSheetParties: TTabSheet;
-        TabSheetJournal: TTabSheet;
-        Panel1: TPanel;
-        LabelGas: TLabel;
-        LabelTemerature: TLabel;
-        LabelTemeratureSetup: TLabel;
         N3: TMenuItem;
         N6: TMenuItem;
         MenuSearchProductsNet: TMenuItem;
@@ -66,10 +60,15 @@ type
         ImageList4: TImageList;
         PanelMessageBox: TPanel;
         ImageInfo: TImage;
-        TabSheetAppConfig: TTabSheet;
         N7: TMenuItem;
         N8: TMenuItem;
         N13: TMenuItem;
+        N14: TMenuItem;
+        N15: TMenuItem;
+        N16: TMenuItem;
+        N17: TMenuItem;
+        N18: TMenuItem;
+        TabSheetAppConfig: TTabSheet;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -92,6 +91,9 @@ type
         procedure MenuSearchProductsNetClick(Sender: TObject);
         procedure N7Click(Sender: TObject);
         procedure N13Click(Sender: TObject);
+        procedure N15Click(Sender: TObject);
+        procedure N16Click(Sender: TObject);
+        procedure N18Click(Sender: TObject);
     private
         { Private declarations }
         FEnableCopyData: boolean;
@@ -133,6 +135,7 @@ type
         { Public declarations }
         function ExceptionDialog(e: Exception): boolean;
         function GetChartByName(AName: string): TChart;
+        procedure SetupChartsXAxisOrder(t1, t2: TDateTime);
         procedure DeleteEmptyCharts;
         procedure SetupSeriesStringGrids;
         procedure SetupCurrentPartyData;
@@ -145,7 +148,7 @@ var
     AToolMainForm: TAToolMainForm;
 
 const
-    PageIndexChart = 4;
+    PageIndexChart = 3;
 
 implementation
 
@@ -161,14 +164,21 @@ uses System.Types, dateutils, myutils, api, UnitApiClient,
 
     Thrift.Collections, math,
     logfile, apitypes, vclutils, UnitFormCharts,
-    UnitFormChart, UnitFormRawModbus, UnitFormTemperatureHardware, UnitFormGas,
+    UnitFormChart,
     UnitFormCoefficients, UnitFormJournal, UnitFormDelay,
     luahelp, UnitFormSelectWorksDialog,
     UnitFormNewPartyDialog, UnitFormParties, UnitFormSearchProductsNetDialog,
-    UnitFormProgress, UnitFormSelectWorkDialog;
+    UnitFormProgress, UnitFormSelectWorkDialog, UnitFormWorkLogRecords,
+    UnitFormTools;
 
 procedure TAToolMainForm.FormCreate(Sender: TObject);
+var
+    s: string;
+    dt: TDateTime;
 begin
+    dt := ISO8601ToDate('2020-07-09T09:14:04+03:00', false);
+    s := DateTimeToStr(dt);
+
     Application.OnException := AppException;
     FFormProductsData := TFormProductsData.Create(self);
 
@@ -210,44 +220,11 @@ begin
         Show;
     end;
 
-    with FormRawmodbus do
-    begin
-        BorderStyle := bsNone;
-        parent := TabSheet4;
-        Align := alTop;
-        Show;
-    end;
-
-    with FormGas do
-    begin
-        BorderStyle := bsNone;
-        parent := TabSheet4;
-        Align := alTop;
-        Show;
-    end;
-
-    with FormTemperatureHardware do
-    begin
-        BorderStyle := bsNone;
-        parent := TabSheet4;
-        Align := alTop;
-        Show;
-    end;
-
     with FormCoefficients do
     begin
         BorderStyle := bsNone;
         parent := TabSheet3;
         Align := alClient;
-        Show;
-    end;
-
-    with FormJournal do
-    begin
-        BorderStyle := bsNone;
-        parent := TabSheetJournal;
-        Align := alClient;
-        Upload;
         Show;
     end;
 
@@ -314,6 +291,7 @@ begin
             ColWidths[0] := 300;
             ColWidths[1] := 300;
         end;
+        //Values := AppCfgClient.getParamValues;
         Show;
     end;
 
@@ -632,6 +610,25 @@ begin
     AForm.Free;
 end;
 
+procedure TAToolMainForm.N15Click(Sender: TObject);
+begin
+    FormWorkLogRecords.Position := poScreenCenter;
+    FormWorkLogRecords.setup;
+end;
+
+procedure TAToolMainForm.N16Click(Sender: TObject);
+begin
+    FormJournal.Upload;
+    FormJournal.Position := poScreenCenter;
+    FormJournal.Show;
+end;
+
+procedure TAToolMainForm.N18Click(Sender: TObject);
+begin
+    FormTool.Position := poScreenCenter;
+    FormTool.Show;
+end;
+
 procedure TAToolMainForm.N2Click(Sender: TObject);
 var
     f: TFormNewPartyDialog;
@@ -671,6 +668,7 @@ end;
 
 procedure TAToolMainForm.N6Click(Sender: TObject);
 begin
+    FormInterrogate.Position := poScreenCenter;
     FormInterrogate.Show;
 end;
 
@@ -717,17 +715,7 @@ begin
     else if PageControl1.ActivePage = TabSheet1 then
     begin
         SetupCurrentPartyData;
-    end
-    else if PageControl1.ActivePage = TabSheetAppConfig then
-        with FFormAppConfig do
-        begin
-
-            Values := AppCfgClient.getParamValues;
-            ACanSelect := true;
-            with StringGrid1 do
-                StringGrid1SelectCell(StringGrid1, Col, Row, ACanSelect);
-
-        end;
+    end;
     // else if PageControl1.ActivePage = TabSheet2 then
     // begin
     // FormCurrentParty.FParty := FilesClient.getCurrentParty;
@@ -738,6 +726,7 @@ end;
 procedure TAToolMainForm.PageControlMainChange(Sender: TObject);
 var
     PageControl: TPageControl;
+    ACanSelect: boolean;
 begin
     PageControl := Sender as TPageControl;
     PageControl.Repaint;
@@ -749,10 +738,14 @@ begin
     begin
         FormParties.Upload;
     end
-    else if PageControl.ActivePage = TabSheetJournal then
-    begin
-        FormJournal.Upload;
-    end
+    else if PageControl.ActivePage = TabSheetAppConfig then
+        with FFormAppConfig do
+        begin
+            Values := AppCfgClient.getParamValues;
+            ACanSelect := true;
+            with StringGrid1 do
+                StringGrid1SelectCell(StringGrid1, Col, Row, ACanSelect);
+        end;
 
 end;
 
@@ -849,6 +842,25 @@ begin
       #10#10'Ok - продолжить'#10#10'Отмена - закрыть приложение'),
       PChar(ExtractFileName(Application.ExeName)), MB_OKCANCEL or MB_ICONERROR)
       = IDCANCEL;
+end;
+
+procedure TAToolMainForm.SetupChartsXAxisOrder(t1, t2: TDateTime);
+var
+    I: integer;
+    AChart: TChart;
+    d: TDateTime;
+begin
+    if t1 >= t2 then
+        exit;
+
+    d := IncSecond(0, 1);
+
+    with PageControlMain do
+        for I := PageIndexChart to PageCount - 1 do
+        begin
+            AChart := (Pages[I].Controls[0] AS TFormChart).Chart1;
+            AChart.BottomAxis.SetMinMax(t1 - d, t2 + d);
+        end;
 end;
 
 function TAToolMainForm.GetChartByName(AName: string): TChart;
@@ -981,18 +993,18 @@ end;
 
 procedure TAToolMainForm.HandleGas(X: string);
 begin
-    SetStatusLabelText(LabelGas, X);
+    SetStatusLabelText(FormTool.LabelGas, X);
 end;
 
 procedure TAToolMainForm.HandleTemperature(X: string);
 begin
-    SetStatusLabelText(LabelTemerature, X);
+    SetStatusLabelText(FormTool.LabelTemerature, X);
 
 end;
 
 procedure TAToolMainForm.HandleTemperatureSetpoint(X: string);
 begin
-    SetStatusLabelText(LabelTemeratureSetup, X);
+    SetStatusLabelText(FormTool.LabelTemeratureSetup, X);
 end;
 
 procedure TAToolMainForm.HandleStatusMessage(X: TStatusMessage);

@@ -46,9 +46,7 @@ uses
   UnitMeasurement in 'UnitMeasurement.pas',
   UnitFormPopup in 'UnitFormPopup.pas' {FormPopup},
   UnitAppIni in 'UnitAppIni.pas',
-  UnitFormRawModbus in 'UnitFormRawModbus.pas' {FormRawModbus},
-  UnitFormTemperatureHardware in 'UnitFormTemperatureHardware.pas' {FormTemperatureHardware},
-  UnitFormGas in 'UnitFormGas.pas' {FormGas},
+  UnitFormTools in 'UnitFormTools.pas' {FormTool},
   UnitFormCoefficients in 'UnitFormCoefficients.pas' {FormCoefficients},
   UnitFormInterrogate in 'UnitFormInterrogate.pas' {FormInterrogate},
   UnitFormProgress in 'UnitFormProgress.pas' {FormProgress},
@@ -65,7 +63,8 @@ uses
   UnitFormStringGridCopyClipboard in 'UnitFormStringGridCopyClipboard.pas' {FormStringGridCopyClipboard},
   UnitFormSearchProductsNetDialog in 'UnitFormSearchProductsNetDialog.pas' {FormSearchProductsNetDialog},
   UnitFormDelay in 'UnitFormDelay.pas' {FormDelay},
-  UnitFormSelectWorksDialog in 'UnitFormSelectWorksDialog.pas' {FormSelectWorksDialog};
+  UnitFormSelectWorksDialog in 'UnitFormSelectWorksDialog.pas' {FormSelectWorksDialog},
+  UnitFormWorkLogRecords in 'UnitFormWorkLogRecords.pas' {FormWorkLogRecords};
 
 {$R *.res}
 
@@ -79,9 +78,7 @@ begin
   Application.CreateForm(TFormSelectCurrentParty, FormSelectCurrentParty);
   Application.CreateForm(TFormJournal, FormJournal);
   Application.CreateForm(TFormPopup, FormPopup);
-  Application.CreateForm(TFormRawModbus, FormRawModbus);
-  Application.CreateForm(TFormTemperatureHardware, FormTemperatureHardware);
-  Application.CreateForm(TFormGas, FormGas);
+  Application.CreateForm(TFormTool, FormTool);
   Application.CreateForm(TFormCoefficients, FormCoefficients);
   Application.CreateForm(TFormInterrogate, FormInterrogate);
   Application.CreateForm(TFormProgress, FormProgress);
@@ -90,6 +87,7 @@ begin
   Application.CreateForm(TFormStringGridCopyClipboard, FormStringGridCopyClipboard);
   Application.CreateForm(TFormDelay, FormDelay);
   Application.CreateForm(TFormSelectWorksDialog, FormSelectWorksDialog);
+  Application.CreateForm(TFormWorkLogRecords, FormWorkLogRecords);
   Application.Run;
 
 end.

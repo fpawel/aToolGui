@@ -25,6 +25,7 @@ object FormProductsDataTable: TFormProductsDataTable
     Margins.Right = 5
     Margins.Bottom = 5
     Align = alClient
+    BiDiMode = bdLeftToRight
     BorderStyle = bsNone
     DefaultColWidth = 100
     DefaultDrawing = False
@@ -33,7 +34,8 @@ object FormProductsDataTable: TFormProductsDataTable
     RowCount = 4
     FixedRows = 0
     GradientEndColor = clBlack
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goEditing, goTabs]
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goEditing, goTabs, goThumbTracking]
+    ParentBiDiMode = False
     PopupMenu = FormStringGridCopyClipboard.PopupMenu1
     TabOrder = 0
     OnDrawCell = StringGrid1DrawCell

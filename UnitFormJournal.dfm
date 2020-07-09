@@ -1,7 +1,8 @@
 object FormJournal: TFormJournal
   Left = 0
   Top = 0
-  Caption = 'FormJournal'
+  BorderStyle = bsSizeToolWin
+  Caption = #1046#1091#1088#1085#1072#1083' '#1085#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1088#1080#1073#1086#1088#1086#1074
   ClientHeight = 348
   ClientWidth = 718
   Color = clBtnHighlight
@@ -11,6 +12,7 @@ object FormJournal: TFormJournal
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 18

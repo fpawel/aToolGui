@@ -65,7 +65,8 @@ implementation
 {$R *.dfm}
 
 uses System.types, dateutils, teechartutils, apitypes, math, stringgridutils,
-    UnitFormCurrentParty, UnitAToolMainForm, logfile;
+    UnitFormCurrentParty, UnitAToolMainForm, logfile, UnitFormWorkLogRecords,
+    Thrift.Collections;
 
 const
     col_count = 6;
@@ -419,12 +420,12 @@ var
     prod_param: IProductParamSeries;
     Rect: TRect;
     sel: TGridRect;
-    AActive:boolean;
+    AActive: boolean;
 begin
-    if not ( (Key = VK_SPACE) or (Key = VK_ESCAPE))  then
+    if not((Key = VK_SPACE) or (Key = VK_ESCAPE)) then
         exit;
     sel := StringGrid1.Selection;
-    AActive := false;
+    AActive := False;
     for ACol := sel.Left to sel.Right do
         for ARow := sel.Top to sel.Bottom do
         begin
@@ -433,8 +434,8 @@ begin
                 Continue;
             if ser.Active then
             begin
-                AActive := true;
-                Break;
+                AActive := True;
+                break;
             end;
         end;
 

@@ -49,10 +49,6 @@ object AToolMainForm: TAToolMainForm
         object TabSheet2: TTabSheet
           Caption = #1055#1072#1088#1090#1080#1103
         end
-        object TabSheetAppConfig: TTabSheet
-          Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
-          ImageIndex = 3
-        end
         object TabSheet3: TTabSheet
           Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099
           ImageIndex = 1
@@ -67,76 +63,8 @@ object AToolMainForm: TAToolMainForm
       Caption = #1040#1088#1093#1080#1074
       ImageIndex = 1
     end
-    object TabSheet4: TTabSheet
-      Caption = #1059#1087#1088#1072#1074#1083#1077#1085#1080#1077
-      ImageIndex = 2
-      object Panel1: TPanel
-        Left = 0
-        Top = 520
-        Width = 940
-        Height = 24
-        Align = alBottom
-        BevelOuter = bvNone
-        Caption = 'Panel1'
-        ShowCaption = False
-        TabOrder = 0
-        object LabelGas: TLabel
-          AlignWithMargins = True
-          Left = 3
-          Top = 5
-          Width = 114
-          Height = 16
-          Margins.Top = 5
-          Margins.Right = 15
-          Align = alLeft
-          Caption = #1043#1072#1079': '#1085#1077' '#1091#1089#1090#1072#1085#1086#1074#1083#1077#1085
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clNavy
-          Font.Height = -13
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-        end
-        object LabelTemerature: TLabel
-          AlignWithMargins = True
-          Left = 135
-          Top = 5
-          Width = 151
-          Height = 16
-          Margins.Top = 5
-          Margins.Right = 15
-          Align = alLeft
-          Caption = #1058#1077#1084#1087#1077#1088#1072#1090#1091#1088#1072': '#1085#1077' '#1089#1095#1080#1090#1072#1085#1072
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clMaroon
-          Font.Height = -13
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-          ExplicitLeft = 125
-        end
-        object LabelTemeratureSetup: TLabel
-          AlignWithMargins = True
-          Left = 304
-          Top = 5
-          Width = 195
-          Height = 16
-          Margins.Top = 5
-          Margins.Right = 15
-          Align = alLeft
-          Caption = #1059#1089#1090#1072#1074#1082#1072' '#1090#1077#1084#1087#1077#1088#1072#1090#1091#1088#1099': '#1085#1077' '#1079#1072#1076#1072#1085#1072
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clTeal
-          Font.Height = -13
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-          ExplicitLeft = 284
-        end
-      end
-    end
-    object TabSheetJournal: TTabSheet
-      Caption = #1046#1091#1088#1085#1072#1083
+    object TabSheetAppConfig: TTabSheet
+      Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
       ImageIndex = 2
     end
   end
@@ -307,10 +235,6 @@ object AToolMainForm: TAToolMainForm
       object N3: TMenuItem
         Caption = '-'
       end
-      object N6: TMenuItem
-        Caption = #1046#1091#1088#1085#1072#1083' '#1087#1088#1080#1105#1084#1086#1087#1077#1088#1077#1076#1072#1095#1080
-        OnClick = N6Click
-      end
     end
     object MenuRun: TMenuItem
       AutoHotkeys = maManual
@@ -340,6 +264,28 @@ object AToolMainForm: TAToolMainForm
       Caption = #1055#1088#1077#1088#1074#1072#1090#1100
       Visible = False
       OnClick = MenuStopWorkClick
+    end
+    object N17: TMenuItem
+      Caption = #1059#1087#1088#1072#1074#1083#1077#1085#1080#1077
+      object N18: TMenuItem
+        Caption = #1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1077
+        OnClick = N18Click
+      end
+    end
+    object N14: TMenuItem
+      Caption = #1046#1091#1088#1085#1072#1083#1099
+      object N16: TMenuItem
+        Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1087#1088#1080#1073#1086#1088#1086#1074
+        OnClick = N16Click
+      end
+      object N15: TMenuItem
+        Caption = #1054#1087#1088#1086#1089' '#1087#1088#1080#1073#1086#1088#1086#1074
+        OnClick = N15Click
+      end
+      object N6: TMenuItem
+        Caption = #1055#1088#1080#1105#1084#1086#1087#1077#1088#1077#1076#1072#1095#1072
+        OnClick = N6Click
+      end
     end
     object N8: TMenuItem
       Caption = #1055#1086#1084#1086#1097#1100
