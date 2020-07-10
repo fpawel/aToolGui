@@ -1,4 +1,4 @@
-object FormTool: TFormTool
+object FormTools: TFormTools
   AlignWithMargins = True
   Left = 0
   Top = 0
@@ -28,9 +28,6 @@ object FormTool: TFormTool
     Align = alTop
     Caption = #1043#1072#1079#1086#1074#1099#1081' '#1073#1083#1086#1082
     TabOrder = 0
-    ExplicitLeft = 0
-    ExplicitTop = 0
-    ExplicitWidth = 834
     object LabelGas: TLabel
       AlignWithMargins = True
       Left = 197
@@ -47,8 +44,7 @@ object FormTool: TFormTool
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      ExplicitLeft = 333
-      ExplicitTop = 25
+      ExplicitHeight = 16
     end
     object Button1: TButton
       AlignWithMargins = True
@@ -62,7 +58,6 @@ object FormTool: TFormTool
       Caption = #1050#1083#1072#1087#1072#1085
       TabOrder = 0
       OnClick = Button1Click
-      ExplicitHeight = 26
     end
     object EditGas: TEdit
       AlignWithMargins = True
@@ -75,6 +70,7 @@ object FormTool: TFormTool
       NumbersOnly = True
       TabOrder = 1
       Text = '1'
+      ExplicitHeight = 24
     end
   end
   object GroupBox2: TGroupBox
@@ -90,7 +86,6 @@ object FormTool: TFormTool
     Align = alTop
     Caption = #1058#1077#1084#1087#1077#1088#1072#1090#1091#1088#1085#1072#1103' '#1082#1072#1084#1077#1088#1072
     TabOrder = 1
-    ExplicitWidth = 777
     DesignSize = (
       526
       129)
@@ -107,7 +102,7 @@ object FormTool: TFormTool
       AlignWithMargins = True
       Left = 101
       Top = 99
-      Width = 401
+      Width = 151
       Height = 16
       Margins.Top = 5
       Margins.Right = 15
@@ -119,13 +114,12 @@ object FormTool: TFormTool
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      ExplicitWidth = 652
     end
     object LabelTemeratureSetup: TLabel
       AlignWithMargins = True
       Left = 273
       Top = 63
-      Width = 229
+      Width = 195
       Height = 16
       Margins.Top = 5
       Margins.Right = 15
@@ -137,7 +131,6 @@ object FormTool: TFormTool
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      ExplicitWidth = 480
     end
     object Button2: TButton
       AlignWithMargins = True
@@ -210,7 +203,7 @@ object FormTool: TFormTool
       Left = 197
       Top = 60
       Width = 70
-      Height = 25
+      Height = 24
       Margins.Bottom = 12
       NumbersOnly = True
       TabOrder = 6
@@ -291,20 +284,18 @@ object FormTool: TFormTool
       NumbersOnly = True
       TabOrder = 0
       Text = '16'
-      ExplicitWidth = 353
     end
     object EditCmdData: TEdit
       AlignWithMargins = True
       Left = 175
       Top = 80
       Width = 334
-      Height = 25
+      Height = 24
       Margins.Bottom = 8
       Anchors = [akLeft, akTop, akRight]
       PopupMenu = PopupMenu1
       TabOrder = 1
       Text = '16'
-      ExplicitWidth = 353
     end
     object Button9: TButton
       AlignWithMargins = True
@@ -316,7 +307,7 @@ object FormTool: TFormTool
       Anchors = [akTop, akRight]
       Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1100' '#1082#1086#1084#1072#1085#1076#1091
       TabOrder = 2
-      ExplicitLeft = 393
+      OnClick = Button9Click
     end
     object ComboBox1: TComboBox
       Left = 175
@@ -334,7 +325,6 @@ object FormTool: TFormTool
         'FLOAT BIG ENDIAN'
         'FLOAT LITTLE ENDIAN'
         'HEX')
-      ExplicitWidth = 212
     end
     object ComboBox2: TComboBox
       Left = 175
@@ -344,7 +334,6 @@ object FormTool: TFormTool
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 4
       Text = 'ComboBox1'
-      ExplicitWidth = 353
     end
   end
   object PopupMenu1: TPopupMenu

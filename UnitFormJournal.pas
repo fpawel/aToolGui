@@ -27,6 +27,7 @@ type
           var CanSelect: Boolean);
         procedure N2Click(Sender: TObject);
         procedure N1Click(Sender: TObject);
+    procedure FormResize(Sender: TObject);
     private
         { Private declarations }
         FEntries: IThriftList<IJournalEntry>;
@@ -62,6 +63,20 @@ begin
         FixedCols := 0;
         FixedRows := 0;
     end;
+end;
+
+procedure TFormJournal.FormResize(Sender: TObject);
+var
+  I: integer;
+begin
+    with StringGrid1 do
+    begin
+        ColWidths[colCount-1] := self.ClientWidth - 50 - StringGrid2.Width;
+        for I := 0 to colCount-2 do
+            ColWidths[colCount-1] := ColWidths[colCount-1] - ColWidths[i];
+
+    end;
+
 end;
 
 procedure TFormJournal.N1Click(Sender: TObject);

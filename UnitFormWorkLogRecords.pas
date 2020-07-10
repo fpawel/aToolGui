@@ -14,7 +14,7 @@ type
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
           Rect: TRect; State: TGridDrawState);
         procedure FormResize(Sender: TObject);
-    procedure StringGrid1DblClick(Sender: TObject);
+        procedure StringGrid1DblClick(Sender: TObject);
     private
         { Private declarations }
     public
@@ -30,12 +30,12 @@ implementation
 {$R *.dfm}
 
 uses stringgridutils, dateutils, UnitAToolMainForm, Thrift.Collections,
-  apitypes, UnitApiClient;
+    apitypes, UnitApiClient;
 
 procedure TFormWorkLogRecords.setup;
 var
     xs: IThriftList<IWorkLogRecord>;
-    i:integer;
+    i: Integer;
     X: IWorkLogRecord;
 begin
     xs := CurrFileClient.listWorkLogRecords;
@@ -52,12 +52,12 @@ begin
     with StringGrid1 do
     begin
         RowCount := xs.Count;
-        for i := 0 to xs.Count-1 do
+        for i := 0 to xs.Count - 1 do
         begin
-            x := xs[i];
-            Cells[0,i] := x.StrtedAt;
-            Cells[1,i] := x.CompletedAt;
-            Cells[2,i] := x.WorkName;
+            X := xs[i];
+            Cells[0, i] := X.StrtedAt;
+            Cells[1, i] := X.CompletedAt;
+            Cells[2, i] := X.WorkName;
         end;
     end;
     FormResize(self);
@@ -69,26 +69,25 @@ procedure TFormWorkLogRecords.FormResize(Sender: TObject);
 begin
     with StringGrid1 do
     begin
-        ColWidths[2] := Self.ClientWidth - 50 - ColWidths[1] - ColWidths[0];
+        ColWidths[2] := self.ClientWidth - 50 - ColWidths[1] - ColWidths[0];
 
     end;
 end;
 
 procedure TFormWorkLogRecords.StringGrid1DblClick(Sender: TObject);
-var t1,t2:TDateTime;
+var
+    t1, t2: TDateTime;
 begin
     try
         with StringGrid1 do
         begin
-            t1 := ISO8601ToDate(Cells[0,Row], false);
-            t2 := ISO8601ToDate(Cells[1,Row], false);
+            t1 := ISO8601ToDate(Cells[0, Row], false);
+            t2 := ISO8601ToDate(Cells[1, Row], false);
         end;
     except
         exit;
     end;
-    AToolMainForm.SetupChartsXAxisOrder(t1,t2);
-
-
+    AToolMainForm.SetupChartsXAxisOrder(t1, t2);
 
 end;
 
@@ -121,8 +120,7 @@ begin
 
     if ACol in [0, 1] then
     begin
-        AText := FormatDateTime('dd.MM.yy hh:nn',
-          ISO8601ToDate('2020-07-09T09:14:04+03:00', false));
+        AText := FormatDateTime('dd.MM.yy hh:nn', ISO8601ToDate(AText, false));
         cnv.Font.Color := clGreen;
     end;
 

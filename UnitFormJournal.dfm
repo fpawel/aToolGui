@@ -14,13 +14,14 @@ object FormJournal: TFormJournal
   OldCreateOrder = False
   Position = poScreenCenter
   OnCreate = FormCreate
+  OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 18
   object StringGrid1: TStringGrid
     AlignWithMargins = True
-    Left = 109
+    Left = 127
     Top = 3
-    Width = 606
+    Width = 588
     Height = 342
     Align = alClient
     BorderStyle = bsNone
@@ -35,12 +36,14 @@ object FormJournal: TFormJournal
     TabOrder = 0
     OnDblClick = StringGrid1DblClick
     OnDrawCell = StringGrid1DrawCell
+    ExplicitLeft = 109
+    ExplicitWidth = 606
   end
   object StringGrid2: TStringGrid
     AlignWithMargins = True
     Left = 3
     Top = 3
-    Width = 100
+    Width = 118
     Height = 342
     Align = alLeft
     BorderStyle = bsNone

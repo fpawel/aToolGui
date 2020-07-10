@@ -276,7 +276,7 @@ var
     p: IProduct;
 begin
     StringGrid_Clear(StringGrid1);
-    FCoefs := CoefsClient.listCoefficients;
+    FCoefs := AppCfgClient.currentDeviceInfo.Coefficients;
     // FProducts := UnitApiClient.FilesClient.getCurrentParty.Products;
     with StringGrid1 do
     begin

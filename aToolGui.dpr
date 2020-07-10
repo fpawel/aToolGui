@@ -46,7 +46,7 @@ uses
   UnitMeasurement in 'UnitMeasurement.pas',
   UnitFormPopup in 'UnitFormPopup.pas' {FormPopup},
   UnitAppIni in 'UnitAppIni.pas',
-  UnitFormTools in 'UnitFormTools.pas' {FormTool},
+  UnitFormTools in 'UnitFormTools.pas' {FormTools},
   UnitFormCoefficients in 'UnitFormCoefficients.pas' {FormCoefficients},
   UnitFormInterrogate in 'UnitFormInterrogate.pas' {FormInterrogate},
   UnitFormProgress in 'UnitFormProgress.pas' {FormProgress},
@@ -78,7 +78,7 @@ begin
   Application.CreateForm(TFormSelectCurrentParty, FormSelectCurrentParty);
   Application.CreateForm(TFormJournal, FormJournal);
   Application.CreateForm(TFormPopup, FormPopup);
-  Application.CreateForm(TFormTool, FormTool);
+  Application.CreateForm(TFormTools, FormTools);
   Application.CreateForm(TFormCoefficients, FormCoefficients);
   Application.CreateForm(TFormInterrogate, FormInterrogate);
   Application.CreateForm(TFormProgress, FormProgress);

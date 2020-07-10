@@ -172,7 +172,7 @@
         </DCCReference>
         <DCCReference Include="UnitAppIni.pas"/>
         <DCCReference Include="UnitFormTools.pas">
-            <Form>FormTool</Form>
+            <Form>FormTools</Form>
         </DCCReference>
         <DCCReference Include="UnitFormCoefficients.pas">
             <Form>FormCoefficients</Form>

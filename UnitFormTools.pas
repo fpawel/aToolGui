@@ -11,7 +11,7 @@ type
     TSyncThrProc = reference to procedure(thr:TThread);
     TProc = reference to procedure;
 
-    TFormTool = class(TForm)
+    TFormTools = class(TForm)
         GroupBox1: TGroupBox;
         Button1: TButton;
         EditGas: TEdit;
@@ -53,6 +53,7 @@ type
         procedure Button3Click(Sender: TObject);
         procedure Button5Click(Sender: TObject);
         procedure Button8Click(Sender: TObject);
+    procedure Button9Click(Sender: TObject);
     private
         { Private declarations }
     public
@@ -60,7 +61,7 @@ type
     end;
 
 var
-    FormTool: TFormTool;
+    FormTools: TFormTools;
 
 implementation
 
@@ -68,27 +69,27 @@ implementation
 
 uses myutils, UnitApiClient, apitypes, UnitAToolMainForm, stringutils;
 
-procedure TFormTool.Button1Click(Sender: TObject);
+procedure TFormTools.Button1Click(Sender: TObject);
 begin
     RunWorkClient.switchGas(StrToInt(EditGas.Text));
 end;
 
-procedure TFormTool.Button2Click(Sender: TObject);
+procedure TFormTools.Button2Click(Sender: TObject);
 begin
     TempDeviceClient.setDestination(StrToFloat2(EditTemp.Text));
 end;
 
-procedure TFormTool.Button3Click(Sender: TObject);
+procedure TFormTools.Button3Click(Sender: TObject);
 begin
     TempDeviceClient.stop;
 end;
 
-procedure TFormTool.Button4Click(Sender: TObject);
+procedure TFormTools.Button4Click(Sender: TObject);
 begin
     TempDeviceClient.start;
 end;
 
-procedure TFormTool.Button5Click(Sender: TObject);
+procedure TFormTools.Button5Click(Sender: TObject);
 var
     thr: TThread;
 begin
@@ -130,34 +131,45 @@ begin
 
 end;
 
-procedure TFormTool.Button6Click(Sender: TObject);
+procedure TFormTools.Button6Click(Sender: TObject);
 begin
     TempDeviceClient.coolingOff;
 end;
 
-procedure TFormTool.Button7Click(Sender: TObject);
+procedure TFormTools.Button7Click(Sender: TObject);
 begin
     TempDeviceClient.coolingOn;
 end;
 
-procedure TFormTool.Button8Click(Sender: TObject);
+procedure TFormTools.Button8Click(Sender: TObject);
 begin
     TempDeviceClient.setup(StrToFloat2(EditTemp.Text));
 end;
 
-procedure TFormTool.N321Click(Sender: TObject);
+procedure TFormTools.Button9Click(Sender: TObject);
+var r:IRequestDeviceCommand;
 begin
-    EditCmd.Text := HelperClient.FormatWrite32BCD(EditCmdData.Text);
+    r := TRequestDeviceCommandImpl.Create;
+    r.CmdModbus := StrToInt(EditCmd.Text);
+    r.CmdDevice := ComboBox2.Text;
+    r.Format := ComboBox1.Text;
+    r.Argument := EditCmdData.Text;
+    RunWorkClient.sendDeviceCommand(r);
 end;
 
-procedure TFormTool.N32floatBE1Click(Sender: TObject);
+procedure TFormTools.N321Click(Sender: TObject);
 begin
-    EditCmd.Text := HelperClient.FormatWrite32FloatBE(EditCmdData.Text);
+    EditCmdData.Text := HelperClient.FormatWrite32BCD(EditCmdData.Text);
 end;
 
-procedure TFormTool.N32floatLE1Click(Sender: TObject);
+procedure TFormTools.N32floatBE1Click(Sender: TObject);
 begin
-    EditCmd.Text := HelperClient.FormatWrite32FloatLE(EditCmdData.Text);
+    EditCmdData.Text := HelperClient.FormatWrite32FloatBE(EditCmdData.Text);
+end;
+
+procedure TFormTools.N32floatLE1Click(Sender: TObject);
+begin
+    EditCmdData.Text := HelperClient.FormatWrite32FloatLE(EditCmdData.Text);
 end;
 
 end.

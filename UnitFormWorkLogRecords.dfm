@@ -41,9 +41,6 @@ object FormWorkLogRecords: TFormWorkLogRecords
     TabOrder = 0
     OnDblClick = StringGrid1DblClick
     OnDrawCell = StringGrid1DrawCell
-    ExplicitTop = 5
-    ExplicitWidth = 641
-    ExplicitHeight = 128
   end
   object Panel1: TPanel
     Left = 0
@@ -54,6 +51,5 @@ object FormWorkLogRecords: TFormWorkLogRecords
     BevelOuter = bvNone
     Caption = #1042' '#1078#1091#1088#1085#1072#1083#1077' '#1085#1077#1090' '#1079#1072#1087#1080#1089#1077#1081
     TabOrder = 1
-    ExplicitWidth = 710
   end
 end

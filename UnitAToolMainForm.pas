@@ -621,12 +621,22 @@ begin
     FormJournal.Upload;
     FormJournal.Position := poScreenCenter;
     FormJournal.Show;
+    FormJournal.OnResize(FormTools);
 end;
 
 procedure TAToolMainForm.N18Click(Sender: TObject);
+var xs : IThriftList<string>;
+  I: Integer;
 begin
-    FormTool.Position := poScreenCenter;
-    FormTool.Show;
+    FormTools.Position := poScreenCenter;
+    FormTools.ComboBox2.Items.Clear;
+    xs := AppCfgClient.currentDeviceInfo.Commands;
+    for I := 0 to xs.Count - 1 do
+        FormTools.ComboBox2.Items.Add(xs[i]);
+    if xs.Count > 0 then
+        FormTools.ComboBox2.ItemIndex := 0;
+    FormTools.Show;
+
 end;
 
 procedure TAToolMainForm.N2Click(Sender: TObject);
@@ -993,18 +1003,18 @@ end;
 
 procedure TAToolMainForm.HandleGas(X: string);
 begin
-    SetStatusLabelText(FormTool.LabelGas, X);
+    SetStatusLabelText(FormTools.LabelGas, X);
 end;
 
 procedure TAToolMainForm.HandleTemperature(X: string);
 begin
-    SetStatusLabelText(FormTool.LabelTemerature, X);
+    SetStatusLabelText(FormTools.LabelTemerature, X);
 
 end;
 
 procedure TAToolMainForm.HandleTemperatureSetpoint(X: string);
 begin
-    SetStatusLabelText(FormTool.LabelTemeratureSetup, X);
+    SetStatusLabelText(FormTools.LabelTemeratureSetup, X);
 end;
 
 procedure TAToolMainForm.HandleStatusMessage(X: TStatusMessage);
