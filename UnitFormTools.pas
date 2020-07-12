@@ -5,7 +5,7 @@ interface
 uses
     Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
     System.Classes, Vcl.Graphics,
-    Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Menus;
+    Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Menus, Vcl.ExtCtrls;
 
 type
     TSyncThrProc = reference to procedure(thr:TThread);
@@ -29,19 +29,19 @@ type
         Button8: TButton;
         LabelTemeratureSetup: TLabel;
         GroupBoxRawModbus: TGroupBox;
-        Label2: TLabel;
-        Label1: TLabel;
-        EditCmd: TEdit;
-        EditCmdData: TEdit;
-        Button9: TButton;
         PopupMenu1: TPopupMenu;
         N321: TMenuItem;
         N32floatBE1: TMenuItem;
         N32floatLE1: TMenuItem;
-    Label3: TLabel;
-    ComboBox1: TComboBox;
-    Label5: TLabel;
+    GroupBox3: TGroupBox;
+    GridPanel1: TGridPanel;
+    Label1: TLabel;
+    EditCmd: TEdit;
     ComboBox2: TComboBox;
+    Label2: TLabel;
+    ComboBox1: TComboBox;
+    EditCmdData: TEdit;
+    Button9: TButton;
         procedure Button1Click(Sender: TObject);
         procedure Button2Click(Sender: TObject);
         procedure N321Click(Sender: TObject);
@@ -49,7 +49,6 @@ type
         procedure N32floatLE1Click(Sender: TObject);
         procedure Button7Click(Sender: TObject);
         procedure Button6Click(Sender: TObject);
-        procedure Button4Click(Sender: TObject);
         procedure Button3Click(Sender: TObject);
         procedure Button5Click(Sender: TObject);
         procedure Button8Click(Sender: TObject);
@@ -82,11 +81,6 @@ end;
 procedure TFormTools.Button3Click(Sender: TObject);
 begin
     TempDeviceClient.stop;
-end;
-
-procedure TFormTools.Button4Click(Sender: TObject);
-begin
-    TempDeviceClient.start;
 end;
 
 procedure TFormTools.Button5Click(Sender: TObject);

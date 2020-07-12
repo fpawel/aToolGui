@@ -41,7 +41,7 @@ type
         Panel1: TPanel;
         StringGrid1: TStringGrid;
         PopupMenu1: TPopupMenu;
-    MenuDeleteProducts: TMenuItem;
+        MenuDeleteProducts: TMenuItem;
         MenuProductsComport: TMenuItem;
         MenuSetChartSeparator: TMenuItem;
         MenuSetChart: TMenuItem;
@@ -114,7 +114,7 @@ implementation
 uses stringgridutils, stringutils, dateutils,
     vclutils, UnitFormPopup, UnitApiClient, myutils, UnitAToolMainForm,
     UnitAppIni, UnitFormInterrogate, teechartutils, UnitFormCoefficients,
-    UnitFormPopup2;
+    UnitFormPopup2, UnitFormWrite32;
 
 {$R *.dfm}
 
@@ -561,14 +561,14 @@ begin
             exit;
 
         FixedRows := 1;
-        //ColWidths[0] := 100;
+        // ColWidths[0] := 100;
 
         Cells[0, 0] := 'СОМ порт';
         Cells[0, 1] := 'Адрес';
         Cells[0, 2] := 'Номер';
 
-        ColWidths[0] := AppIni.ReadInteger('StringGrid1.ColWidth',
-              IntToStr(0), ColWidths[0]);
+        ColWidths[0] := AppIni.ReadInteger('StringGrid1.ColWidth', IntToStr(0),
+          ColWidths[0]);
 
         for ACol := 1 to ColCount - 1 do
         begin
@@ -670,6 +670,9 @@ begin
 end;
 
 procedure TFormCurrentParty.upload;
+var
+    xs: IThriftList<string>;
+    i: integer;
 begin
     FParty := FilesClient.getCurrentParty;
     FParams := CurrFileClient.listDeviceParams;
@@ -687,6 +690,14 @@ begin
     end;
     FormCoefficients.setup;
     CurrFileClient.requestChart;
+
+    FormWrite32.ComboBoxCmd.Items.Clear;
+    FormWrite32.ComboBoxCmd.Text := '';
+    xs := AppCfgClient.currentDeviceInfo.Commands;
+    for I := 0 to xs.Count - 1 do
+        FormWrite32.ComboBoxCmd.Items.Add(xs[i]);
+    if xs.Count > 0 then
+        FormWrite32.ComboBoxCmd.ItemIndex := 0;
 end;
 
 procedure TFormCurrentParty.AddMeasurements(xs: TArray<TMeasurement>);

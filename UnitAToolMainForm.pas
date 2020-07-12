@@ -48,7 +48,6 @@ type
         MenuRunScript: TMenuItem;
         MenuRun: TMenuItem;
         MenuStopWork: TMenuItem;
-        N10: TMenuItem;
         N11: TMenuItem;
         N12: TMenuItem;
         N9: TMenuItem;
@@ -66,9 +65,23 @@ type
         N14: TMenuItem;
         N15: TMenuItem;
         N16: TMenuItem;
-        N17: TMenuItem;
-        N18: TMenuItem;
         TabSheetAppConfig: TTabSheet;
+    MenuWrite32: TMenuItem;
+    N22: TMenuItem;
+    N110: TMenuItem;
+    N23: TMenuItem;
+    N31: TMenuItem;
+    N41: TMenuItem;
+    N51: TMenuItem;
+    N61: TMenuItem;
+    N24: TMenuItem;
+    N26: TMenuItem;
+    N27: TMenuItem;
+    N28: TMenuItem;
+    N29: TMenuItem;
+    N30: TMenuItem;
+    N32: TMenuItem;
+    N19: TMenuItem;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -85,7 +98,6 @@ type
         procedure PageControl1Change(Sender: TObject);
         procedure MenuRunScriptClick(Sender: TObject);
         procedure MenuStopWorkClick(Sender: TObject);
-        procedure N10Click(Sender: TObject);
         procedure N9Click(Sender: TObject);
         procedure N6Click(Sender: TObject);
         procedure MenuSearchProductsNetClick(Sender: TObject);
@@ -93,7 +105,14 @@ type
         procedure N13Click(Sender: TObject);
         procedure N15Click(Sender: TObject);
         procedure N16Click(Sender: TObject);
-        procedure N18Click(Sender: TObject);
+    procedure N24Click(Sender: TObject);
+    procedure N26Click(Sender: TObject);
+    procedure N27Click(Sender: TObject);
+    procedure N30Click(Sender: TObject);
+    procedure N32Click(Sender: TObject);
+    procedure N28Click(Sender: TObject);
+    procedure N29Click(Sender: TObject);
+    procedure MenuWrite32Click(Sender: TObject);
     private
         { Private declarations }
         FEnableCopyData: boolean;
@@ -169,7 +188,7 @@ uses System.Types, dateutils, myutils, api, UnitApiClient,
     luahelp, UnitFormSelectWorksDialog,
     UnitFormNewPartyDialog, UnitFormParties, UnitFormSearchProductsNetDialog,
     UnitFormProgress, UnitFormSelectWorkDialog, UnitFormWorkLogRecords,
-    UnitFormTools;
+    UnitFormTools, stringutils, UnitFormWrite32;
 
 procedure TAToolMainForm.FormCreate(Sender: TObject);
 var
@@ -301,7 +320,7 @@ begin
 
     FEnableCopyData := true;
     FormCurrentParty.Upload;
-    // FormParties.upload;
+    MenuWrite32.Click;
 end;
 
 procedure TAToolMainForm.HandleCopydata(var Message: TMessage);
@@ -561,22 +580,18 @@ begin
     RunWorkClient.interrupt;
 end;
 
-procedure TAToolMainForm.N10Click(Sender: TObject);
-var
-    f: TFormAppConfig;
+procedure TAToolMainForm.MenuWrite32Click(Sender: TObject);
 begin
-    f := TFormAppConfig.Create(nil);
-    f.FUpdateAppConfig := true;
-    try
-        f.Values := AppCfgClient.getParamValues;
-    except
-        f.Free;
-        raise;
+    if MenuWrite32.Checked then
+    begin
+        FormWrite32.ToolButtonStop.Click;
+        exit;
     end;
-    f.ToolBar1.Hide;
-    f.ShowModal;
-    // FormCurrentParty.upload;
-
+    FormWrite32.Panel1.Parent:= FormCurrentParty;
+    FormWrite32.Panel1.Align := alBottom;
+    FormWrite32.Panel1.Font.Size := 9;
+    FormWrite32.Panel1.Show;
+    MenuWrite32.Checked := true;
 end;
 
 procedure TAToolMainForm.N13Click(Sender: TObject);
@@ -600,7 +615,7 @@ begin
         BorderStyle := bsNone;
         Align := alClient;
         Font.Assign(self.Font);
-        Font.Size := 12;
+        Font.Size := 9;
         Lines.Text := '';
         Lines.Add(Format('Дата: %s %s', [bi.Date, bi.Time]));
         Lines.Add(Format('Сборка: %s', [bi.Uuid]));
@@ -624,19 +639,41 @@ begin
     FormJournal.OnResize(FormTools);
 end;
 
-procedure TAToolMainForm.N18Click(Sender: TObject);
-var xs : IThriftList<string>;
-  I: Integer;
+procedure TAToolMainForm.N24Click(Sender: TObject);
 begin
-    FormTools.Position := poScreenCenter;
-    FormTools.ComboBox2.Items.Clear;
-    xs := AppCfgClient.currentDeviceInfo.Commands;
-    for I := 0 to xs.Count - 1 do
-        FormTools.ComboBox2.Items.Add(xs[i]);
-    if xs.Count > 0 then
-        FormTools.ComboBox2.ItemIndex := 0;
-    FormTools.Show;
+    RunWorkClient.switchGas((Sender as TMenuItem).Tag);
+end;
 
+procedure TAToolMainForm.N26Click(Sender: TObject);
+begin
+    TempDeviceClient.start;
+end;
+
+procedure TAToolMainForm.N27Click(Sender: TObject);
+begin
+    TempDeviceClient.stop;
+end;
+
+procedure TAToolMainForm.N28Click(Sender: TObject);
+var
+    strValue: string;
+    value: Double;
+begin
+    if not InputQuery('Уставка термокамеры', 'Температура уставки',
+      strValue) or not TryStrToFloat2(strValue, value) then
+        exit;
+    TempDeviceClient.setDestination(value);
+end;
+
+procedure TAToolMainForm.N29Click(Sender: TObject);
+var
+    strValue: string;
+    value: Double;
+begin
+    if not InputQuery('Пеервод термокамеры', 'Температура:',
+      strValue) or not TryStrToFloat2(strValue, value) then
+        exit;
+    TempDeviceClient.setup(value);
 end;
 
 procedure TAToolMainForm.N2Click(Sender: TObject);
@@ -657,6 +694,16 @@ begin
 
 end;
 
+procedure TAToolMainForm.N30Click(Sender: TObject);
+begin
+    TempDeviceClient.coolingOn;
+end;
+
+procedure TAToolMainForm.N32Click(Sender: TObject);
+begin
+    TempDeviceClient.coolingOff;
+end;
+
 procedure TAToolMainForm.N4Click(Sender: TObject);
 var
     strProductsCount: string;
@@ -672,7 +719,6 @@ end;
 
 procedure TAToolMainForm.N5Click(Sender: TObject);
 begin
-    Hide;
     AppCfgClient.EditConfig;
 end;
 

@@ -8,7 +8,7 @@ object FormInterrogate: TFormInterrogate
   Color = clBtnHighlight
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -15
+  Font.Height = -12
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
@@ -16,7 +16,7 @@ object FormInterrogate: TFormInterrogate
   OnCreate = FormCreate
   OnResize = FormResize
   PixelsPerInch = 96
-  TextHeight = 18
+  TextHeight = 14
   object StringGrid1: TStringGrid
     AlignWithMargins = True
     Left = 3
@@ -36,5 +36,7 @@ object FormInterrogate: TFormInterrogate
     TabOrder = 0
     OnDblClick = StringGrid1DblClick
     OnDrawCell = StringGrid1DrawCell
+    ExplicitLeft = 8
+    ExplicitTop = -2
   end
 end

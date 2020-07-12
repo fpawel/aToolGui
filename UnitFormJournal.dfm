@@ -8,7 +8,7 @@ object FormJournal: TFormJournal
   Color = clBtnHighlight
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -15
+  Font.Height = -12
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
@@ -16,7 +16,7 @@ object FormJournal: TFormJournal
   OnCreate = FormCreate
   OnResize = FormResize
   PixelsPerInch = 96
-  TextHeight = 18
+  TextHeight = 14
   object StringGrid1: TStringGrid
     AlignWithMargins = True
     Left = 127
@@ -36,8 +36,6 @@ object FormJournal: TFormJournal
     TabOrder = 0
     OnDblClick = StringGrid1DblClick
     OnDrawCell = StringGrid1DrawCell
-    ExplicitLeft = 109
-    ExplicitWidth = 606
   end
   object StringGrid2: TStringGrid
     AlignWithMargins = True

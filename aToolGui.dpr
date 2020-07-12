@@ -64,7 +64,8 @@ uses
   UnitFormSearchProductsNetDialog in 'UnitFormSearchProductsNetDialog.pas' {FormSearchProductsNetDialog},
   UnitFormDelay in 'UnitFormDelay.pas' {FormDelay},
   UnitFormSelectWorksDialog in 'UnitFormSelectWorksDialog.pas' {FormSelectWorksDialog},
-  UnitFormWorkLogRecords in 'UnitFormWorkLogRecords.pas' {FormWorkLogRecords};
+  UnitFormWorkLogRecords in 'UnitFormWorkLogRecords.pas' {FormWorkLogRecords},
+  UnitFormWrite32 in 'UnitFormWrite32.pas' {FormWrite32};
 
 {$R *.res}
 
@@ -88,6 +89,7 @@ begin
   Application.CreateForm(TFormDelay, FormDelay);
   Application.CreateForm(TFormSelectWorksDialog, FormSelectWorksDialog);
   Application.CreateForm(TFormWorkLogRecords, FormWorkLogRecords);
+  Application.CreateForm(TFormWrite32, FormWrite32);
   Application.Run;
 
 end.

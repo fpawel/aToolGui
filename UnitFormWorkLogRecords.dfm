@@ -8,14 +8,14 @@ object FormWorkLogRecords: TFormWorkLogRecords
   Color = clWindow
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -13
+  Font.Height = -12
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
   OnResize = FormResize
   PixelsPerInch = 96
-  TextHeight = 16
+  TextHeight = 14
   object StringGrid1: TStringGrid
     AlignWithMargins = True
     Left = 5

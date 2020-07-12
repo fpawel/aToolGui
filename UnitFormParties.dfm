@@ -7,14 +7,14 @@ object FormParties: TFormParties
   Color = clWindow
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -15
+  Font.Height = -12
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
   OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
-  TextHeight = 18
+  TextHeight = 14
   object Splitter1: TSplitter
     Left = 457
     Top = 0
@@ -104,19 +104,19 @@ object FormParties: TFormParties
         AlignWithMargins = True
         Left = 5
         Top = 10
-        Width = 172
+        Width = 147
         Height = 22
         Margins.Left = 5
         Margins.Top = 10
         Align = alLeft
         Caption = #1060#1080#1083#1100#1090#1088': '#1089#1077#1088#1080#1081#1085#1099#1081' '#1085#1086#1084#1077#1088
-        ExplicitHeight = 18
+        ExplicitHeight = 14
       end
       object EditFilterSerial: TEdit
         AlignWithMargins = True
-        Left = 185
+        Left = 160
         Top = 5
-        Width = 267
+        Width = 292
         Height = 27
         Margins.Left = 5
         Margins.Top = 5
@@ -125,7 +125,7 @@ object FormParties: TFormParties
         NumbersOnly = True
         TabOrder = 0
         OnChange = EditFilterSerialChange
-        ExplicitHeight = 26
+        ExplicitHeight = 22
       end
     end
   end

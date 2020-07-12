@@ -7,7 +7,7 @@ object AToolMainForm: TAToolMainForm
   Color = clWhite
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -13
+  Font.Height = -12
   Font.Name = 'Tahoma'
   Font.Style = []
   Menu = MainMenu1
@@ -18,7 +18,7 @@ object AToolMainForm: TAToolMainForm
   OnResize = FormResize
   OnShow = FormShow
   PixelsPerInch = 96
-  TextHeight = 16
+  TextHeight = 14
   object PageControlMain: TPageControl
     Left = 0
     Top = 0
@@ -48,14 +48,20 @@ object AToolMainForm: TAToolMainForm
         OnChange = PageControl1Change
         object TabSheet2: TTabSheet
           Caption = #1055#1072#1088#1090#1080#1103
+          ExplicitTop = 27
+          ExplicitHeight = 513
         end
         object TabSheet3: TTabSheet
           Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099
           ImageIndex = 1
+          ExplicitTop = 27
+          ExplicitHeight = 513
         end
         object TabSheet1: TTabSheet
           Caption = #1044#1072#1085#1085#1099#1077
           ImageIndex = 2
+          ExplicitTop = 27
+          ExplicitHeight = 513
         end
       end
     end
@@ -221,12 +227,12 @@ object AToolMainForm: TAToolMainForm
         Caption = #1048#1084#1087#1086#1088#1090' '#1076#1072#1085#1085#1099#1093' '#1080#1079' '#1092#1072#1081#1083#1072'...'
         OnClick = N9Click
       end
+      object MenuWrite32: TMenuItem
+        Caption = #1054#1090#1087#1072#1088#1074#1082#1072' '#1082#1086#1084#1072#1085#1076#1099
+        OnClick = MenuWrite32Click
+      end
       object N11: TMenuItem
         Caption = '-'
-      end
-      object N10: TMenuItem
-        Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
-        OnClick = N10Click
       end
       object N5: TMenuItem
         Caption = #1050#1086#1085#1092#1080#1075#1091#1088#1072#1094#1080#1103
@@ -265,13 +271,6 @@ object AToolMainForm: TAToolMainForm
       Visible = False
       OnClick = MenuStopWorkClick
     end
-    object N17: TMenuItem
-      Caption = #1059#1087#1088#1072#1074#1083#1077#1085#1080#1077
-      object N18: TMenuItem
-        Caption = #1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1077
-        OnClick = N18Click
-      end
-    end
     object N14: TMenuItem
       Caption = #1046#1091#1088#1085#1072#1083#1099
       object N16: TMenuItem
@@ -285,6 +284,70 @@ object AToolMainForm: TAToolMainForm
       object N6: TMenuItem
         Caption = #1055#1088#1080#1105#1084#1086#1087#1077#1088#1077#1076#1072#1095#1072
         OnClick = N6Click
+      end
+    end
+    object N22: TMenuItem
+      Caption = #1059#1087#1088#1072#1074#1083#1077#1085#1080#1077
+      object N24: TMenuItem
+        Caption = #1055#1085#1077#1074#1084#1086#1073#1083#1086#1082': '#1079#1072#1082#1088#1099#1090#1100
+        OnClick = N24Click
+      end
+      object N110: TMenuItem
+        Tag = 1
+        Caption = #1055#1085#1077#1074#1084#1086#1073#1083#1086#1082': '#1075#1072#1079' 1'
+        OnClick = N24Click
+      end
+      object N23: TMenuItem
+        Tag = 2
+        Caption = #1055#1085#1077#1074#1084#1086#1073#1083#1086#1082': '#1075#1072#1079' 2'
+        OnClick = N24Click
+      end
+      object N31: TMenuItem
+        Tag = 3
+        Caption = #1055#1085#1077#1074#1084#1086#1073#1083#1086#1082': '#1075#1072#1079' 3'
+        OnClick = N24Click
+      end
+      object N41: TMenuItem
+        Tag = 4
+        Caption = #1055#1085#1077#1074#1084#1086#1073#1083#1086#1082': '#1075#1072#1079' 4'
+        OnClick = N24Click
+      end
+      object N51: TMenuItem
+        Tag = 5
+        Caption = #1055#1085#1077#1074#1084#1086#1073#1083#1086#1082': '#1075#1072#1079' 5'
+        OnClick = N24Click
+      end
+      object N61: TMenuItem
+        Tag = 6
+        Caption = #1055#1085#1077#1074#1084#1086#1073#1083#1086#1082': '#1075#1072#1079' 6'
+        OnClick = N24Click
+      end
+      object N26: TMenuItem
+        Caption = #1058#1077#1088#1084#1086#1082#1072#1084#1077#1088#1072': '#1089#1090#1072#1088#1090
+        OnClick = N26Click
+      end
+      object N27: TMenuItem
+        Caption = #1058#1077#1088#1084#1086#1082#1072#1084#1077#1088#1072': '#1089#1090#1086#1087
+        OnClick = N27Click
+      end
+      object N28: TMenuItem
+        Caption = #1058#1077#1088#1084#1086#1082#1072#1084#1077#1088#1072': '#1091#1089#1090#1072#1074#1082#1072
+        OnClick = N28Click
+      end
+      object N29: TMenuItem
+        Caption = #1058#1077#1088#1084#1086#1082#1072#1084#1077#1088#1072': '#1087#1077#1088#1077#1074#1086#1076
+        OnClick = N29Click
+      end
+      object N19: TMenuItem
+        Caption = #1058#1077#1088#1084#1086#1082#1072#1084#1077#1088#1072': '#1086#1093#1083#1072#1078#1076#1077#1085#1080#1077
+        object N30: TMenuItem
+          Caption = #1042#1082#1083#1102#1095#1080#1090#1100
+          OnClick = N30Click
+        end
+        object N32: TMenuItem
+          Caption = #1042#1099#1082#1083#1102#1095#1080#1090#1100
+          OnClick = N32Click
+        end
       end
     end
     object N8: TMenuItem

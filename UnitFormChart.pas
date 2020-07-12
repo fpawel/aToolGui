@@ -125,7 +125,7 @@ begin
     Chart1.Canvas.Pen.Style := psSolid;
     Chart1.Canvas.Pen.Width := 1;
     Chart1.Canvas.Pen.Mode := pmCopy;
-    Chart1.Canvas.Font.Size := 10;
+    Chart1.Canvas.Font.Size := 9;
 
     for ser in Chart1.SeriesList do
     begin
