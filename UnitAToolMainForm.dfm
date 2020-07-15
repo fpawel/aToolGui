@@ -48,19 +48,21 @@ object AToolMainForm: TAToolMainForm
         OnChange = PageControl1Change
         object TabSheet2: TTabSheet
           Caption = #1055#1072#1088#1090#1080#1103
-          ExplicitTop = 27
-          ExplicitHeight = 513
         end
         object TabSheet3: TTabSheet
           Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099
           ImageIndex = 1
+          ExplicitLeft = 0
           ExplicitTop = 27
+          ExplicitWidth = 0
           ExplicitHeight = 513
         end
         object TabSheet1: TTabSheet
           Caption = #1044#1072#1085#1085#1099#1077
           ImageIndex = 2
+          ExplicitLeft = 0
           ExplicitTop = 27
+          ExplicitWidth = 0
           ExplicitHeight = 513
         end
       end

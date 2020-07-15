@@ -60,7 +60,6 @@ uses
   UnitFormNewPartyDialog in 'UnitFormNewPartyDialog.pas' {FormNewPartyDialog},
   UnitFormParties in 'UnitFormParties.pas' {FormParties},
   UnitFormProductsDataTable in 'UnitFormProductsDataTable.pas' {FormProductsDataTable},
-  UnitFormStringGridCopyClipboard in 'UnitFormStringGridCopyClipboard.pas' {FormStringGridCopyClipboard},
   UnitFormSearchProductsNetDialog in 'UnitFormSearchProductsNetDialog.pas' {FormSearchProductsNetDialog},
   UnitFormDelay in 'UnitFormDelay.pas' {FormDelay},
   UnitFormSelectWorksDialog in 'UnitFormSelectWorksDialog.pas' {FormSelectWorksDialog},
@@ -85,7 +84,6 @@ begin
   Application.CreateForm(TFormProgress, FormProgress);
   Application.CreateForm(TFormSelectWorkDialog, FormSelectWorkDialog);
   Application.CreateForm(TFormParties, FormParties);
-  Application.CreateForm(TFormStringGridCopyClipboard, FormStringGridCopyClipboard);
   Application.CreateForm(TFormDelay, FormDelay);
   Application.CreateForm(TFormSelectWorksDialog, FormSelectWorksDialog);
   Application.CreateForm(TFormWorkLogRecords, FormWorkLogRecords);

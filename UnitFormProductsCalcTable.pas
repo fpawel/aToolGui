@@ -5,14 +5,19 @@ interface
 uses
     Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
     System.Classes, Vcl.Graphics, thrift.collections, apitypes,
-    Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, UnitFormPopup2;
+    Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, UnitFormPopup2, Vcl.Menus;
 
 type
     TFormProductsCalcTable = class(TForm)
         StringGrid1: TStringGrid;
+    PopupMenu1: TPopupMenu;
+    N1: TMenuItem;
+    N2: TMenuItem;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
           Rect: TRect; State: TGridDrawState);
         procedure StringGrid1DblClick(Sender: TObject);
+    procedure N1Click(Sender: TObject);
+    procedure N2Click(Sender: TObject);
     private
         { Private declarations }
         FProducts: IThriftList<IProduct>;
@@ -31,8 +36,7 @@ implementation
 
 {$R *.dfm}
 
-uses stringgridutils, stringutils, UnitApiClient, UnitFormPopup,
-  UnitFormStringGridCopyClipboard;
+uses stringgridutils, stringutils, UnitApiClient, UnitFormPopup;
 
 procedure TFormProductsCalcTable.doSetup;
 var
@@ -60,6 +64,23 @@ begin
         end;
 
     end;
+end;
+
+procedure TFormProductsCalcTable.N1Click(Sender: TObject);
+var r:TGridRect;
+begin
+    r.Top := 0;
+    r.Left := 0;
+    r.Bottom := StringGrid1.RowCount-1;
+    r.Right := StringGrid1.ColCount-1;
+    StringGrid1.Selection := r;
+
+    StringGrid_copy_to_clipboard(StringGrid1);
+end;
+
+procedure TFormProductsCalcTable.N2Click(Sender: TObject);
+begin
+    StringGrid_copy_selection_to_clipboard(StringGrid1);
 end;
 
 procedure TFormProductsCalcTable.setup(products: IThriftList<IProduct>;

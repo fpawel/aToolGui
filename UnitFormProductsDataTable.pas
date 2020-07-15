@@ -12,12 +12,17 @@ type
 
     TFormProductsDataTable = class(TForm)
         StringGrid1: TStringGrid;
+    PopupMenu1: TPopupMenu;
+    N1: TMenuItem;
+    N2: TMenuItem;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
           Rect: TRect; State: TGridDrawState);
         procedure StringGrid1SelectCell(Sender: TObject; ACol, ARow: Integer;
           var CanSelect: boolean);
         procedure StringGrid1SetEditText(Sender: TObject; ACol, ARow: Integer;
           const Value: string);
+    procedure N1Click(Sender: TObject);
+    procedure N2Click(Sender: TObject);
     private
         { Private declarations }
         Last_Edited_Col, Last_Edited_Row: Integer;
@@ -42,7 +47,7 @@ implementation
 {$R *.dfm}
 
 uses stringgridutils, stringutils, UnitApiClient,
-  UnitFormStringGridCopyClipboard, UnitFormProductsData;
+   UnitFormProductsData;
 
 procedure TFormProductsDataTable.doSetup;
 var
@@ -68,6 +73,23 @@ begin
 
     end;
 
+end;
+
+procedure TFormProductsDataTable.N1Click(Sender: TObject);
+var r:TGridRect;
+begin
+    r.Top := 0;
+    r.Left := 0;
+    r.Bottom := StringGrid1.RowCount-1;
+    r.Right := StringGrid1.ColCount-1;
+    StringGrid1.Selection := r;
+
+    StringGrid_copy_to_clipboard(StringGrid1);
+end;
+
+procedure TFormProductsDataTable.N2Click(Sender: TObject);
+begin
+    StringGrid_copy_selection_to_clipboard(StringGrid1);
 end;
 
 procedure TFormProductsDataTable.Setup(Products: IThriftList<IProduct>;
