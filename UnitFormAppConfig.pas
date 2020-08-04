@@ -4,10 +4,10 @@ interface
 
 uses
     Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-    System.Classes, Vcl.Graphics,
+    System.Classes, Vcl.Graphics, Vcl.StdCtrls,
     Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, apitypes,
     UnitFormPopup2, Thrift.Collections, Vcl.Menus, Vcl.ComCtrls, Vcl.ToolWin,
-    System.ImageList, Vcl.ImgList;
+    System.ImageList, Vcl.ImgList, UnitFormComboBox;
 
 type
 
@@ -43,11 +43,13 @@ type
 
         FBmpShevron: TBitmap;
         FBmpShevron2: TBitmap;
+        FFormComboBoxDialog: TFormComboBoxDialog;
 
         procedure FFormPopup2ToolButton3Click(Sender: TObject);
 
         procedure setParamValue(ARow: Integer; Value: string);
         procedure OnPopupMenuItemClick(Sender: TObject);
+        procedure OnComboBox(Sender: TObject);
         procedure setup;
         procedure SetValues(AConfigParamValues: IThriftList<IConfigParamValue>);
         function GetValues: IThriftList<IConfigParamValue>;
@@ -69,6 +71,7 @@ uses stringutils, stringgridutils, UnitApiClient, UnitAppIni;
 
 procedure TFormAppConfig.FormCreate(Sender: TObject);
 begin
+    FFormComboBoxDialog := nil;
     with StringGrid1 do
     begin
         ColCount := 2;
@@ -240,30 +243,50 @@ var
     ACol, ARow: Integer;
     cv: IConfigParamValue;
     Value: string;
+    pt:TPoint;
 begin
-    if (GetAsyncKeyState(VK_LBUTTON) >= 0) then
-        exit;
+
     StringGrid1.MouseToCell(X, Y, ACol, ARow);
     if not((ARow > 0) and (ACol = 1)) then
         exit;
     cv := FConfigParamValues[ARow - 1];
-    if cv.Type_ <> 'bool' then
-        exit;
-    Value := 'true';
-    if cv.Value = 'true' then
-        Value := 'false';
-    try
-        setParamValue(ARow, Value);
-        FFormPopup2.Hide;
-        cv.Value := Value;
-        StringGrid1.Cells[ACol, ARow] := Value;
 
-    except
-        on e: Exception do
+
+    if (GetAsyncKeyState(VK_LBUTTON) >= 0) then
+    begin
+        if Assigned(FFormComboBoxDialog) then
         begin
-            FFormPopup2.SetText(e.Message, false);
-            FFormPopup2.Show;
+            FFormComboBoxDialog.Caption := cv.Name;
+
+            pt := StringGrid1.ClientToScreen(Point(x,y));
+
+            FFormComboBoxDialog.Top := pt.Y+3;
+            FFormComboBoxDialog.Left := pt.X+3;
+            FFormComboBoxDialog.Show;
         end;
+        exit;
+    end;
+
+
+    if cv.Type_ = 'bool' then
+    begin
+        Value := 'true';
+        if cv.Value = 'true' then
+            Value := 'false';
+        try
+            setParamValue(ARow, Value);
+            FFormPopup2.Hide;
+            cv.Value := Value;
+            StringGrid1.Cells[ACol, ARow] := Value;
+
+        except
+            on e: Exception do
+            begin
+                FFormPopup2.SetText(e.Message, false);
+                FFormPopup2.Show;
+            end;
+        end;
+        exit;
     end;
 
 end;
@@ -285,6 +308,49 @@ begin
               IntToStr(ACol), ColWidths[ACol]);
         end;
 
+    end;
+
+end;
+
+procedure TFormAppConfig.OnComboBox(Sender: TObject);
+var
+    ACol, ARow: Integer;
+    AKey, Value: string;
+    CanSelect: Boolean;
+    AComboBox:    TComboBox;
+begin
+    with StringGrid1 do
+    begin
+        ACol := Col;
+        ARow := Row;
+    end;
+    AComboBox := Sender as TComboBox;
+    Value := '';
+    if AComboBox.ItemIndex > -1 then
+        Value := AComboBox.Items[AComboBox.ItemIndex];
+
+    if FConfigParamValues[ARow - 1].Value = Value then
+        exit;
+
+    try
+        setParamValue(ARow, Value);
+        FFormPopup2.Hide;
+        StringGrid1.Cells[ACol, ARow] := Value;
+    except
+        on e: Exception do
+        begin
+            FFormPopup2.SetText(e.Message, false);
+            FFormPopup2.Show;
+        end;
+    end;
+
+    AKey := FConfigParamValues[ARow - 1].Key;
+
+    if FUpdateAppConfig and (AKey = 'device_type') or (AKey = 'product_type')
+    then
+    begin
+        Values := AppCfgClient.getParamValues;
+        StringGrid1SelectCell(StringGrid1, ACol, ARow, CanSelect);
     end;
 
 end;
@@ -367,6 +433,9 @@ begin
         exit;
 
     PopupMenu1.Items.Clear;
+    if Assigned(FFormComboBoxDialog) then
+        FreeAndNil(FFormComboBoxDialog);
+
     if (ARow < 1) or (ARow - 1 >= FConfigParamValues.Count) then
         exit;
 
@@ -385,6 +454,17 @@ begin
         else
         begin
             Options := Options - [goEditing];
+            if c.ValuesList.Count > 10 then
+            begin
+                FFormComboBoxDialog := TFormComboBoxDialog.Create(nil);
+                for I := 0 to c.ValuesList.Count - 1 do
+                    FFormComboBoxDialog.ComboBox1.Items.Add(c.ValuesList[I]);
+                FFormComboBoxDialog.ComboBox1.ItemIndex :=
+                  FFormComboBoxDialog.ComboBox1.Items.IndexOf(c.Value);
+                FFormComboBoxDialog.ComboBox1.OnChange := OnComboBox;
+                exit;
+            end;
+
             for I := 0 to c.ValuesList.Count - 1 do
             begin
                 mn := TMenuItem.Create(self);

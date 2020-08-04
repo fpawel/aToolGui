@@ -64,7 +64,8 @@ uses
   UnitFormDelay in 'UnitFormDelay.pas' {FormDelay},
   UnitFormSelectWorksDialog in 'UnitFormSelectWorksDialog.pas' {FormSelectWorksDialog},
   UnitFormWorkLogRecords in 'UnitFormWorkLogRecords.pas' {FormWorkLogRecords},
-  UnitFormWrite32 in 'UnitFormWrite32.pas' {FormWrite32};
+  UnitFormWrite32 in 'UnitFormWrite32.pas' {FormWrite32},
+  UnitFormComboBox in 'UnitFormComboBox.pas' {FormComboBoxDialog};
 
 {$R *.res}
 
