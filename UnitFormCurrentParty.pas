@@ -13,15 +13,9 @@ uses
 
 type
 
-    // type ProductParamValue struct {
-    // Addr modbus.Addr
-    // Comport string
-    // ParamAddr modbus.Var
-    // Value string
-    // }
     TProductConnection = record
         ProductID: int64;
-        Ok: boolean;
+        Error: string;
     end;
 
     TProductParamValue = record
@@ -34,6 +28,11 @@ type
     TProductVar = record
         ProductID, ParamAddr: int64;
         constructor Create(AProductID, AVarID: int64);
+    end;
+
+    TProductConnectionInfo = record
+        Error: string;
+        Time: TDateTime;
     end;
 
     TFormCurrentParty = class(TForm)
@@ -50,6 +49,10 @@ type
         MenuDeleteChart: TMenuItem;
         MenuSetNetAddr: TMenuItem;
         N2: TMenuItem;
+        Panel2: TPanel;
+        Image1: TImage;
+        Label1: TLabel;
+        Image2: TImage;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: integer;
           Rect: TRect; State: TGridDrawState);
         procedure StringGrid1SelectCell(Sender: TObject; ACol, ARow: integer;
@@ -77,11 +80,13 @@ type
         Last_Edited_Col, Last_Edited_Row: integer;
         FBmp: array [0 .. 3] of TBitmap;
 
-        FProductConnection: TDictionary<int64, boolean>;
+        FProductConnectioninfo: TDictionary<int64, TProductConnectionInfo>;
 
         procedure SetProductsComport(Sender: TObject);
 
         procedure _deleteAllCharts;
+
+        procedure updateProductErrorInfoPanel(ACol: integer);
 
         procedure setMainFormCaption;
         function GetSelectedProductsIDs: Thrift.Collections.IThriftList<int64>;
@@ -127,7 +132,7 @@ var
 begin
     FSeries := TDictionary<TProductVar, TFastLineSeries>.Create;
     FSeriesInfo := TDictionary<TFastLineSeries, TProductVar>.Create;
-    FProductConnection := TDictionary<int64, boolean>.Create;
+    FProductConnectioninfo := TDictionary<int64, TProductConnectionInfo>.Create;
 
     for i := 0 to 3 do
     begin
@@ -139,6 +144,48 @@ end;
 procedure TFormCurrentParty.FormShow(Sender: TObject);
 begin
     //
+end;
+
+procedure TFormCurrentParty.updateProductErrorInfoPanel(ACol: integer);
+var
+    p: IProduct;
+    pc: TProductConnectionInfo;
+    s: string;
+begin
+    if (ACol < 1) or (ACol - 1 >= FParty.Products.Count) then
+    begin
+        Panel2.Visible := false;
+        exit;
+    end;
+
+    p := FParty.Products[ACol - 1];
+    if not FProductConnectioninfo.ContainsKey(p.ProductID) then
+    begin
+        Panel2.Visible := false;
+        exit;
+    end;
+    pc := FProductConnectioninfo[p.ProductID];
+
+    s := Format('%s %s адр.%d сер.№ %d', [TimeToStr(pc.Time), p.Comport, p.Addr,
+      p.Serial]);
+
+    if length(pc.Error) = 0 then
+    begin
+        Label1.Caption := Format('%s: связь установлена', [s]);
+        Label1.Font.Color := clNavy;
+        Image2.Visible := true;
+        Image1.Visible := false;
+    end
+    else
+    begin
+        Label1.Caption := Format('%s: %s', [s, pc.Error]);
+        Label1.Font.Color := clRed;
+        Image2.Visible := false;
+        Image1.Visible := true;
+    end;
+
+    Panel2.Visible := true;
+
 end;
 
 procedure TFormCurrentParty.MenuDeleteProductsClick(Sender: TObject);
@@ -288,6 +335,7 @@ begin
 
     StringGrid_RedrawRow(StringGrid1, 0);
     StringGrid_RedrawCol(StringGrid1, 0);
+    updateProductErrorInfoPanel(ACol);
 end;
 
 procedure TFormCurrentParty.StringGrid1SetEditText(Sender: TObject;
@@ -472,13 +520,13 @@ begin
     c := StringGrid1.Canvas;
     c.Font.Color := clNavy;
     p := FParty.Products[ACol - 1];
-    if not FProductConnection.ContainsKey(p.ProductID) then
+    if not FProductConnectioninfo.ContainsKey(p.ProductID) then
     begin
         StringGrid_DrawCellText(StringGrid1, ACol, ARow, ARect,
           taRightJustify, AText);
         exit;
     end;
-    if FProductConnection[p.ProductID] then
+    if length(FProductConnectioninfo[p.ProductID].Error) = 0 then
         n := 0
     else
         n := 2;
@@ -664,7 +712,7 @@ begin
         AToolMainForm.PageControlMain.OnChange :=
           AToolMainForm.PageControlMainChange;
 
-        AToolMainForm.PageControlMain.Show;
+        AToolMainForm.PageControlMain.show;
     end;
 
 end;
@@ -694,7 +742,7 @@ begin
     FormWrite32.ComboBoxCmd.Items.Clear;
     FormWrite32.ComboBoxCmd.Text := '';
     xs := AppCfgClient.currentDeviceInfo.Commands;
-    for I := 0 to xs.Count - 1 do
+    for i := 0 to xs.Count - 1 do
         FormWrite32.ComboBoxCmd.Items.Add(xs[i]);
     if xs.Count > 0 then
         FormWrite32.ComboBoxCmd.ItemIndex := 0;
@@ -708,7 +756,7 @@ var
     kv: TPair<TFastLineSeries, TProductVar>;
 begin
 
-    if Length(xs) = 0 then
+    if length(xs) = 0 then
     begin
         AToolMainForm.HideModalMessage;
         exit;
@@ -795,6 +843,7 @@ procedure TFormCurrentParty.SetProductConnection(X: TProductConnection);
 var
     p: IProduct;
     ARow, i: integer;
+    Y: TProductConnectionInfo;
 
 begin
     i := 0;
@@ -803,10 +852,13 @@ begin
     begin
         if p.ProductID = X.ProductID then
         begin
-            FProductConnection.AddOrSetValue(p.ProductID, X.Ok);
+            Y.Error := X.Error;
+            Y.Time := now;
+            FProductConnectioninfo.AddOrSetValue(p.ProductID, Y);
             with StringGrid1 do
                 if not(EditorMode AND (Col = i + 1) AND (Row = ARow)) then
                     Cells[i + 1, ARow] := Cells[i + 1, ARow];
+            updateProductErrorInfoPanel(StringGrid1.Col);
         end;
         Inc(i);
     end;
