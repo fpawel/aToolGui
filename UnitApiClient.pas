@@ -76,6 +76,7 @@ begin
 
     AppInfoClient:= TAppInfoService.TClient.create(prot('AppInfoService'));
 
+
 end;
 
 end.

@@ -29,6 +29,7 @@ type
         N2: TMenuItem;
         N3: TMenuItem;
         TimerRepaint: TTimer;
+    ToolButton2: TToolButton;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
           Rect: TRect; State: TGridDrawState);
         procedure StringGrid1MouseDown(Sender: TObject; Button: TMouseButton;
@@ -46,6 +47,7 @@ type
         procedure TimerRepaintTimer(Sender: TObject);
         procedure StringGrid1KeyDown(Sender: TObject; var Key: Word;
           Shift: TShiftState);
+    procedure ToolButton2Click(Sender: TObject);
     private
         { Private declarations }
         function SeriesOfColRow(ACol, ARow: Integer): TFastLineSeries;
@@ -496,6 +498,15 @@ begin
     if ToolButton1.Down then
         ToolButton3.Down := False;
     Chart1.Repaint;
+end;
+
+procedure TFormChart.ToolButton2Click(Sender: TObject);
+var
+    TimeFrom, TimeTo: TTimeUnixMillis;
+begin
+    TimeFrom := DateTimeToUnixMillis(Chart1.BottomAxis.Minimum);
+    TimeTo := DateTimeToUnixMillis(Chart1.BottomAxis.Maximum);
+    CurrFileClient.saveChartAsText(TimeFrom, TimeTo, Caption);
 end;
 
 procedure TFormChart.ToolButton3Click(Sender: TObject);

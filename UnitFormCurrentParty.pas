@@ -31,7 +31,8 @@ type
     end;
 
     TProductConnectionInfo = record
-        Error: string;
+        Text: string;
+        IsError: boolean;
         Time: TDateTime;
     end;
 
@@ -80,7 +81,7 @@ type
         Last_Edited_Col, Last_Edited_Row: integer;
         FBmp: array [0 .. 3] of TBitmap;
 
-        FProductConnectioninfo: TDictionary<int64, TProductConnectionInfo>;
+        FProductConnectionInfo: TDictionary<int64, TProductConnectionInfo>;
 
         procedure SetProductsComport(Sender: TObject);
 
@@ -150,7 +151,6 @@ procedure TFormCurrentParty.updateProductErrorInfoPanel(ACol: integer);
 var
     p: IProduct;
     pc: TProductConnectionInfo;
-    s: string;
 begin
     if (ACol < 1) or (ACol - 1 >= FParty.Products.Count) then
     begin
@@ -166,19 +166,19 @@ begin
     end;
     pc := FProductConnectioninfo[p.ProductID];
 
-    s := Format('%s %s адр.%d сер.№ %d', [TimeToStr(pc.Time), p.Comport, p.Addr,
-      p.Serial]);
+    Label1.Caption := Format('%s %s адр.%d сер.№ %d: %s', [TimeToStr(pc.Time), p.Comport, p.Addr,
+      p.Serial, pc.Text]);
 
-    if length(pc.Error) = 0 then
+
+    if not pc.IsError then
     begin
-        Label1.Caption := Format('%s: связь установлена', [s]);
+
         Label1.Font.Color := clNavy;
         Image2.Visible := true;
         Image1.Visible := false;
     end
     else
     begin
-        Label1.Caption := Format('%s: %s', [s, pc.Error]);
         Label1.Font.Color := clRed;
         Image2.Visible := false;
         Image1.Visible := true;
@@ -526,7 +526,7 @@ begin
           taRightJustify, AText);
         exit;
     end;
-    if length(FProductConnectioninfo[p.ProductID].Error) = 0 then
+    if not FProductConnectioninfo[p.ProductID].IsError then
         n := 0
     else
         n := 2;
@@ -852,7 +852,15 @@ begin
     begin
         if p.ProductID = X.ProductID then
         begin
-            Y.Error := X.Error;
+            if length(X.Error) > 0 then
+            begin
+                Y.Text := X.Error;
+                Y.IsError := true;
+            end else
+            begin
+                Y.Text := 'связь установлена';
+                Y.IsError := False;
+            end;
             Y.Time := now;
             FProductConnectioninfo.AddOrSetValue(p.ProductID, Y);
             with StringGrid1 do
@@ -878,11 +886,13 @@ begin
         p := FParty.Products[i];
         if (p.Comport <> X.Comport) or (p.Addr <> X.Addr) then
             continue;
+
         for j := 0 to FParams.Count - 1 do
         begin
             AParamAddr := FParams[j].ParamAddr;
             if AParamAddr <> X.ParamAddr then
                 continue;
+
             StringGrid1.Cells[i + 1, FirstParamRow + j] := X.Value;
             if TryStrToFloat2(X.Value, v) and
               FSeries.TryGetValue(TProductVar.Create(p.ProductID,
@@ -892,10 +902,8 @@ begin
                 if ser.ParentChart <> nil then
                     (ser.ParentChart.Parent as TFormChart)
                       .TimerRepaint.Enabled := true;
-
             end;
         end;
-
     end;
 
 end;

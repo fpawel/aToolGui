@@ -92,9 +92,9 @@ object FormChart: TFormChart
     ParentColor = True
     TabOrder = 2
     object ToolBar1: TToolBar
-      Left = 912
+      Left = 880
       Top = 0
-      Width = 98
+      Width = 130
       Height = 33
       Align = alRight
       ButtonHeight = 31
@@ -104,8 +104,15 @@ object FormChart: TFormChart
       EdgeOuter = esNone
       Images = ImageList1
       TabOrder = 0
-      object ToolButton1: TToolButton
+      object ToolButton2: TToolButton
         Left = 0
+        Top = 0
+        Caption = 'ToolButton2'
+        ImageIndex = 5
+        OnClick = ToolButton2Click
+      end
+      object ToolButton1: TToolButton
+        Left = 32
         Top = 0
         Hint = #1055#1086#1082#1072#1079#1072#1090#1100' '#1090#1086#1095#1082#1080
         Caption = 'ToolButton1'
@@ -116,7 +123,7 @@ object FormChart: TFormChart
         OnClick = ToolButton1Click
       end
       object ToolButton3: TToolButton
-        Left = 32
+        Left = 64
         Top = 0
         Hint = #1055#1086#1082#1072#1079#1072#1090#1100' '#1084#1072#1088#1082#1077#1088#1099' '#1079#1085#1072#1095#1077#1085#1080#1081
         Caption = 'ToolButton3'
@@ -127,7 +134,7 @@ object FormChart: TFormChart
         OnClick = ToolButton3Click
       end
       object ToolButton4: TToolButton
-        Left = 64
+        Left = 96
         Top = 0
         Caption = 'ToolButton4'
         ImageIndex = 3
@@ -138,17 +145,18 @@ object FormChart: TFormChart
     object Panel11: TPanel
       Left = 0
       Top = 0
-      Width = 912
+      Width = 880
       Height = 33
       Align = alClient
       BevelOuter = bvNone
       Color = clBtnHighlight
       ParentBackground = False
       TabOrder = 1
+      ExplicitWidth = 912
       object GridPanel1: TGridPanel
         Left = 0
         Top = 0
-        Width = 912
+        Width = 880
         Height = 33
         Align = alClient
         BevelOuter = bvNone
@@ -175,25 +183,29 @@ object FormChart: TFormChart
             Value = 100.000000000000000000
           end>
         TabOrder = 0
+        ExplicitWidth = 912
         object PanelX: TPanel
           Left = 0
           Top = 0
-          Width = 456
+          Width = 440
           Height = 33
           Align = alClient
           BevelOuter = bvNone
           Caption = 'PanelX'
           TabOrder = 0
+          ExplicitWidth = 456
         end
         object PanelY: TPanel
-          Left = 456
+          Left = 440
           Top = 0
-          Width = 456
+          Width = 440
           Height = 33
           Align = alClient
           BevelOuter = bvNone
           Caption = 'PanelX'
           TabOrder = 1
+          ExplicitLeft = 450
+          ExplicitWidth = 456
         end
       end
     end

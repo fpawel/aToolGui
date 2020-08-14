@@ -82,6 +82,7 @@ type
     N30: TMenuItem;
     N32: TMenuItem;
     N19: TMenuItem;
+    N10: TMenuItem;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -113,6 +114,7 @@ type
     procedure N28Click(Sender: TObject);
     procedure N29Click(Sender: TObject);
     procedure MenuWrite32Click(Sender: TObject);
+    procedure N10Click(Sender: TObject);
     private
         { Private declarations }
         FEnableCopyData: boolean;
@@ -592,6 +594,27 @@ begin
     FormWrite32.Panel1.Font.Size := 9;
     FormWrite32.Panel1.Show;
     MenuWrite32.Checked := true;
+end;
+
+procedure TAToolMainForm.N10Click(Sender: TObject);
+var
+    dlg: TOpenDialog;
+begin
+    dlg := TSaveDialog.Create(nil);
+    dlg.Filter := 'װאיכû csv (*.csv)|*.csv';
+    dlg.InitialDir := AppIni.ReadString('AToolMainForm',
+      'charts_csv_files_dialog_idir', '');
+
+    try
+        if dlg.Execute() then
+
+            CurrFileClient.openFile(dlg.FileName);
+
+    finally
+        AppIni.WriteString('AToolMainForm', 'charts_csv_files_dialog_idir',
+          ExtractFilePath(dlg.FileName));
+        dlg.Free;
+    end;
 end;
 
 procedure TAToolMainForm.N13Click(Sender: TObject);

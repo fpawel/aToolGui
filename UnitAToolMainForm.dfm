@@ -52,18 +52,10 @@ object AToolMainForm: TAToolMainForm
         object TabSheet3: TTabSheet
           Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099
           ImageIndex = 1
-          ExplicitLeft = 0
-          ExplicitTop = 27
-          ExplicitWidth = 0
-          ExplicitHeight = 513
         end
         object TabSheet1: TTabSheet
           Caption = #1044#1072#1085#1085#1099#1077
           ImageIndex = 2
-          ExplicitLeft = 0
-          ExplicitTop = 27
-          ExplicitWidth = 0
-          ExplicitHeight = 513
         end
       end
     end
@@ -232,6 +224,10 @@ object AToolMainForm: TAToolMainForm
       object MenuWrite32: TMenuItem
         Caption = #1054#1090#1087#1072#1088#1074#1082#1072' '#1082#1086#1084#1072#1085#1076#1099
         OnClick = MenuWrite32Click
+      end
+      object N10: TMenuItem
+        Caption = #1069#1082#1089#1087#1086#1088#1090' '#1075#1088#1072#1092#1080#1082#1072'...'
+        OnClick = N10Click
       end
       object N11: TMenuItem
         Caption = '-'
