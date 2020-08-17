@@ -29,7 +29,7 @@ type
         N2: TMenuItem;
         N3: TMenuItem;
         TimerRepaint: TTimer;
-    ToolButton2: TToolButton;
+        ToolButton5: TToolButton;
         procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
           Rect: TRect; State: TGridDrawState);
         procedure StringGrid1MouseDown(Sender: TObject; Button: TMouseButton;
@@ -47,7 +47,7 @@ type
         procedure TimerRepaintTimer(Sender: TObject);
         procedure StringGrid1KeyDown(Sender: TObject; var Key: Word;
           Shift: TShiftState);
-    procedure ToolButton2Click(Sender: TObject);
+        procedure ToolButton5Click(Sender: TObject);
     private
         { Private declarations }
         function SeriesOfColRow(ACol, ARow: Integer): TFastLineSeries;
@@ -68,7 +68,7 @@ implementation
 
 uses System.types, dateutils, teechartutils, apitypes, math, stringgridutils,
     UnitFormCurrentParty, UnitAToolMainForm, logfile, UnitFormWorkLogRecords,
-    Thrift.Collections;
+    Thrift.Collections, unitappini;
 
 const
     col_count = 6;
@@ -500,15 +500,6 @@ begin
     Chart1.Repaint;
 end;
 
-procedure TFormChart.ToolButton2Click(Sender: TObject);
-var
-    TimeFrom, TimeTo: TTimeUnixMillis;
-begin
-    TimeFrom := DateTimeToUnixMillis(Chart1.BottomAxis.Minimum);
-    TimeTo := DateTimeToUnixMillis(Chart1.BottomAxis.Maximum);
-    CurrFileClient.saveChartAsText(TimeFrom, TimeTo, Caption);
-end;
-
 procedure TFormChart.ToolButton3Click(Sender: TObject);
 begin
     if ToolButton3.Down then
@@ -522,6 +513,39 @@ var
 begin
     if GetCursorPos(pnt) then
         PopupMenu1.Popup(pnt.X, pnt.Y);
+end;
+
+procedure TFormChart.ToolButton5Click(Sender: TObject);
+var
+    dlg: TOpenDialog;
+    TimeFrom, TimeTo: TTimeUnixMillis;
+    AFileName: string;
+begin
+    dlg := TSaveDialog.Create(nil);
+    dlg.Filter := 'Страницы excel (*.xlsx)|*.xlsx|Файлы csv (*.csv)|*.csv';
+    dlg.InitialDir := AppIni.ReadString('AToolMainForm',
+      'charts_files_dialog_idir', ExtractFileDir(Application.ExeName));
+
+    if not dlg.Execute() then
+        exit;
+
+    if dlg.FilterIndex = 1 then
+        AFileName := ChangeFileExt(dlg.FileName, '.xlsx')
+    else if dlg.FilterIndex = 2 then
+        AFileName := ChangeFileExt(dlg.FileName, '.csv')
+    else
+        raise exception.Create('unexpected: ' + inttostr(dlg.FilterIndex));
+
+    try
+        TimeFrom := DateTimeToUnixMillis(Chart1.BottomAxis.Minimum);
+        TimeTo := DateTimeToUnixMillis(Chart1.BottomAxis.Maximum);
+        CurrFileClient.exportChart(AFileName, TimeFrom, TimeTo, Caption);
+
+    finally
+        AppIni.WriteString('AToolMainForm', 'charts_files_dialog_idir',
+          ExtractFilePath(AFileName));
+        dlg.Free;
+    end;
 end;
 
 procedure TFormChart.N2Click(Sender: TObject);

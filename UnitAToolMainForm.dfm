@@ -225,10 +225,6 @@ object AToolMainForm: TAToolMainForm
         Caption = #1054#1090#1087#1072#1088#1074#1082#1072' '#1082#1086#1084#1072#1085#1076#1099
         OnClick = MenuWrite32Click
       end
-      object N10: TMenuItem
-        Caption = #1069#1082#1089#1087#1086#1088#1090' '#1075#1088#1072#1092#1080#1082#1072'...'
-        OnClick = N10Click
-      end
       object N11: TMenuItem
         Caption = '-'
       end
