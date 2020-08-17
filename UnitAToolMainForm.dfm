@@ -24,7 +24,7 @@ object AToolMainForm: TAToolMainForm
     Top = 0
     Width = 1048
     Height = 552
-    ActivePage = TabSheetCurrentParty
+    ActivePage = TabSheetCharts
     Align = alClient
     MultiLine = True
     OwnerDraw = True
@@ -66,6 +66,22 @@ object AToolMainForm: TAToolMainForm
     object TabSheetAppConfig: TTabSheet
       Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
       ImageIndex = 2
+    end
+    object TabSheetCharts: TTabSheet
+      Caption = #1043#1088#1072#1092#1080#1082#1080
+      ImageIndex = 3
+      object PageControlCharts: TPageControl
+        Left = 0
+        Top = 0
+        Width = 940
+        Height = 544
+        Align = alClient
+        TabOrder = 0
+        ExplicitLeft = 264
+        ExplicitTop = 96
+        ExplicitWidth = 289
+        ExplicitHeight = 193
+      end
     end
   end
   object PanelMessageBox: TPanel

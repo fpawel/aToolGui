@@ -86,6 +86,8 @@ begin
     Chart1.View3D := False;
     Chart1.Axes.FastCalc := True;
 
+    Chart1.Axes.Bottom.Increment:=DateTimeStep[dtOneSecond];
+    Chart1.Axes.Bottom.DateTimeFormat:='dd/mm HH:nn:ss';
     for i := 0 to Chart1.AxesList.Count - 1 do
     begin
         Chart1.Axes[i].Axis.Width := 1;

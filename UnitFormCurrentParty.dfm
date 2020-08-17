@@ -101,7 +101,7 @@ object FormCurrentParty: TFormCurrentParty
         Left = 65
         Top = 8
         Width = 35
-        Height = 19
+        Height = 14
         Margins.Top = 8
         Align = alLeft
         Caption = 'Label1'
@@ -111,7 +111,6 @@ object FormCurrentParty: TFormCurrentParty
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        ExplicitHeight = 14
       end
       object Image2: TImage
         AlignWithMargins = True

@@ -133,7 +133,7 @@ var
 begin
     FSeries := TDictionary<TProductVar, TFastLineSeries>.Create;
     FSeriesInfo := TDictionary<TFastLineSeries, TProductVar>.Create;
-    FProductConnectioninfo := TDictionary<int64, TProductConnectionInfo>.Create;
+    FProductConnectionInfo := TDictionary<int64, TProductConnectionInfo>.Create;
 
     for i := 0 to 3 do
     begin
@@ -159,16 +159,15 @@ begin
     end;
 
     p := FParty.Products[ACol - 1];
-    if not FProductConnectioninfo.ContainsKey(p.ProductID) then
+    if not FProductConnectionInfo.ContainsKey(p.ProductID) then
     begin
         Panel2.Visible := false;
         exit;
     end;
-    pc := FProductConnectioninfo[p.ProductID];
+    pc := FProductConnectionInfo[p.ProductID];
 
-    Label1.Caption := Format('%s %s адр.%d сер.№ %d: %s', [TimeToStr(pc.Time), p.Comport, p.Addr,
-      p.Serial, pc.Text]);
-
+    Label1.Caption := Format('%s %s адр.%d сер.№ %d: %s',
+      [TimeToStr(pc.Time), p.Comport, p.Addr, p.Serial, pc.Text]);
 
     if not pc.IsError then
     begin
@@ -208,8 +207,8 @@ var
 begin
     for xx in FSeriesInfo do
         xx.Key.ParentChart := nil;
-    with AToolMainForm.PageControlMain do
-        while PageCount > PageIndexChart do
+    with AToolMainForm.PageControlCharts do
+        while PageCount > 0 do
             Pages[PageCount - 1].Free;
 end;
 
@@ -299,11 +298,10 @@ begin
             MenuSetChart.Items[MenuSetChart.Count - 1].Free
         end;
 
-        for i := PageIndexChart to AToolMainForm.PageControlMain.
-          PageCount - 1 do
+        for i := 0 to AToolMainForm.PageControlCharts.PageCount - 1 do
         begin
             m := TMenuItem.Create(nil);
-            m.Caption := AToolMainForm.PageControlMain.Pages[i].Caption;
+            m.Caption := AToolMainForm.PageControlCharts.Pages[i].Caption;
             m.OnClick := MenuSetChartClick;
             MenuSetChart.Add(m);
         end;
@@ -520,13 +518,13 @@ begin
     c := StringGrid1.Canvas;
     c.Font.Color := clNavy;
     p := FParty.Products[ACol - 1];
-    if not FProductConnectioninfo.ContainsKey(p.ProductID) then
+    if not FProductConnectionInfo.ContainsKey(p.ProductID) then
     begin
         StringGrid_DrawCellText(StringGrid1, ACol, ARow, ARect,
           taRightJustify, AText);
         exit;
     end;
-    if not FProductConnectioninfo[p.ProductID].IsError then
+    if not FProductConnectionInfo[p.ProductID].IsError then
         n := 0
     else
         n := 2;
@@ -856,13 +854,14 @@ begin
             begin
                 Y.Text := X.Error;
                 Y.IsError := true;
-            end else
+            end
+            else
             begin
                 Y.Text := 'связь установлена';
-                Y.IsError := False;
+                Y.IsError := false;
             end;
             Y.Time := now;
-            FProductConnectioninfo.AddOrSetValue(p.ProductID, Y);
+            FProductConnectionInfo.AddOrSetValue(p.ProductID, Y);
             with StringGrid1 do
                 if not(EditorMode AND (Col = i + 1) AND (Row = ARow)) then
                     Cells[i + 1, ARow] := Cells[i + 1, ARow];

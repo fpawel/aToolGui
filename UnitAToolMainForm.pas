@@ -66,22 +66,24 @@ type
         N15: TMenuItem;
         N16: TMenuItem;
         TabSheetAppConfig: TTabSheet;
-    MenuWrite32: TMenuItem;
-    N22: TMenuItem;
-    N110: TMenuItem;
-    N23: TMenuItem;
-    N31: TMenuItem;
-    N41: TMenuItem;
-    N51: TMenuItem;
-    N61: TMenuItem;
-    N24: TMenuItem;
-    N26: TMenuItem;
-    N27: TMenuItem;
-    N28: TMenuItem;
-    N29: TMenuItem;
-    N30: TMenuItem;
-    N32: TMenuItem;
-    N19: TMenuItem;
+        MenuWrite32: TMenuItem;
+        N22: TMenuItem;
+        N110: TMenuItem;
+        N23: TMenuItem;
+        N31: TMenuItem;
+        N41: TMenuItem;
+        N51: TMenuItem;
+        N61: TMenuItem;
+        N24: TMenuItem;
+        N26: TMenuItem;
+        N27: TMenuItem;
+        N28: TMenuItem;
+        N29: TMenuItem;
+        N30: TMenuItem;
+        N32: TMenuItem;
+        N19: TMenuItem;
+        TabSheetCharts: TTabSheet;
+    PageControlCharts: TPageControl;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -105,14 +107,14 @@ type
         procedure N13Click(Sender: TObject);
         procedure N15Click(Sender: TObject);
         procedure N16Click(Sender: TObject);
-    procedure N24Click(Sender: TObject);
-    procedure N26Click(Sender: TObject);
-    procedure N27Click(Sender: TObject);
-    procedure N30Click(Sender: TObject);
-    procedure N32Click(Sender: TObject);
-    procedure N28Click(Sender: TObject);
-    procedure N29Click(Sender: TObject);
-    procedure MenuWrite32Click(Sender: TObject);
+        procedure N24Click(Sender: TObject);
+        procedure N26Click(Sender: TObject);
+        procedure N27Click(Sender: TObject);
+        procedure N30Click(Sender: TObject);
+        procedure N32Click(Sender: TObject);
+        procedure N28Click(Sender: TObject);
+        procedure N29Click(Sender: TObject);
+        procedure MenuWrite32Click(Sender: TObject);
     private
         { Private declarations }
         FEnableCopyData: boolean;
@@ -165,9 +167,6 @@ type
 
 var
     AToolMainForm: TAToolMainForm;
-
-const
-    PageIndexChart = 3;
 
 implementation
 
@@ -310,7 +309,7 @@ begin
             ColWidths[0] := 300;
             ColWidths[1] := 300;
         end;
-        //Values := AppCfgClient.getParamValues;
+        // Values := AppCfgClient.getParamValues;
         Show;
     end;
 
@@ -587,7 +586,7 @@ begin
         FormWrite32.ToolButtonStop.Click;
         exit;
     end;
-    FormWrite32.Panel1.Parent:= FormCurrentParty;
+    FormWrite32.Panel1.parent := FormCurrentParty;
     FormWrite32.Panel1.Align := alBottom;
     FormWrite32.Panel1.Font.Size := 9;
     FormWrite32.Panel1.Show;
@@ -620,6 +619,7 @@ begin
         Lines.Add(Format('Дата: %s %s', [bi.Date, bi.Time]));
         Lines.Add(Format('Сборка: %s', [bi.Uuid]));
         Lines.Add(Format('Commit: %s', [bi.Commit]));
+        Lines.Add(Format('Commit GUI: %s', [bi.CommitGui]));
     end;
     AForm.ShowModal;
     AForm.Free;
@@ -646,7 +646,7 @@ end;
 
 procedure TAToolMainForm.N26Click(Sender: TObject);
 begin
-    TempDeviceClient.start;
+    TempDeviceClient.Start;
 end;
 
 procedure TAToolMainForm.N27Click(Sender: TObject);
@@ -659,8 +659,8 @@ var
     strValue: string;
     value: Double;
 begin
-    if not InputQuery('Уставка термокамеры', 'Температура уставки',
-      strValue) or not TryStrToFloat2(strValue, value) then
+    if not InputQuery('Уставка термокамеры', 'Температура уставки', strValue) or
+      not TryStrToFloat2(strValue, value) then
         exit;
     TempDeviceClient.setDestination(value);
 end;
@@ -670,8 +670,8 @@ var
     strValue: string;
     value: Double;
 begin
-    if not InputQuery('Пеервод термокамеры', 'Температура:',
-      strValue) or not TryStrToFloat2(strValue, value) then
+    if not InputQuery('Пеервод термокамеры', 'Температура:', strValue) or
+      not TryStrToFloat2(strValue, value) then
         exit;
     TempDeviceClient.setup(value);
 end;
@@ -813,7 +813,7 @@ var
     AText: string;
 
     X, y: integer;
-    txt_height: double;
+    txt_height: Double;
     words: TArray<string>;
     word: string;
 begin
@@ -833,36 +833,24 @@ begin
     AText := PageControl.Pages[TabIndex].Caption;
     txt_height := PageControl.Canvas.TextHeight(AText);
 
-    if TabIndex < PageIndexChart then
-    begin
-        word := PageControl.Pages[TabIndex].Caption;
-        words := word.Split([' '], TStringSplitOptions.ExcludeEmpty);
-
-        X := Rect.Left + 7;
-
-        if length(words) = 1 then
-        begin
-            y := Rect.Top + round((Rect.Height - txt_height) / 2.0);
-            PageControl.Canvas.TextRect(Rect, X, y, word);
-        end
-        else
-        begin
-            y := Rect.Top + 5;
-            PageControl.Canvas.FillRect(Rect);
-            PageControl.Canvas.TextOut(X, y, words[0]);
-            y := y + round(txt_height) + 3;
-            PageControl.Canvas.TextOut(X, y, words[1]);
-        end;
-
-        exit;
-    end;
+    word := PageControl.Pages[TabIndex].Caption;
+    words := word.Split([' '], TStringSplitOptions.ExcludeEmpty);
 
     X := Rect.Left + 7;
-    y := Rect.Top + 5;
-    PageControl.Canvas.FillRect(Rect);
-    PageControl.Canvas.TextOut(X, y, 'График:');
-    y := y + round(txt_height) + 3;
-    PageControl.Canvas.TextOut(X, y, AText);
+
+    if length(words) = 1 then
+    begin
+        y := Rect.Top + round((Rect.Height - txt_height) / 2.0);
+        PageControl.Canvas.TextRect(Rect, X, y, word);
+    end
+    else
+    begin
+        y := Rect.Top + 5;
+        PageControl.Canvas.FillRect(Rect);
+        PageControl.Canvas.TextOut(X, y, words[0]);
+        y := y + round(txt_height) + 3;
+        PageControl.Canvas.TextOut(X, y, words[1]);
+    end;
 end;
 
 procedure TAToolMainForm.AppException(Sender: TObject; e: Exception);
@@ -911,8 +899,8 @@ begin
 
     d := IncSecond(0, 1);
 
-    with PageControlMain do
-        for I := PageIndexChart to PageCount - 1 do
+    with PageControlCharts do
+        for I := 0 to PageCount - 1 do
         begin
             AChart := (Pages[I].Controls[0] AS TFormChart).Chart1;
             AChart.BottomAxis.SetMinMax(t1 - d, t2 + d);
@@ -925,12 +913,12 @@ var
     tbs: TTabSheet;
     AFormChart: TFormChart;
 begin
-    for I := PageIndexChart to PageControlMain.PageCount - 1 do
-        if PageControlMain.Pages[I].Caption = AName then
-            exit((PageControlMain.Pages[I].Controls[0] AS TFormChart).Chart1);
+    for I := 0 to PageControlCharts.PageCount - 1 do
+        if PageControlCharts.Pages[I].Caption = AName then
+            exit((PageControlCharts.Pages[I].Controls[0] AS TFormChart).Chart1);
     tbs := TTabSheet.Create(nil);
     tbs.Caption := AName;
-    tbs.PageControl := PageControlMain;
+    tbs.PageControl := PageControlCharts;
 
     AFormChart := TFormChart.Create(tbs);
     with AFormChart do
@@ -954,8 +942,8 @@ procedure TAToolMainForm.SetupSeriesStringGrids;
 var
     I: integer;
 begin
-    with PageControlMain do
-        for I := PageIndexChart to PageCount - 1 do
+    with PageControlCharts do
+        for I := 0 to PageCount - 1 do
             (Pages[I].Controls[0] AS TFormChart).setupStringGrid;
 end;
 
@@ -1091,8 +1079,8 @@ var
     I: integer;
 begin
     xs := TList<TTabSheet>.Create;
-    with PageControlMain do
-        for I := PageIndexChart to PageCount - 1 do
+    with PageControlCharts do
+        for I := 0 to PageCount - 1 do
             if (Pages[I].Controls[0] AS TFormChart).Chart1.SeriesCount = 0 then
                 xs.Add(Pages[I]);
     for I := 0 to xs.Count - 1 do
