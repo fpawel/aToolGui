@@ -42,7 +42,6 @@ object FormWrite32: TFormWrite32
       Margins.Top = 6
       Align = alLeft
       Caption = #1040#1088#1075#1091#1084#1077#1085#1090':'
-      ExplicitLeft = 335
       ExplicitHeight = 13
     end
     object ComboBoxCmdModbus: TComboBox
@@ -86,7 +85,6 @@ object FormWrite32: TFormWrite32
         'BE'
         'LE'
         'HEX')
-      ExplicitLeft = 393
     end
     object Button9: TButton
       AlignWithMargins = True
@@ -101,8 +99,6 @@ object FormWrite32: TFormWrite32
       Caption = #1047#1072#1087#1080#1089#1100' 32'
       TabOrder = 0
       OnClick = Button9Click
-      ExplicitTop = 3
-      ExplicitHeight = 22
     end
     object ToolBar6: TToolBar
       Left = 731
@@ -139,7 +135,6 @@ object FormWrite32: TFormWrite32
       Margins.Bottom = 12
       Align = alLeft
       TabOrder = 5
-      ExplicitLeft = 469
     end
   end
   object ImageList4: TImageList
