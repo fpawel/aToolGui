@@ -1,0 +1,42 @@
+object FormInterrogate: TFormInterrogate
+  Left = 0
+  Top = 0
+  BorderStyle = bsSizeToolWin
+  Caption = #1046#1091#1088#1085#1072#1083' '#1087#1088#1080#1105#1084#1086#1087#1077#1088#1077#1076#1072#1095#1080
+  ClientHeight = 213
+  ClientWidth = 722
+  Color = clBtnHighlight
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poScreenCenter
+  OnCreate = FormCreate
+  OnResize = FormResize
+  PixelsPerInch = 96
+  TextHeight = 14
+  object StringGrid1: TStringGrid
+    AlignWithMargins = True
+    Left = 3
+    Top = 3
+    Width = 716
+    Height = 207
+    Align = alClient
+    BorderStyle = bsNone
+    ColCount = 4
+    DefaultColWidth = 120
+    DefaultDrawing = False
+    FixedColor = clBackground
+    FixedCols = 0
+    RowCount = 1
+    FixedRows = 0
+    GradientEndColor = clBlack
+    TabOrder = 0
+    OnDblClick = StringGrid1DblClick
+    OnDrawCell = StringGrid1DrawCell
+    ExplicitLeft = 8
+    ExplicitTop = -2
+  end
+end

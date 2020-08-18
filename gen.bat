@@ -1,2 +1,0 @@
-thrift -r --out ./internal/thriftgen/ --gen go:package_prefix=github.com/fpawel/atool/internal/thriftgen/  api.thrift
-thrift -r --out %DELPHIPATH%/src/github.com/fpawel/AToolGui/gen-delphi/ --gen delphi api.thrift
