@@ -52,36 +52,20 @@ object AToolMainForm: TAToolMainForm
         object TabSheet3: TTabSheet
           Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099
           ImageIndex = 1
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
         end
         object TabSheet1: TTabSheet
           Caption = #1044#1072#1085#1085#1099#1077
           ImageIndex = 2
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
         end
       end
     end
     object TabSheetParties: TTabSheet
       Caption = #1040#1088#1093#1080#1074
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
     end
     object TabSheetAppConfig: TTabSheet
       Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
     end
     object TabSheetCharts: TTabSheet
       Caption = #1043#1088#1072#1092#1080#1082#1080
@@ -387,8 +371,8 @@ object AToolMainForm: TAToolMainForm
     DrawingStyle = dsTransparent
     Height = 20
     Width = 20
-    Left = 535
-    Top = 122
+    Left = 551
+    Top = 98
     Bitmap = {
       494C010106002403040014001400FFFFFF002110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000500000002800000001002000000000000032
